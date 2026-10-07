@@ -1,0 +1,23 @@
+======================================================================
+STAGE: benchmark  models=['CompactMLP']
+======================================================================
+  using the dataset provider's own train.csv / test.csv split.
+  [session/ binary] CompactMLP   acc=0.9713 macroF1=0.8101 infer=2.09 us/sample
+  [session/ 8class] CompactMLP   acc=0.8529 macroF1=0.6652 infer=0.40 us/sample
+  [session/34class] CompactMLP   acc=0.8068 macroF1=0.6376 infer=0.43 us/sample
+   task        model  accuracy  macro_f1  weighted_f1  n_train  n_test
+ binary       LogReg    0.9610    0.6881       0.9520   152525  124844
+ binary RandomForest    0.9770    0.8911       0.9786   152525  124844
+ 8class       LogReg    0.7699    0.5476       0.7389   152525  124844
+ 8class RandomForest    0.9527    0.7674       0.9594   152525  124844
+34class       LogReg    0.7360    0.5320       0.7228   152525  124844
+34class RandomForest    0.9155    0.7377       0.9274   152525  124844
+ binary     LightGBM    0.9795    0.9031       0.9809   152525  124844
+ 8class     LightGBM    0.9670    0.8072       0.9706   152525  124844
+34class     LightGBM    0.9578    0.8019       0.9598   152525  124844
+ binary   CompactMLP    0.9713    0.8101       0.9684   152525  124844
+ 8class   CompactMLP    0.8529    0.6652       0.8494   152525  124844
+34class   CompactMLP    0.8068    0.6376       0.8064   152525  124844
+
+  Best 8-class model so far: LightGBM (macro-F1=0.8072)
+  done (58.4s)

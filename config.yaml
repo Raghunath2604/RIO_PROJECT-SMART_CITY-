@@ -1,0 +1,34 @@
+# Fog-IDS Enterprise Configuration
+version: "1.0.0"
+
+system:
+  environment: "production"
+  log_level: "INFO"
+  enable_siem_logging: true
+  alert_log_path: "logs/alerts.jsonl"
+  audit_log_path: "logs/audit.log"
+
+inference:
+  default_model: "LightGBM"
+  default_task: "8class"
+  tier_switching:
+    enabled: true
+    high_load_threshold_cpu_pct: 75.0
+    medium_load_threshold_cpu_pct: 45.0
+    hysteresis_pct: 5.0
+    dwell_time_seconds: 1.0
+
+hardware_budget:
+  target_architecture: "ARM Cortex-A72 (Raspberry Pi 4)"
+  max_streaming_latency_us: 1000.0
+  max_model_footprint_kb: 500.0
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  cors_origins: ["*"]
+
+dashboard:
+  port: 8501
+  theme: "dark"

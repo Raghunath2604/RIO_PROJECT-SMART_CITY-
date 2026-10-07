@@ -1,0 +1,13 @@
+model,task,split,size_kb,batch_us_per_sample,streaming_us_per_sample,pi4_est_us_per_sample_low,pi4_est_us_per_sample_high,n_test
+LogReg,binary,session,2.6,0.24,94.46,472.3,614.0,124844
+LogReg,8class,session,5.3,0.339,78.6,393.0,510.9,124844
+LogReg,34class,session,15.6,0.904,81.57,407.8,530.2,124844
+LightGBM,binary,session,517.8,1.489,1214.82,6074.1,7896.3,124844
+LightGBM,8class,session,4133.8,18.691,1876.01,9380.1,12194.1,124844
+LightGBM,34class,session,15563.9,188.535,3480.03,17400.2,22620.2,124844
+CompactMLP,binary,session,129.4,1.048,121.85,609.3,792.0,124844
+CompactMLP,8class,session,135.4,1.215,132.11,660.6,858.7,124844
+CompactMLP,34class,session,156.6,1.704,123.63,618.2,803.6,124844
+RandomForest,binary,session,10956.3,2.32,33825.66,169128.3,219866.8,124844
+RandomForest,8class,session,48522.0,5.051,33755.67,168778.4,219411.9,124844
+RandomForest,34class,session,103906.3,13.671,33562.78,167813.9,218158.1,124844

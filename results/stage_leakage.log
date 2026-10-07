@@ -1,0 +1,21 @@
+======================================================================
+STAGE: leakage (RQ2)
+======================================================================
+  [note] the uploaded real-data redistribution is already row-shuffled (measured mean same-label run length ~1.1 over 1M rows), so the original per-capture session boundaries are not recoverable from this file -- see src/loader.py::load_real_presplit docstring. The leakage (RQ2) experiment is therefore demonstrated on the synthetic generator instead, which DOES construct genuine session boundaries by design, so the random-vs-session comparison is actually meaningful. The real data is used for every other stage (benchmark, profiling, fog emulation).
+[loader] no real CICIoT2023 data found -- generating schema-matched synthetic data. See src/data_gen.py docstring for why, and pass --real-data-dir once you have the files.
+  [ random/ 8class] LogReg       acc=0.9992 macroF1=0.9853 infer=0.13 us/sample
+  [ random/ 8class] RandomForest acc=0.9998 macroF1=0.9985 infer=4.51 us/sample
+  [ random/ 8class] LightGBM     acc=0.9998 macroF1=0.9979 infer=30.83 us/sample
+  [ random/ 8class] CompactMLP   acc=0.9991 macroF1=0.9894 infer=0.32 us/sample
+  [session/ 8class] LogReg       acc=0.9997 macroF1=0.9940 infer=0.14 us/sample
+  [session/ 8class] RandomForest acc=0.9998 macroF1=0.9960 infer=4.32 us/sample
+  [session/ 8class] LightGBM     acc=0.9998 macroF1=0.9889 infer=30.00 us/sample
+  [session/ 8class] CompactMLP   acc=0.9993 macroF1=0.9788 infer=0.35 us/sample
+             accuracy         macro_f1        
+split          random session   random session
+model                                         
+CompactMLP     0.9991  0.9993   0.9894  0.9788
+LightGBM       0.9998  0.9998   0.9979  0.9889
+LogReg         0.9992  0.9997   0.9853  0.9940
+RandomForest   0.9998  0.9998   0.9985  0.9960
+  done (55.8s)

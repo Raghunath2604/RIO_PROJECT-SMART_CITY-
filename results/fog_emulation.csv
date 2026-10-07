@@ -1,0 +1,4 @@
+strategy,accuracy,macro_f1,mean_classes_seen_per_node,total_classes,rounds,local_epochs
+centralized,0.9532136105860114,0.7678143801056626,,,,
+per_node,0.954969802313287,0.7790415587250865,8.0,8.0,,
+federated_avg,0.7583784563134792,0.5201139924952719,,,15.0,5.0

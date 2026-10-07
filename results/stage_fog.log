@@ -1,0 +1,8 @@
+======================================================================
+STAGE: fog  nodes=4 (SIMULATED, no physical device)
+======================================================================
+     strategy  accuracy  macro_f1  mean_classes_seen_per_node  total_classes  rounds  local_epochs
+  centralized  0.952405  0.767075                         NaN            NaN     NaN           NaN
+     per_node  0.955557  0.781076                         8.0            8.0     NaN           NaN
+federated_avg  0.758330  0.519493                         NaN            NaN    15.0           5.0
+  done (71.6s)

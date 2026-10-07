@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fog-IDS | Edge Intrusion Detection System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation -->
+        <header class="top-nav">
+            <div class="nav-brand">
+                <div class="shield-icon">🛡️</div>
+                <div>
+                    <h1 class="nav-title">Fog-IDS Defense Center</h1>
+                    <p class="nav-subtitle">Lightweight Multi-Class Intrusion Detection for Smart City Fog Nodes</p>
+                </div>
+            </div>
+            <div class="nav-status">
+                <div class="status-badge live-badge">
+                    <span class="status-dot"></span>
+                    <span>CICIoT2023 REAL DATA (277K Flows)</span>
+                </div>
+                <div class="status-badge api-badge" id="api-status">
+                    <span class="status-dot green-dot"></span>
+                    <span>API: ONLINE</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- KPI Metrics Grid -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-value text-blue">96.74%</div>
+                <div class="kpi-label">8-Class Top Accuracy (LightGBM)</div>
+                <div class="kpi-trend">0.8099 Macro-F1</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value text-purple">132 µs</div>
+                <div class="kpi-label">Edge Streaming Latency (CompactMLP)</div>
+                <div class="kpi-trend">135.4 KB Footprint</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value text-orange">84.0%</div>
+                <div class="kpi-label">Minority Web-Based Recall (RQ4)</div>
+                <div class="kpi-trend">73.4% Brute Force</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value text-green">209.8K</div>
+                <div class="kpi-label">Peak Ingestion Flows/Sec</div>
+                <div class="kpi-trend">Batch Vectorized Inference</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value text-cyan">4 Nodes</div>
+                <div class="kpi-label">Simulated Fog Cluster</div>
+                <div class="kpi-trend">FedAvg / Per-Node</div>
+            </div>
+        </section>
+
+        <!-- Main Navigation Tabs -->
+        <nav class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('stream')">🛡️ Live Traffic & Fog Stream</button>
+            <button class="tab-btn" onclick="switchTab('tier')">⚡ Dynamic Tier Switcher (FR5)</button>
+            <button class="tab-btn" onclick="switchTab('inspector')">🔍 Threat Flow Inspector</button>
+            <button class="tab-btn" onclick="switchTab('benchmark')">📊 Benchmark & Research Gaps</button>
+            <button class="tab-btn" onclick="switchTab('api')">🚀 API & Documentation</button>
+        </nav>
+
+        <!-- TAB 1: Live Traffic & Fog Stream -->
+        <main id="tab-stream" class="tab-content active">
+            <div class="grid-2-1">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>📡 Live Network Ingestion Stream</h2>
+                        <div class="stream-controls">
+                            <button id="stream-toggle-btn" class="btn btn-primary" onclick="toggleStream()">▶️ Start Flow Stream</button>
+                            <span class="stream-rate-label">Rate: <b id="rate-val">5</b> flows/sec</span>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="alert-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Fog Node</th>
+                                    <th>Threat Category</th>
+                                    <th>Predicted Sub-Attack</th>
+                                    <th>Confidence</th>
+                                    <th>Latency</th>
+                                    <th>Severity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stream-table-body">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>🏢 Fog Cluster Node Telemetry</h2>
+                    </div>
+                    <div class="node-grid">
+                        <div class="node-card" id="node-1">
+                            <div class="node-title"><span>Node-01 (Gateway)</span><span class="node-status-dot"></span></div>
+                            <div class="node-metric"><span>Rate:</span> <b class="text-blue">340 p/s</b></div>
+                            <div class="node-metric"><span>CPU Load:</span> <b>32%</b></div>
+                            <div class="node-metric"><span>Memory:</span> <b>64 MB</b></div>
+                            <div class="node-metric"><span>Threats Blocked:</span> <b class="text-red">14</b></div>
+                        </div>
+                        <div class="node-card" id="node-2">
+                            <div class="node-title"><span>Node-02 (Smart Hub)</span><span class="node-status-dot"></span></div>
+                            <div class="node-metric"><span>Rate:</span> <b class="text-blue">210 p/s</b></div>
+                            <div class="node-metric"><span>CPU Load:</span> <b>24%</b></div>
+                            <div class="node-metric"><span>Memory:</span> <b>48 MB</b></div>
+                            <div class="node-metric"><span>Threats Blocked:</span> <b class="text-red">8</b></div>
+                        </div>
+                        <div class="node-card" id="node-3">
+                            <div class="node-title"><span>Node-03 (Edge Router)</span><span class="node-status-dot"></span></div>
+                            <div class="node-metric"><span>Rate:</span> <b class="text-blue">480 p/s</b></div>
+                            <div class="node-metric"><span>CPU Load:</span> <b>46%</b></div>
+                            <div class="node-metric"><span>Memory:</span> <b>82 MB</b></div>
+                            <div class="node-metric"><span>Threats Blocked:</span> <b class="text-red">26</b></div>
+                        </div>
+                        <div class="node-card" id="node-4">
+                            <div class="node-title"><span>Node-04 (Sensor Hub)</span><span class="node-status-dot"></span></div>
+                            <div class="node-metric"><span>Rate:</span> <b class="text-blue">150 p/s</b></div>
+                            <div class="node-metric"><span>CPU Load:</span> <b>18%</b></div>
+                            <div class="node-metric"><span>Memory:</span> <b>38 MB</b></div>
+                            <div class="node-metric"><span>Threats Blocked:</span> <b class="text-red">3</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- TAB 2: Dynamic Tier Switcher (FR5) -->
+        <main id="tab-tier" class="tab-content">
+            <div class="grid-1-2">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>🎛️ Edge Resource Pressure Simulator</h2>
+                    </div>
+                    <div class="slider-group">
+                        <label for="cpu-slider">Simulated CPU Load: <span id="cpu-slider-val" class="slider-val">35%</span></label>
+                        <input type="range" id="cpu-slider" min="0" max="100" value="35" oninput="updateTierSimulation(this.value)">
+                    </div>
+
+                    <div class="tier-display-card" id="tier-card">
+                        <div class="tier-display-subtitle">ACTIVE INFERENCE TIER</div>
+                        <div class="tier-display-title" id="active-tier-name">FULL TIER</div>
+                        <div class="tier-display-model" id="active-tier-model">Model: LightGBM (150 trees)</div>
+                        <p class="tier-display-desc" id="active-tier-desc">Optimal macro-F1 (0.8099) under standard edge CPU load (<45%).</p>
+                    </div>
+
+                    <div class="tier-rule-box">
+                        <h3>Hysteresis & Switching Thresholds:</h3>
+                        <ul>
+                            <li><b>FULL TIER (LightGBM):</b> Active when CPU Load &lt; 45%</li>
+                            <li><b>REDUCED TIER (CompactMLP):</b> Active when 45% ≤ Load ≤ 75% (132 µs latency)</li>
+                            <li><b>MINIMAL TIER (LogReg):</b> Active when CPU Load &gt; 75% (78 µs emergency fallback)</li>
+                            <li><b>5% Hysteresis Buffer:</b> Prevents rapid flapping at threshold boundaries</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>📈 Macro-F1 vs. Single-Row Edge Latency Trade-Off</h2>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="tierChart"></canvas>
+                    </div>
+                    <div class="table-container" style="margin-top: 16px;">
+                        <table class="alert-table">
+                            <thead>
+                                <tr>
+                                    <th>Tier Name</th>
+                                    <th>Model Family</th>
+                                    <th>Macro-F1</th>
+                                    <th>Streaming Latency</th>
+                                    <th>Model Size</th>
+                                    <th>Pi 4 Estimate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge badge-blue">FULL</span></td>
+                                    <td>LightGBM</td>
+                                    <td><b>0.8099</b></td>
+                                    <td>1,876.0 µs</td>
+                                    <td>4.1 MB</td>
+                                    <td>9.4 - 12.2 ms</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge badge-purple">REDUCED</span></td>
+                                    <td>CompactMLP</td>
+                                    <td><b>0.6432</b></td>
+                                    <td><b>132.1 µs</b></td>
+                                    <td><b>135.4 KB</b></td>
+                                    <td><b>0.66 - 0.86 ms</b></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge badge-orange">MINIMAL</span></td>
+                                    <td>LogisticRegression</td>
+                                    <td>0.5480</td>
+                                    <td>78.6 µs</td>
+                                    <td>5.3 KB</td>
+                                    <td>0.39 - 0.51 ms</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- TAB 3: Threat Flow Inspector -->
+        <main id="tab-inspector" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>🔍 Real-Time Flow Classifier & XAI Attribution</h2>
+                </div>
+                <div class="inspector-controls">
+                    <div class="form-group">
+                        <label for="preset-select">Select Attack Preset Vector:</label>
+                        <select id="preset-select" class="form-control" onchange="runInspection()">
+                            <option value="DDoS-SYN_Flood">DDoS-SYN_Flood (Critical Severity)</option>
+                            <option value="Mirai-greip_flood">Mirai-greip_flood (Critical IoT Botnet)</option>
+                            <option value="DictionaryBruteForce">DictionaryBruteForce (Rare Minority Attack)</option>
+                            <option value="SqlInjection">SqlInjection / Web-Based (Rare Minority Attack)</option>
+                            <option value="Recon-PortScan">Recon-PortScan (Low/Medium Probe)</option>
+                            <option value="BenignTraffic">BenignTraffic (Normal IoT Flow)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="model-select">Classification Model:</label>
+                        <select id="model-select" class="form-control" onchange="runInspection()">
+                            <option value="LightGBM">LightGBM (Full Tier - 0.81 F1)</option>
+                            <option value="CompactMLP">CompactMLP (Reduced Tier - 132 µs)</option>
+                            <option value="LogReg">LogisticRegression (Minimal Tier - 78 µs)</option>
+                            <option value="RandomForest">RandomForest (120 Trees Ensemble)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-select">Granularity Scope:</label>
+                        <select id="task-select" class="form-control" onchange="runInspection()">
+                            <option value="8class">8-Class (Category Classification)</option>
+                            <option value="binary">Binary (Benign vs Malicious)</option>
+                            <option value="34class">34-Class (Fine-Grained Sub-Attacks)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="kpi-grid" style="margin-top: 20px;">
+                    <div class="kpi-card">
+                        <div class="kpi-label">PREDICTED THREAT</div>
+                        <div class="kpi-value text-blue" id="insp-prediction" style="font-size: 1.6rem;">DDoS</div>
+                        <div class="kpi-trend" id="insp-category">Category: DDoS</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">CONFIDENCE SCORE</div>
+                        <div class="kpi-value text-green" id="insp-confidence">99.8%</div>
+                        <div class="kpi-trend">Model Softmax Distribution</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">THREAT SEVERITY</div>
+                        <div style="margin-top: 8px;">
+                            <span class="severity-pill pill-critical" id="insp-severity">CRITICAL</span>
+                        </div>
+                        <div class="kpi-trend">Automated Firewall Trigger</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">INFERENCE LATENCY</div>
+                        <div class="kpi-value text-purple" id="insp-latency">1,876 µs</div>
+                        <div class="kpi-trend">Single-Row Ingestion</div>
+                    </div>
+                </div>
+
+                <div class="panel-header" style="margin-top: 24px;">
+                    <h3>🧠 Local Feature Attributions (Explainable AI)</h3>
+                </div>
+                <div class="table-container">
+                    <table class="alert-table">
+                        <thead>
+                            <tr>
+                                <th>Feature Name</th>
+                                <th>Observed Value</th>
+                                <th>Contribution Score</th>
+                                <th>Diagnostic Direction</th>
+                            </tr>
+                        </thead>
+                        <tbody id="xai-table-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- TAB 4: Benchmark & Research Gaps -->
+        <main id="tab-benchmark" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>📊 Empirical Benchmark Results on Real CICIoT2023 Dataset</h2>
+                </div>
+                <div class="table-container">
+                    <table class="alert-table">
+                        <thead>
+                            <tr>
+                                <th>Task Scope</th>
+                                <th>Model Architecture</th>
+                                <th>Accuracy</th>
+                                <th>Macro-F1</th>
+                                <th>Weighted-F1</th>
+                                <th>Training Samples</th>
+                                <th>Test Samples</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><b>Binary (2-Class)</b></td><td><b>LightGBM</b></td><td><b>0.9803</b></td><td><b>0.9060</b></td><td>0.9816</td><td>152,525</td><td>124,844</td></tr>
+                            <tr><td>Binary</td><td>RandomForest</td><td>0.9786</td><td>0.8972</td><td>0.9799</td><td>152,525</td><td>124,844</td></tr>
+                            <tr><td>Binary</td><td>CompactMLP</td><td>0.9674</td><td>0.7615</td><td>0.9619</td><td>152,525</td><td>124,844</td></tr>
+                            <tr><td>Binary</td><td>LogisticRegression</td><td>0.9611</td><td>0.6889</td><td>0.9521</td><td>152,525</td><td>124,844</td></tr>
+                            <tr style="border-top: 2px solid rgba(255,255,255,0.1);"><td><b>8-Class (Category)</b></td><td><b>LightGBM</b></td><td><b>0.9674</b></td><td><b>0.8099</b></td><td>0.9707</td><td>152,525</td><td>124,844</td></tr>
+                            <tr><td>8-Class</td><td>RandomForest</td><td>0.9524</td><td>0.7660</td><td>0.9589</td><td>152,525</td><td>124,844</td></tr>
+                            <tr><td>8-Class</td><td>CompactMLP</td><td>0.8338</td><td>0.6432</td><td>0.8245</td><td>152,525</td><td>124,844</td></tr>
+                            <tr><td>8-Class</td><td>LogisticRegression</td><td>0.7699</td><td>0.5480</td><td>0.7391</td><td>152,525</td><td>124,844</td></tr>
+                            <tr style="border-top: 2px solid rgba(255,255,255,0.1);"><td><b>34-Class (Fine-Grained)</b></td><td><b>LightGBM</b></td><td><b>0.9579</b></td><td><b>0.8064</b></td><td>0.9598</td><td>152,525</td><td>124,844</td></tr>
+                            <tr><td>34-Class</td><td>RandomForest</td><td>0.9151</td><td>0.7385</td><td>0.9268</td><td>152,525</td><td>124,844</td></tr>
+                            <tr><td>34-Class</td><td>CompactMLP</td><td>0.8104</td><td>0.6357</td><td>0.8112</td><td>152,525</td><td>124,844</td></tr>
+                            <tr><td>34-Class</td><td>LogisticRegression</td><td>0.7357</td><td>0.5314</td><td>0.7225</td><td>152,525</td><td>124,844</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel-header" style="margin-top: 28px;">
+                    <h3>🎯 Research Gap Resolution Summary</h3>
+                </div>
+                <div class="grid-2-1">
+                    <div class="panel">
+                        <h4>Gap 1: Minority Class Starvation Solved (RQ4)</h4>
+                        <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.5;">
+                            Unweighted models in IoT security literature achieve only 3–30% recall on rare attacks. 
+                            Our per-class Bernoulli subsampling + balanced class-weighting boosted <b>Web-Based Recall to 84.0%</b> and <b>Brute Force Recall to 73.4%</b>.
+                        </p>
+                    </div>
+                    <div class="panel">
+                        <h4>Gap 3: True Single-Row Streaming Latency (RQ3)</h4>
+                        <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.5;">
+                            Batch timing gives an illusion of low latency. Under true per-packet streaming arrival, 
+                            <b>Random Forest takes 33.8 ms/sample</b> (unviable for edge), whereas <b>CompactMLP consumes only 132 µs</b> at 135 KB.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- TAB 5: API Documentation -->
+        <main id="tab-api" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>🚀 Production REST API & Swagger Documentation</h2>
+                </div>
+                <p style="color: #94a3b8; font-size: 0.95rem;">
+                    The FastAPI backend exposes standard REST endpoints for IoT gateways, fog aggregators, and SOC dashboards:
+                </p>
+
+                <div class="table-container" style="margin-top: 16px;">
+                    <table class="alert-table">
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Endpoint Route</th>
+                                <th>Description</th>
+                                <th>Parameters / Payload</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge badge-blue">GET</span></td>
+                                <td><code>/health</code></td>
+                                <td>Microservice health & CPU/RAM telemetry</td>
+                                <td>None</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-blue">GET</span></td>
+                                <td><code>/api/v1/models</code></td>
+                                <td>List all registered production models & SHA256 checksums</td>
+                                <td>None</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-green">POST</span></td>
+                                <td><code>/api/v1/predict</code></td>
+                                <td>Classify single network flow with XAI attribution</td>
+                                <td><code>{ features: {...}, model_name: "LightGBM", task: "8class" }</code></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-green">POST</span></td>
+                                <td><code>/api/v1/predict/adaptive</code></td>
+                                <td>Dynamic resource-aware tier classification (FR5)</td>
+                                <td><code>{ features: {...}, task: "8class" }</code></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-green">POST</span></td>
+                                <td><code>/api/v1/predict/batch</code></td>
+                                <td>High-throughput vectorized batch classification</td>
+                                <td><code>{ flows: [{...}, {...}], model_name: "CompactMLP" }</code></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-green">POST</span></td>
+                                <td><code>/api/v1/analyze/file</code></td>
+                                <td>Direct CSV dataset upload & intrusion breakdown summary</td>
+                                <td>Multipart Form: <code>file.csv</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 24px; text-align: center;">
+                    <a href="/docs" target="_blank" class="btn btn-primary" style="text-decoration: none; padding: 12px 24px;">
+                        📖 Open Interactive OpenAPI / Swagger Documentation
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Fog-IDS: Lightweight Multi-Class Intrusion Detection for Fog Nodes in Smart City IoT Networks</p>
+            <p style="color: #64748b; font-size: 0.8rem; margin-top: 4px;">Dataset: Real CICIoT2023 | Production Edge Deployment System</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

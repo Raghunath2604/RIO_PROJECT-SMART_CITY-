@@ -1,0 +1,34 @@
+# Python & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# Testing & Caching
+.pytest_cache/
+.coverage
+htmlcov/
+results/_cache/
+
+# Large Datasets & Archives
+real_data/
+archive3.zip
+*.pcap
+*.csv.gz
+
+# IDE & OS Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+logs/*.log
+logs/*.jsonl

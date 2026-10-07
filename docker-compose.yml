@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  fogids-api:
+    build: .
+    container_name: fogids_api
+    command: uvicorn api:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./results:/app/results
+      - ./models:/app/models
+    restart: unless-stopped
+
+  fogids-dashboard:
+    build: .
+    container_name: fogids_dashboard
+    command: streamlit run app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./results:/app/results
+      - ./models:/app/models
+    depends_on:
+      - fogids-api
+    restart: unless-stopped

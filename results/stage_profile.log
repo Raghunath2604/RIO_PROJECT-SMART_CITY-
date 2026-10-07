@@ -1,0 +1,17 @@
+======================================================================
+STAGE: profile
+======================================================================
+       model    task   split  size_kb  batch_us_per_sample  streaming_us_per_sample  pi4_est_us_per_sample_low  pi4_est_us_per_sample_high  n_test
+      LogReg  binary session      2.6                0.101                    50.30                      251.5                       326.9  124844
+RandomForest  binary session  10878.3                4.404                  5618.94                    28094.7                     36523.1  124844
+      LogReg  8class session      5.3                0.148                    44.60                      223.0                       289.9  124844
+RandomForest  8class session  49203.1                7.530                  5799.18                    28995.9                     37694.7  124844
+      LogReg 34class session     15.6                0.425                    40.12                      200.6                       260.8  124844
+RandomForest 34class session 104609.0               12.965                  5619.30                    28096.5                     36525.5  124844
+    LightGBM  binary session    517.6                4.530                   648.37                     3241.9                      4214.4  124844
+    LightGBM  8class session   4133.5               68.301                   854.10                     4270.5                      5551.7  124844
+    LightGBM 34class session  15586.2              347.845                  1147.58                     5737.9                      7459.2  124844
+  CompactMLP  binary session     70.2                2.088                    80.31                      401.5                       522.0  124844
+  CompactMLP  8class session     73.2                0.404                   120.70                      603.5                       784.6  124844
+  CompactMLP 34class session     83.9                0.430                   104.60                      523.0                       679.9  124844
+  done (7.3s)

@@ -1,0 +1,20 @@
+======================================================================
+STAGE: benchmark  models=['LogReg', 'RandomForest']
+======================================================================
+  using the dataset provider's own train.csv / test.csv split.
+  [session/ binary] LogReg       acc=0.9610 macroF1=0.6881 infer=0.10 us/sample
+  [session/ binary] RandomForest acc=0.9770 macroF1=0.8911 infer=4.40 us/sample
+  [session/ 8class] LogReg       acc=0.7699 macroF1=0.5476 infer=0.15 us/sample
+  [session/ 8class] RandomForest acc=0.9527 macroF1=0.7674 infer=7.53 us/sample
+  [session/34class] LogReg       acc=0.7360 macroF1=0.5320 infer=0.42 us/sample
+  [session/34class] RandomForest acc=0.9155 macroF1=0.7377 infer=12.96 us/sample
+   task        model  accuracy  macro_f1  weighted_f1  n_train  n_test
+ binary       LogReg    0.9610    0.6881       0.9520   152525  124844
+ binary RandomForest    0.9770    0.8911       0.9786   152525  124844
+ 8class       LogReg    0.7699    0.5476       0.7389   152525  124844
+ 8class RandomForest    0.9527    0.7674       0.9594   152525  124844
+34class       LogReg    0.7360    0.5320       0.7228   152525  124844
+34class RandomForest    0.9155    0.7377       0.9274   152525  124844
+
+  Best 8-class model so far: RandomForest (macro-F1=0.7674)
+  done (107.9s)

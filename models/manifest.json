@@ -1,0 +1,126 @@
+{
+  "version": "1.0.0",
+  "updated_at": "2026-10-05 14:53:31",
+  "models": {
+    "LogReg:binary": {
+      "file": "LogReg_binary.joblib",
+      "model": "LogReg",
+      "task": "binary",
+      "classes_count": 2,
+      "accuracy": 0.961079427125052,
+      "macro_f1": 0.6888543196426071,
+      "sha256": "75e774559ed2a5a685194554958404522d383b4f4439628401e97932fc134f2b",
+      "size_bytes": 2275
+    },
+    "LogReg:8class": {
+      "file": "LogReg_8class.joblib",
+      "model": "LogReg",
+      "task": "8class",
+      "classes_count": 8,
+      "accuracy": 0.7698888212489187,
+      "macro_f1": 0.547991056139931,
+      "sha256": "1fa2a07c2157e4e420c1ec826da329248081284ae8a7580731d42ce05c505b17",
+      "size_bytes": 4817
+    },
+    "LogReg:34class": {
+      "file": "LogReg_34class.joblib",
+      "model": "LogReg",
+      "task": "34class",
+      "classes_count": 34,
+      "accuracy": 0.7356781263016244,
+      "macro_f1": 0.5313803021448222,
+      "sha256": "fe04d5e6bc6df0eb193d3561f9efbb5b157edff3a38898109755445f18e60044",
+      "size_bytes": 13743
+    },
+    "LightGBM:binary": {
+      "file": "LightGBM_binary.joblib",
+      "model": "LightGBM",
+      "task": "binary",
+      "classes_count": 2,
+      "accuracy": 0.980279388677069,
+      "macro_f1": 0.9059888917520698,
+      "sha256": "a76efb197d4eb6496c7c23b17e6efe4cdc2df17778cc3b0e0b4215b937b8b20a",
+      "size_bytes": 233609
+    },
+    "LightGBM:8class": {
+      "file": "LightGBM_8class.joblib",
+      "model": "LightGBM",
+      "task": "8class",
+      "classes_count": 8,
+      "accuracy": 0.967391304347826,
+      "macro_f1": 0.8098750113224931,
+      "sha256": "f297f41ae6ec5da2627101950de74ba7faf446f5babe6d0ad5b1dd2630ca67ce",
+      "size_bytes": 1847548
+    },
+    "LightGBM:34class": {
+      "file": "LightGBM_34class.joblib",
+      "model": "LightGBM",
+      "task": "34class",
+      "classes_count": 34,
+      "accuracy": 0.9578754285348114,
+      "macro_f1": 0.8063871881602945,
+      "sha256": "3adfa3c60a6164a8d6da9ffbdcb702dbbb2e28665dabe4430b5189151baa63ae",
+      "size_bytes": 6926917
+    },
+    "CompactMLP:binary": {
+      "file": "CompactMLP_binary.joblib",
+      "model": "CompactMLP",
+      "task": "binary",
+      "classes_count": 2,
+      "accuracy": 0.9673512543654481,
+      "macro_f1": 0.7615149554953394,
+      "sha256": "b49e0c1f9bdb38c95e34aaaf9cb2afba29a261d677a2a345ad359cd0d50c5c1f",
+      "size_bytes": 123072
+    },
+    "CompactMLP:8class": {
+      "file": "CompactMLP_8class.joblib",
+      "model": "CompactMLP",
+      "task": "8class",
+      "classes_count": 8,
+      "accuracy": 0.8338085931242191,
+      "macro_f1": 0.6431742043893209,
+      "sha256": "80780821a9ce8b80632255e59df8a060d9c636d6a08ff8ee8c9f3bfb647d3211",
+      "size_bytes": 128465
+    },
+    "CompactMLP:34class": {
+      "file": "CompactMLP_34class.joblib",
+      "model": "CompactMLP",
+      "task": "34class",
+      "classes_count": 34,
+      "accuracy": 0.8103553234436577,
+      "macro_f1": 0.6357184795815786,
+      "sha256": "56fb70df884076bd2d43493c21b1cb16bb3022b8ace6d5c6b0d49d66e54bba00",
+      "size_bytes": 148963
+    },
+    "RandomForest:binary": {
+      "file": "RandomForest_binary.joblib",
+      "model": "RandomForest",
+      "task": "binary",
+      "classes_count": 2,
+      "accuracy": 0.978589279420717,
+      "macro_f1": 0.8972128099738692,
+      "sha256": "ac336e62f3eb0aaa0512563923db6a18b692ceb8e03fc9e3800aad6a4be4ed2a",
+      "size_bytes": 3728333
+    },
+    "RandomForest:8class": {
+      "file": "RandomForest_8class.joblib",
+      "model": "RandomForest",
+      "task": "8class",
+      "classes_count": 8,
+      "accuracy": 0.9523725609560731,
+      "macro_f1": 0.7660016902436253,
+      "sha256": "31567a54f63c94039b4f76cf45107f8fb18e9dd7aa3afd4ce28f809ae27903c5",
+      "size_bytes": 15020276
+    },
+    "RandomForest:34class": {
+      "file": "RandomForest_34class.joblib",
+      "model": "RandomForest",
+      "task": "34class",
+      "classes_count": 34,
+      "accuracy": 0.9150539873762455,
+      "macro_f1": 0.7385359268870199,
+      "sha256": "c1895e10b2237f5181aa4279fe2b13c0b6dc57613d1bf28a4c772739489c7b20",
+      "size_bytes": 18376893
+    }
+  }
+}

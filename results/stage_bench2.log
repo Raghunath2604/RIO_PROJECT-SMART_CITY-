@@ -1,0 +1,20 @@
+======================================================================
+STAGE: benchmark  models=['LightGBM']
+======================================================================
+  using the dataset provider's own train.csv / test.csv split.
+  [session/ binary] LightGBM     acc=0.9795 macroF1=0.9031 infer=4.53 us/sample
+  [session/ 8class] LightGBM     acc=0.9670 macroF1=0.8072 infer=68.30 us/sample
+  [session/34class] LightGBM     acc=0.9578 macroF1=0.8019 infer=347.85 us/sample
+   task        model  accuracy  macro_f1  weighted_f1  n_train  n_test
+ binary       LogReg    0.9610    0.6881       0.9520   152525  124844
+ binary RandomForest    0.9770    0.8911       0.9786   152525  124844
+ 8class       LogReg    0.7699    0.5476       0.7389   152525  124844
+ 8class RandomForest    0.9527    0.7674       0.9594   152525  124844
+34class       LogReg    0.7360    0.5320       0.7228   152525  124844
+34class RandomForest    0.9155    0.7377       0.9274   152525  124844
+ binary     LightGBM    0.9795    0.9031       0.9809   152525  124844
+ 8class     LightGBM    0.9670    0.8072       0.9706   152525  124844
+34class     LightGBM    0.9578    0.8019       0.9598   152525  124844
+
+  Best 8-class model so far: LightGBM (macro-F1=0.8072)
+  done (143.7s)
