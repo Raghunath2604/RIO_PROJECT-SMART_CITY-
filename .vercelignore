@@ -1,0 +1,20 @@
+# Vercel Deployment Ignore Rules
+# Excludes heavy local datasets, caches, tests, and figures from Serverless Function bundle
+
+real_data/
+archive3.zip
+results/_cache/
+results/figures/
+tests/
+.pytest_cache/
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.bat
+Dockerfile
+docker-compose.yml
+run_pipeline.py
+run_production_demo.py
+verify_all_live.py
+app.py
