@@ -194,8 +194,8 @@ fogids/
 
 ### 1. Clone & Setup Environment
 ```bash
-git clone https://github.com/your-username/fogids.git
-cd fogids
+git clone https://github.com/Raghunath2604/RIO_PROJECT-SMART_CITY-.git
+cd RIO_PROJECT-SMART_CITY-
 
 python -m venv venv
 # On Windows:
