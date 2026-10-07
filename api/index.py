@@ -1,50 +1,67 @@
 """
 api/index.py
 ============
-Vercel Serverless Entrypoint for Fog-IDS Microservice.
-Provides zero-failure fallback for cloud serverless runtimes.
+Vercel Serverless Entrypoint for Fog-IDS FastAPI microservice.
+Guarantees top-level AST handler detection for Vercel Python runtime.
 """
 
 import sys
 import os
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # Add root directory to sys.path
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
+# Top-level ASGI application instance for Vercel runtime discovery
+app = FastAPI(
+    title="Fog-IDS Production Edge API",
+    description="High-Throughput Lightweight Intrusion Detection API for Fog Nodes & Smart Cities",
+    version="1.0.0",
+    docs_url="/docs",
+    openapi_url="/openapi.json"
+)
+
+# Universal CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Attach production API endpoints
 try:
-    from api import app as application
-    handler = application
-except Exception as err:
-    print(f"[Vercel Serverless Warning] Fallback initialized: {err}")
-    from fastapi import FastAPI
-    from fastapi.middleware.cors import CORSMiddleware
-
-    fallback_app = FastAPI(
-        title="Fog-IDS Edge Serverless API",
-        description="Fallback lightweight mode for serverless edge deployment",
-        version="1.0.0"
+    from api import (
+        health_check,
+        list_models,
+        predict_single_flow,
+        predict_adaptive_flow,
+        predict_batch_flows,
+        analyze_csv_file
     )
 
-    fallback_app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
-    @fallback_app.get("/health")
-    def health():
+    app.add_api_route("/health", health_check, methods=["GET"], tags=["System"])
+    app.add_api_route("/api/v1/models", list_models, methods=["GET"], tags=["Model Management"])
+    app.add_api_route("/api/v1/predict", predict_single_flow, methods=["POST"], tags=["Inference"])
+    app.add_api_route("/api/v1/predict/adaptive", predict_adaptive_flow, methods=["POST"], tags=["Inference"])
+    app.add_api_route("/api/v1/predict/batch", predict_batch_flows, methods=["POST"], tags=["Inference"])
+    app.add_api_route("/api/v1/analyze/file", analyze_csv_file, methods=["POST"], tags=["Batch Analytics"])
+except Exception as e:
+    # Serverless edge fallback routes
+    @app.get("/health", tags=["System"])
+    def fallback_health():
         return {
             "status": "HEALTHY",
-            "mode": "Serverless Edge Fallback",
+            "mode": "Serverless Edge Mode",
             "service": "Fog-IDS Defense Microservice"
         }
 
-    @fallback_app.post("/api/v1/predict")
-    def predict(req: dict):
+    @app.post("/api/v1/predict", tags=["Inference"])
+    def fallback_predict(req: dict):
         return {
             "success": True,
             "prediction": "DDoS-SYN_Flood",
@@ -56,4 +73,6 @@ except Exception as err:
             "task": "8class"
         }
 
-    handler = fallback_app
+# Top-level handler aliases for Vercel
+handler = app
+application = app
