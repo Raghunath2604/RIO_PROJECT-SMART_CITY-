@@ -31,7 +31,7 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# CORS Middleware
+# Enable CORS for all origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -40,10 +40,46 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse, FileResponse
+
 # Global Services
 registry = ModelRegistry()
 inference_engine = FogInferenceEngine()
 tier_switcher = DynamicTierSwitcher(simulate_resources=False)
+
+# Public directory path
+PUBLIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public")
+if os.path.exists(PUBLIC_DIR):
+    app.mount("/static", StaticFiles(directory=PUBLIC_DIR), name="static")
+
+@app.get("/", tags=["UI"])
+def serve_ui():
+    """Serves the main production Edge Defense Center UI."""
+    index_path = os.path.join(PUBLIC_DIR, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {
+        "status": "ONLINE",
+        "service": "Fog-IDS Production API",
+        "docs": "/docs",
+        "health": "/health"
+    }
+
+@app.get("/style.css", include_in_schema=False)
+def serve_css():
+    css_path = os.path.join(PUBLIC_DIR, "style.css")
+    if os.path.exists(css_path):
+        return FileResponse(css_path, media_type="text/css")
+    raise HTTPException(status_code=404, detail="CSS not found")
+
+@app.get("/app.js", include_in_schema=False)
+def serve_js():
+    js_path = os.path.join(PUBLIC_DIR, "app.js")
+    if os.path.exists(js_path):
+        return FileResponse(js_path, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="JS not found")
+
 
 # Preload default models
 try:
