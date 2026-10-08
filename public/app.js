@@ -1,6 +1,6 @@
 // ==========================================================================
-// Fog-IDS Enterprise Cyber Defense Command Center Application Engine
-// Production JavaScript Client with Real-Time Telemetry & Edge AI Fallback
+// Fog-IDS Enterprise Smart City SOC Dashboard Application Engine
+// Clean, Fast, Non-Animated Real-Time Telemetry & Client Controller
 // ==========================================================================
 
 const API_BASE = "";
@@ -18,10 +18,10 @@ let batchDonutChart = null;
 
 // Telemetry state for simulated Fog Nodes
 const nodeData = [
-    { id: 1, name: "Node-01 (Gateway)", tput: 380, cpu: 28, ram: 64, blocked: 42 },
-    { id: 2, name: "Node-02 (Smart Hub)", tput: 240, cpu: 34, ram: 48, blocked: 19 },
+    { id: 1, name: "Node-01 (City Gateway)", tput: 380, cpu: 28, ram: 64, blocked: 42 },
+    { id: 2, name: "Node-02 (Traffic Hub)", tput: 240, cpu: 34, ram: 48, blocked: 19 },
     { id: 3, name: "Node-03 (Edge Router)", tput: 510, cpu: 52, ram: 92, blocked: 87 },
-    { id: 4, name: "Node-04 (Sensor Grid)", tput: 160, cpu: 18, ram: 32, blocked: 6 }
+    { id: 4, name: "Node-04 (Grid Sensors)", tput: 160, cpu: 18, ram: 32, blocked: 6 }
 ];
 
 // Presets Definition
@@ -142,11 +142,20 @@ const ATTACK_PRESETS = {
     }
 };
 
+const TAB_TITLES = {
+    "stream": "Live Traffic & Ingestion Feed",
+    "tier": "Dynamic Tier Switcher (FR5 Engine)",
+    "inspector": "Threat Vector Studio & XAI Diagnostics",
+    "batch": "Batch CSV Network Flow Scanner",
+    "benchmark": "Empirical Benchmark & Evaluation Matrix",
+    "api": "REST API Sandbox Console"
+};
+
 // -----------------------------------------------------------------------------
 // Live Clock & Health Check
 // -----------------------------------------------------------------------------
 function updateLiveClock() {
-    const clockEl = document.getElementById("live-clock");
+    const clockEl = document.getElementById("header-utc-clock");
     if (clockEl) {
         const now = new Date();
         clockEl.innerText = now.toUTCString().split(" ")[4] + " UTC";
@@ -154,44 +163,41 @@ function updateLiveClock() {
 }
 
 async function checkApiHealth() {
-    const dot = document.getElementById("api-status-dot");
-    const text = document.getElementById("api-status-text");
-    const pingEl = document.getElementById("api-ping-latency");
+    const dot = document.getElementById("sidebar-api-dot");
+    const text = document.getElementById("sidebar-api-text");
 
-    const t0 = performance.now();
     try {
         const res = await fetch(`${API_BASE}/health`, { method: "GET" });
-        const elapsed = Math.round(performance.now() - t0);
         if (res.ok) {
             const data = await res.json();
             isApiOnline = true;
-            dot.className = "status-dot green-dot";
-            text.innerText = `ONLINE (${data.cpu_usage_pct ? data.cpu_usage_pct.toFixed(0) : 0}% CPU)`;
-            if (pingEl) pingEl.innerText = `${elapsed}ms`;
+            if (dot) dot.className = "status-dot green-dot";
+            if (text) text.innerText = `API Online (${data.cpu_usage_pct ? data.cpu_usage_pct.toFixed(0) : 0}% CPU)`;
         } else {
             throw new Error("API non-200");
         }
     } catch (e) {
-        const elapsed = Math.round(performance.now() - t0);
         isApiOnline = false;
-        dot.className = "status-dot blue-dot";
-        text.innerText = "EDGE SIMULATOR";
-        if (pingEl) pingEl.innerText = `${elapsed}ms`;
+        if (dot) dot.className = "status-dot blue-dot";
+        if (text) text.innerText = "Edge Simulator Mode";
     }
 }
 
 // -----------------------------------------------------------------------------
-// Tab Switching Navigation
+// Tab Switching Navigation (Instant, No Animation Jitter)
 // -----------------------------------------------------------------------------
 function switchTab(tabId) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
 
-    const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick')?.includes(tabId));
+    const activeBtn = Array.from(document.querySelectorAll('.nav-item')).find(b => b.getAttribute('onclick')?.includes(tabId));
     if (activeBtn) activeBtn.classList.add('active');
 
     const target = document.getElementById(`tab-${tabId}`);
     if (target) target.classList.add('active');
+
+    const titleEl = document.getElementById("current-view-title");
+    if (titleEl) titleEl.innerText = TAB_TITLES[tabId] || "Smart City SOC";
 
     if (tabId === 'stream' && !liveThroughputChart) initLiveThroughputChart();
     if (tabId === 'tier' && !tierBubbleChart) initTierBubbleChart();
@@ -206,12 +212,8 @@ function initLiveThroughputChart() {
     const ctx = document.getElementById('liveThroughputChart')?.getContext('2d');
     if (!ctx) return;
 
-    const initialLabels = Array.from({ length: 20 }, (_, i) => `${20 - i}s ago`);
+    const initialLabels = Array.from({ length: 20 }, (_, i) => `${20 - i}s`);
     const initialData = Array.from({ length: 20 }, () => Math.floor(Math.random() * 250 + 650));
-
-    const gradient = ctx.createLinearGradient(0, 0, 0, 140);
-    gradient.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
-    gradient.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
 
     liveThroughputChart = new Chart(ctx, {
         type: 'line',
@@ -222,9 +224,9 @@ function initLiveThroughputChart() {
                 data: initialData,
                 borderColor: '#38bdf8',
                 borderWidth: 2,
-                backgroundColor: gradient,
+                backgroundColor: 'rgba(56, 189, 248, 0.08)',
                 fill: true,
-                tension: 0.35,
+                tension: 0.2,
                 pointRadius: 0
             }]
         },
@@ -242,7 +244,7 @@ function initLiveThroughputChart() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: 'rgba(10, 16, 29, 0.95)',
+                    backgroundColor: '#0e1422',
                     titleFont: { family: 'JetBrains Mono' },
                     bodyFont: { family: 'JetBrains Mono' }
                 }
@@ -274,11 +276,11 @@ function generateStreamRow() {
         tr.innerHTML = `
             <td style="color: #94a3b8;">${timeStr}</td>
             <td><b>${node.name.split(" ")[0]}</b></td>
-            <td><span class="badge ${p.category === 'Benign' ? 'badge-green' : 'badge-blue'}">${p.category}</span></td>
+            <td><span class="status-tag ${p.category === 'Benign' ? 'tag-green' : 'tag-blue'}">${p.category}</span></td>
             <td>${p.name}</td>
             <td>${(p.confidence * 100).toFixed(1)}%</td>
             <td style="color: #c084fc;">${p.latency.toFixed(1)} µs</td>
-            <td><span class="severity-pill pill-${p.severity.toLowerCase()}">${p.severity}</span></td>
+            <td><span class="status-tag tag-${p.severity === 'Critical' ? 'red' : p.severity === 'High' ? 'orange' : 'green'}">${p.severity}</span></td>
         `;
         tbody.insertBefore(tr, tbody.firstChild);
         if (tbody.children.length > 15) tbody.removeChild(tbody.lastChild);
@@ -296,12 +298,10 @@ function generateStreamRow() {
 
     const tputEl = document.getElementById(`node-${node.id}-tput`);
     const cpuEl = document.getElementById(`node-${node.id}-cpu`);
-    const cpuBar = document.getElementById(`node-${node.id}-cpu-bar`);
     const blockEl = document.getElementById(`node-${node.id}-blocked`);
 
     if (tputEl) tputEl.innerText = `${node.tput} p/s`;
     if (cpuEl) cpuEl.innerText = `${node.cpu}%`;
-    if (cpuBar) cpuBar.style.width = `${node.cpu}%`;
     if (blockEl) blockEl.innerText = node.blocked;
 
     // Chart Update
@@ -320,17 +320,11 @@ function toggleStream() {
     isStreaming = !isStreaming;
 
     if (isStreaming) {
-        btn.innerHTML = `
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-            <span>Stop Stream</span>
-        `;
-        btn.style.background = "linear-gradient(135deg, #dc2626, #ef4444)";
+        btn.innerText = "Stop Ingestion";
+        btn.style.background = "#ef4444";
         streamInterval = setInterval(generateStreamRow, 1000 / streamRate);
     } else {
-        btn.innerHTML = `
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            <span>Start Stream</span>
-        `;
+        btn.innerText = "Start Ingestion";
         btn.style.background = "";
         clearInterval(streamInterval);
     }
@@ -350,28 +344,29 @@ function updateTierSimulation(cpu) {
     const titleEl = document.getElementById("active-tier-title");
     const modelEl = document.getElementById("active-tier-model");
     const descEl = document.getElementById("active-tier-desc");
+    const sidebarTier = document.getElementById("sidebar-tier-label");
 
     if (cpu < 45) {
         titleEl.innerText = "FULL TIER";
-        titleEl.style.color = "#38bdf8";
+        titleEl.className = "tier-card-title text-blue";
         card.style.borderColor = "#38bdf8";
-        card.style.boxShadow = "0 0 25px rgba(56, 189, 248, 0.25)";
         modelEl.innerText = "Model: LightGBM (150 trees)";
         descEl.innerText = "Optimal macro-F1 (0.8099) under standard edge CPU load (<45%).";
+        if (sidebarTier) sidebarTier.innerText = "FULL (LightGBM)";
     } else if (cpu <= 75) {
         titleEl.innerText = "REDUCED TIER";
-        titleEl.style.color = "#c084fc";
+        titleEl.className = "tier-card-title text-purple";
         card.style.borderColor = "#c084fc";
-        card.style.boxShadow = "0 0 25px rgba(192, 132, 252, 0.25)";
         modelEl.innerText = "Model: CompactMLP (64, 32)";
         descEl.innerText = "Fast edge neural network (132.1 µs, 135.4 KB) under moderate CPU pressure.";
+        if (sidebarTier) sidebarTier.innerText = "REDUCED (CompactMLP)";
     } else {
         titleEl.innerText = "MINIMAL TIER";
-        titleEl.style.color = "#fb923c";
+        titleEl.className = "tier-card-title text-orange";
         card.style.borderColor = "#fb923c";
-        card.style.boxShadow = "0 0 25px rgba(251, 146, 60, 0.25)";
         modelEl.innerText = "Model: LogisticRegression (L2)";
         descEl.innerText = "Ultra-light emergency fallback (78.6 µs, 5.3 KB) under critical CPU spikes.";
+        if (sidebarTier) sidebarTier.innerText = "MINIMAL (LogReg)";
     }
 }
 
@@ -405,6 +400,7 @@ function initTierBubbleChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: false,
             scales: {
                 x: {
                     type: 'logarithmic',
@@ -423,7 +419,7 @@ function initTierBubbleChart() {
             plugins: {
                 legend: { labels: { color: '#f8fafc', font: { family: 'Plus Jakarta Sans', size: 11 } } },
                 tooltip: {
-                    backgroundColor: 'rgba(10, 16, 29, 0.95)',
+                    backgroundColor: '#0e1422',
                     titleFont: { family: 'JetBrains Mono' },
                     bodyFont: { family: 'JetBrains Mono' }
                 }
@@ -473,13 +469,14 @@ function initInspProbabilityChart() {
                 backgroundColor: [
                     '#ef4444', '#f97316', '#a855f7', '#38bdf8', '#fbbf24', '#10b981', '#fb923c', '#06b6d4'
                 ],
-                borderRadius: 4
+                borderRadius: 3
             }]
         },
         options: {
             indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
+            animation: false,
             scales: {
                 x: {
                     min: 0,
@@ -495,7 +492,7 @@ function initInspProbabilityChart() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: 'rgba(10, 16, 29, 0.95)',
+                    backgroundColor: '#0e1422',
                     titleFont: { family: 'JetBrains Mono' },
                     bodyFont: { family: 'JetBrains Mono' }
                 }
@@ -547,7 +544,7 @@ async function executeInspection() {
                 return;
             }
         } catch (e) {
-            console.warn("API inspect fallback to edge logic:", e);
+            console.warn("API fallback to edge logic:", e);
         }
     }
 
@@ -563,7 +560,7 @@ function renderInspectionResults(data) {
 
     const sevEl = document.getElementById("insp-severity");
     sevEl.innerText = data.severity.toUpperCase();
-    sevEl.className = `severity-pill pill-${data.severity.toLowerCase()}`;
+    sevEl.className = `status-tag tag-${data.severity === 'Critical' ? 'red' : data.severity === 'High' ? 'orange' : 'green'}`;
 
     // Update XAI Table
     const xaiTbody = document.getElementById("xai-table-body");
@@ -573,7 +570,7 @@ function renderInspectionResults(data) {
                 <td><b>${x.feat}</b></td>
                 <td>${x.val.toFixed(2)}</td>
                 <td style="color: ${x.type === 'indicator' ? '#34d399' : '#38bdf8'}; font-weight: 700;">${x.score}</td>
-                <td><span class="badge ${x.type === 'indicator' ? 'badge-orange' : 'badge-blue'}">${x.type === 'indicator' ? 'Attack Indicator' : 'Normalizing Factor'}</span></td>
+                <td><span class="status-tag ${x.type === 'indicator' ? 'tag-orange' : 'tag-blue'}">${x.type === 'indicator' ? 'Attack Indicator' : 'Normalizer'}</span></td>
             </tr>
         `).join('');
     }
@@ -602,7 +599,7 @@ function handleFileSelected(files) {
 }
 
 function generateDemoDataset() {
-    document.getElementById('batch-file-status').innerText = "Loaded: cic_iot2023_live_traffic_dump.csv (500 flows)";
+    document.getElementById('batch-file-status').innerText = "Loaded: cic_iot2023_capture.csv (500 flows)";
     runBatchSimulation(500);
 }
 
@@ -630,7 +627,7 @@ function runBatchSimulation(totalFlows) {
             <td><b>${b.cat}</b></td>
             <td>${b.count}</td>
             <td>${b.pct}</td>
-            <td><span class="severity-pill pill-${b.sev.toLowerCase()}">${b.sev}</span></td>
+            <td><span class="status-tag tag-${b.sev === 'Critical' ? 'red' : b.sev === 'High' ? 'orange' : 'green'}">${b.sev}</span></td>
         </tr>
     `).join('');
 
@@ -646,17 +643,18 @@ function runBatchSimulation(totalFlows) {
                     data: breakdown.map(b => b.count),
                     backgroundColor: ['#ef4444', '#10b981', '#c084fc', '#f97316', '#38bdf8', '#fb923c', '#06b6d4'],
                     borderWidth: 2,
-                    borderColor: '#0a0f1d'
+                    borderColor: '#090d16'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '68%',
+                animation: false,
+                cutout: '65%',
                 plugins: {
                     legend: { position: 'right', labels: { color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } } },
                     tooltip: {
-                        backgroundColor: 'rgba(10, 16, 29, 0.95)',
+                        backgroundColor: '#0e1422',
                         titleFont: { family: 'JetBrains Mono' },
                         bodyFont: { family: 'JetBrains Mono' }
                     }
@@ -741,13 +739,13 @@ async function sendConsoleApiRequest() {
         const elapsed = (performance.now() - t0).toFixed(1);
 
         statusEl.innerText = `Status: ${res.status} ${res.statusText || 'OK'}`;
-        statusEl.className = res.ok ? "badge badge-green" : "badge badge-orange";
+        statusEl.className = res.ok ? "status-tag tag-green" : "status-tag tag-orange";
         timeEl.innerText = `Latency: ${elapsed} ms`;
         viewer.innerText = JSON.stringify(data, null, 2);
     } catch (e) {
         const elapsed = (performance.now() - t0).toFixed(1);
         statusEl.innerText = "Status: Edge Simulator";
-        statusEl.className = "badge badge-blue";
+        statusEl.className = "status-tag tag-blue";
         timeEl.innerText = `Latency: ${elapsed} ms`;
         viewer.innerText = JSON.stringify({
             "status": "ONLINE_SIMULATOR",

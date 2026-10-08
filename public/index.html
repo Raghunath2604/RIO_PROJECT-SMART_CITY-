@@ -3,805 +3,685 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fog-IDS | Autonomous Edge Defense & Intrusion Detection Command Center</title>
-    <meta name="description" content="Enterprise-grade lightweight multi-class network intrusion detection system for Smart City IoT fog computing nodes benchmarked on real CICIoT2023 dataset.">
+    <title>Fog-IDS | Smart City Edge Intrusion Detection Dashboard</title>
+    <meta name="description" content="Production-grade intrusion detection dashboard for Smart City IoT fog nodes benchmarked on real CICIoT2023 dataset.">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="cyber-background-grid"></div>
-    <div class="cyber-glow cyber-glow-1"></div>
-    <div class="cyber-glow cyber-glow-2"></div>
-
-    <div class="app-container">
+    <div class="layout-wrapper">
         <!-- ================================================================= -->
-        <!-- TOP NAVIGATION & STATUS BAR -->
+        <!-- LEFT SIDEBAR NAVIGATION PANEL -->
         <!-- ================================================================= -->
-        <header class="top-nav">
-            <div class="nav-brand">
-                <div class="shield-logo">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                         <path d="M9 12l2 2 4-4"/>
                     </svg>
                 </div>
-                <div>
-                    <div class="brand-title-wrap">
-                        <h1 class="nav-title">Fog-IDS <span class="badge-edition">ENTERPRISE</span></h1>
-                    </div>
-                    <p class="nav-subtitle">Autonomous Multi-Class Intrusion Detection for Smart City Fog Nodes</p>
+                <div class="brand-text">
+                    <h2>Fog-IDS</h2>
+                    <span>Smart City SOC</span>
                 </div>
             </div>
 
-            <div class="nav-status-group">
-                <!-- Dataset Badge -->
-                <div class="status-pill dataset-pill" title="Trained on genuine CICIoT2023 dataset with 277,369 balanced sample flows">
-                    <span class="status-dot green-dot"></span>
-                    <span class="pill-label">DATASET:</span>
-                    <span class="pill-val">CICIoT2023 (277K Flows)</span>
-                </div>
-
-                <!-- API Connectivity Badge -->
-                <div class="status-pill api-pill" id="api-status-pill">
-                    <span class="status-dot blue-dot" id="api-status-dot"></span>
-                    <span class="pill-label">BACKEND:</span>
-                    <span class="pill-val" id="api-status-text">ONLINE</span>
-                    <span class="latency-sub" id="api-ping-latency">12ms</span>
-                </div>
-
-                <!-- UTC Clock -->
-                <div class="status-pill time-pill">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    <span id="live-clock" class="time-val">00:00:00 UTC</span>
-                </div>
-
-                <button class="btn btn-icon" onclick="checkApiHealth()" title="Refresh Telemetry">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-                    </svg>
+            <div class="sidebar-section-title">SECURITY MODULES</div>
+            <nav class="sidebar-menu">
+                <button class="nav-item active" onclick="switchTab('stream')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    <span>Live Traffic Stream</span>
                 </button>
-            </div>
-        </header>
+                <button class="nav-item" onclick="switchTab('tier')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span>Dynamic Tier (FR5)</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('inspector')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <span>Threat Studio & XAI</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('batch')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <span>Batch CSV Forensics</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('benchmark')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    <span>Empirical Benchmark</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('api')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    <span>REST API Sandbox</span>
+                </button>
+            </nav>
 
-        <!-- ================================================================= -->
-        <!-- GLOBAL THREAT KPI RIBBON -->
-        <!-- ================================================================= -->
-        <section class="kpi-grid">
-            <div class="kpi-card" data-glow="blue">
-                <div class="kpi-header">
-                    <span class="kpi-label">8-Class Top Accuracy</span>
-                    <span class="kpi-icon text-blue">🎯</span>
+            <div class="sidebar-footer">
+                <div class="sidebar-section-title">CLUSTER STATUS</div>
+                <div class="cluster-summary-box">
+                    <div class="cluster-row"><span>Fog Nodes:</span> <b class="text-cyan">4 Active</b></div>
+                    <div class="cluster-row"><span>Inference Tier:</span> <b class="text-blue" id="sidebar-tier-label">FULL (LightGBM)</b></div>
+                    <div class="cluster-row"><span>Engine:</span> <b class="text-green">CICIoT2023 Real</b></div>
                 </div>
-                <div class="kpi-value text-blue" id="kpi-acc">96.74%</div>
-                <div class="kpi-footer">
-                    <span class="badge badge-subtle">LightGBM</span>
-                    <span class="kpi-trend text-blue">0.8099 Macro-F1 (RQ1)</span>
-                </div>
-            </div>
-
-            <div class="kpi-card" data-glow="purple">
-                <div class="kpi-header">
-                    <span class="kpi-label">Streaming Edge Latency</span>
-                    <span class="kpi-icon text-purple">⚡</span>
-                </div>
-                <div class="kpi-value text-purple" id="kpi-lat">132.1 µs</div>
-                <div class="kpi-footer">
-                    <span class="badge badge-subtle">CompactMLP</span>
-                    <span class="kpi-trend text-purple">135.4 KB Footprint (RQ3)</span>
-                </div>
-            </div>
-
-            <div class="kpi-card" data-glow="orange">
-                <div class="kpi-header">
-                    <span class="kpi-label">Rare Attack Recall</span>
-                    <span class="kpi-icon text-orange">🛡️</span>
-                </div>
-                <div class="kpi-value text-orange" id="kpi-recall">84.0%</div>
-                <div class="kpi-footer">
-                    <span class="badge badge-subtle">Cost-Weighted</span>
-                    <span class="kpi-trend text-orange">73.4% Brute Force (RQ4)</span>
+                <div class="sidebar-api-status">
+                    <span class="status-dot green-dot" id="sidebar-api-dot"></span>
+                    <span id="sidebar-api-text">API Online (Port 8000)</span>
                 </div>
             </div>
-
-            <div class="kpi-card" data-glow="green">
-                <div class="kpi-header">
-                    <span class="kpi-label">Peak Ingestion Rate</span>
-                    <span class="kpi-icon text-green">🚀</span>
-                </div>
-                <div class="kpi-value text-green" id="kpi-tput">209.8K</div>
-                <div class="kpi-footer">
-                    <span class="badge badge-subtle">SIMD Vectorized</span>
-                    <span class="kpi-trend text-green">Flows / Second</span>
-                </div>
-            </div>
-
-            <div class="kpi-card" data-glow="cyan">
-                <div class="kpi-header">
-                    <span class="kpi-label">Active Fog Cluster</span>
-                    <span class="kpi-icon text-cyan">🏢</span>
-                </div>
-                <div class="kpi-value text-cyan" id="kpi-nodes">4 Nodes</div>
-                <div class="kpi-footer">
-                    <span class="badge badge-subtle">Adaptive FR5</span>
-                    <span class="kpi-trend text-cyan">Dynamic Tier Switching</span>
-                </div>
-            </div>
-
-            <div class="kpi-card" data-glow="red">
-                <div class="kpi-header">
-                    <span class="kpi-label">Threats Intercepted</span>
-                    <span class="kpi-icon text-red">🛑</span>
-                </div>
-                <div class="kpi-value text-red" id="kpi-blocked-total">154</div>
-                <div class="kpi-footer">
-                    <span class="badge badge-subtle">Auto-Drop</span>
-                    <span class="kpi-trend text-red">Zero-Day & Botnets</span>
-                </div>
-            </div>
-        </section>
+        </aside>
 
         <!-- ================================================================= -->
-        <!-- MAIN NAVIGATION TABS -->
+        <!-- MAIN CONTENT AREA -->
         <!-- ================================================================= -->
-        <nav class="tab-nav">
-            <button class="tab-btn active" onclick="switchTab('stream')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                <span>Live Ingestion & Cluster</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab('tier')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                <span>Dynamic Tier Switcher (FR5)</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab('inspector')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <span>Threat Studio & XAI</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab('batch')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                <span>Batch CSV Forensics</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab('benchmark')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                <span>Empirical Benchmark (RQ1-5)</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab('api')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                <span>REST API Sandbox</span>
-            </button>
-        </nav>
-
-        <!-- ================================================================= -->
-        <!-- TAB 1: LIVE INGESTION & CLUSTER TOPOLOGY -->
-        <!-- ================================================================= -->
-        <main id="tab-stream" class="tab-content active">
-            <div class="grid-2-1">
-                <!-- Left: Live Ingestion Feed & Live Chart -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <div class="panel-title-wrap">
-                            <span class="panel-icon text-cyan">📡</span>
-                            <div>
-                                <h2>Live Network Ingestion Stream</h2>
-                                <p class="panel-desc">Simulated real-time packet arrival across distributed edge nodes</p>
-                            </div>
-                        </div>
-                        <div class="stream-toolbar">
-                            <button id="stream-toggle-btn" class="btn btn-primary" onclick="toggleStream()">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                                <span>Start Stream</span>
-                            </button>
-                            <button class="btn btn-secondary" onclick="clearStreamTable()">Clear Feed</button>
-                            <div class="rate-badge">
-                                <span>Rate:</span>
-                                <input type="range" id="stream-rate-slider" min="1" max="10" value="2" oninput="updateStreamRate(this.value)">
-                                <b id="stream-rate-display">2</b>/s
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Live Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header-sub">
-                            <span>Ingestion Rate (Packets / Second)</span>
-                            <span class="live-indicator"><span class="status-dot green-dot"></span> LIVE 30S WINDOW</span>
-                        </div>
-                        <div style="height: 140px; position: relative;">
-                            <canvas id="liveThroughputChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Stream Table -->
-                    <div class="table-container" style="margin-top: 16px;">
-                        <table class="alert-table">
-                            <thead>
-                                <tr>
-                                    <th>Timestamp</th>
-                                    <th>Source Node</th>
-                                    <th>Threat Category</th>
-                                    <th>Attack Vector</th>
-                                    <th>Confidence</th>
-                                    <th>Latency</th>
-                                    <th>Action / Severity</th>
-                                </tr>
-                            </thead>
-                            <tbody id="stream-table-body">
-                                <!-- Populated dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
+        <div class="main-wrapper">
+            <!-- Top Header Bar -->
+            <header class="top-header">
+                <div class="header-breadcrumb">
+                    <span class="breadcrumb-root">Smart City Fog Security</span>
+                    <span class="breadcrumb-separator">/</span>
+                    <span class="breadcrumb-current" id="current-view-title">Live Ingestion & Cluster</span>
                 </div>
 
-                <!-- Right: Fog Cluster Node Telemetry -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <div class="panel-title-wrap">
-                            <span class="panel-icon text-blue">🏢</span>
-                            <div>
-                                <h2>Fog Cluster Nodes</h2>
-                                <p class="panel-desc">4-Node Smart City Distributed Topology</p>
-                            </div>
-                        </div>
+                <div class="header-right">
+                    <div class="header-pill">
+                        <span class="pill-title">DATASET:</span>
+                        <span class="pill-value text-green">CICIoT2023 (277K Flows)</span>
                     </div>
 
-                    <div class="node-grid">
-                        <div class="node-card" id="node-card-1">
-                            <div class="node-head">
-                                <div class="node-name">
-                                    <span class="node-icon">🌐</span>
-                                    <b>Node-01 (Gateway)</b>
-                                </div>
-                                <span class="node-status-pill online">HEALTHY</span>
-                            </div>
-                            <div class="node-metrics-list">
-                                <div class="node-row"><span>Throughput:</span> <b class="text-blue" id="node-1-tput">380 p/s</b></div>
-                                <div class="node-row"><span>CPU Load:</span> <span class="progress-bar-wrap"><div class="progress-bar" id="node-1-cpu-bar" style="width: 28%;"></div></span><b id="node-1-cpu">28%</b></div>
-                                <div class="node-row"><span>Memory:</span> <b id="node-1-ram">64 MB</b></div>
-                                <div class="node-row"><span>Blocked Threats:</span> <b class="text-red" id="node-1-blocked">42</b></div>
-                            </div>
-                        </div>
-
-                        <div class="node-card" id="node-card-2">
-                            <div class="node-head">
-                                <div class="node-name">
-                                    <span class="node-icon">⚡</span>
-                                    <b>Node-02 (Smart Hub)</b>
-                                </div>
-                                <span class="node-status-pill online">HEALTHY</span>
-                            </div>
-                            <div class="node-metrics-list">
-                                <div class="node-row"><span>Throughput:</span> <b class="text-blue" id="node-2-tput">240 p/s</b></div>
-                                <div class="node-row"><span>CPU Load:</span> <span class="progress-bar-wrap"><div class="progress-bar" id="node-2-cpu-bar" style="width: 34%;"></div></span><b id="node-2-cpu">34%</b></div>
-                                <div class="node-row"><span>Memory:</span> <b id="node-2-ram">48 MB</b></div>
-                                <div class="node-row"><span>Blocked Threats:</span> <b class="text-red" id="node-2-blocked">19</b></div>
-                            </div>
-                        </div>
-
-                        <div class="node-card" id="node-card-3">
-                            <div class="node-head">
-                                <div class="node-name">
-                                    <span class="node-icon">📡</span>
-                                    <b>Node-03 (Edge Router)</b>
-                                </div>
-                                <span class="node-status-pill warning">PRESSURE</span>
-                            </div>
-                            <div class="node-metrics-list">
-                                <div class="node-row"><span>Throughput:</span> <b class="text-blue" id="node-3-tput">510 p/s</b></div>
-                                <div class="node-row"><span>CPU Load:</span> <span class="progress-bar-wrap"><div class="progress-bar bar-orange" id="node-3-cpu-bar" style="width: 52%;"></div></span><b id="node-3-cpu" class="text-orange">52%</b></div>
-                                <div class="node-row"><span>Memory:</span> <b id="node-3-ram">92 MB</b></div>
-                                <div class="node-row"><span>Blocked Threats:</span> <b class="text-red" id="node-3-blocked">87</b></div>
-                            </div>
-                        </div>
-
-                        <div class="node-card" id="node-card-4">
-                            <div class="node-head">
-                                <div class="node-name">
-                                    <span class="node-icon">🔌</span>
-                                    <b>Node-04 (Sensor Grid)</b>
-                                </div>
-                                <span class="node-status-pill online">HEALTHY</span>
-                            </div>
-                            <div class="node-metrics-list">
-                                <div class="node-row"><span>Throughput:</span> <b class="text-blue" id="node-4-tput">160 p/s</b></div>
-                                <div class="node-row"><span>CPU Load:</span> <span class="progress-bar-wrap"><div class="progress-bar" id="node-4-cpu-bar" style="width: 18%;"></div></span><b id="node-4-cpu">18%</b></div>
-                                <div class="node-row"><span>Memory:</span> <b id="node-4-ram">32 MB</b></div>
-                                <div class="node-row"><span>Blocked Threats:</span> <b class="text-red" id="node-4-blocked">6</b></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- ================================================================= -->
-        <!-- TAB 2: DYNAMIC TIER SWITCHER (FR5 ENGINE) -->
-        <!-- ================================================================= -->
-        <main id="tab-tier" class="tab-content">
-            <div class="grid-1-2">
-                <!-- Left: Resource Pressure Controller -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <div class="panel-title-wrap">
-                            <span class="panel-icon text-purple">⚡</span>
-                            <div>
-                                <h2>Resource Pressure Controller</h2>
-                                <p class="panel-desc">Dynamic Tier Transition Engine (FR5)</p>
-                            </div>
-                        </div>
+                    <div class="header-pill">
+                        <span class="pill-title">SYSTEM CLOCK:</span>
+                        <span class="pill-value" id="header-utc-clock">00:00:00 UTC</span>
                     </div>
 
-                    <div class="pressure-slider-card">
-                        <div class="slider-header">
-                            <span>Simulated Fog CPU Pressure</span>
-                            <span id="tier-cpu-val" class="slider-digital-value">35%</span>
-                        </div>
-                        <input type="range" id="tier-cpu-slider" class="custom-slider" min="0" max="100" value="35" oninput="updateTierSimulation(this.value)">
-                        <div class="slider-ticks">
-                            <span>0% (Idle)</span>
-                            <span>45% (Full Boundary)</span>
-                            <span>75% (Reduced Boundary)</span>
-                            <span>100% (Critical)</span>
-                        </div>
-                    </div>
-
-                    <div class="tier-display-card" id="tier-display-card">
-                        <div class="tier-display-badge" id="active-tier-badge">ACTIVE INFERENCE TIER</div>
-                        <div class="tier-display-title" id="active-tier-title">FULL TIER</div>
-                        <div class="tier-display-model" id="active-tier-model">Model: LightGBM (150 trees)</div>
-                        <p class="tier-display-desc" id="active-tier-desc">Optimal macro-F1 (0.8099) under standard edge CPU load (&lt;45%).</p>
-                    </div>
-
-                    <div class="rule-box">
-                        <h3>⚡ Hysteresis & Switching Thresholds</h3>
-                        <ul class="rule-list">
-                            <li><span class="badge badge-blue">FULL TIER</span> LightGBM: Active when CPU &lt; 45% (0.8099 Macro-F1)</li>
-                            <li><span class="badge badge-purple">REDUCED TIER</span> CompactMLP: Active when 45% ≤ CPU ≤ 75% (132.1 µs latency)</li>
-                            <li><span class="badge badge-orange">MINIMAL TIER</span> LogReg: Active when CPU &gt; 75% (78.6 µs emergency fallback)</li>
-                            <li><b>5% Hysteresis Buffer:</b> Prevents rapid flapping at threshold boundaries (45±5%, 75±5%)</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Right: Latency vs Macro-F1 Pareto Frontier Chart -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <div class="panel-title-wrap">
-                            <span class="panel-icon text-cyan">📈</span>
-                            <div>
-                                <h2>Pareto Latency-Accuracy Tradeoff</h2>
-                                <p class="panel-desc">Macro-F1 vs. Single-Row Edge Latency (Bubble Size = Memory Footprint)</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="height: 280px; position: relative;">
-                        <canvas id="tierBubbleChart"></canvas>
-                    </div>
-
-                    <div class="table-container" style="margin-top: 16px;">
-                        <table class="alert-table">
-                            <thead>
-                                <tr>
-                                    <th>Tier Name</th>
-                                    <th>Architecture</th>
-                                    <th>Macro-F1</th>
-                                    <th>Streaming Latency</th>
-                                    <th>Artifact Size</th>
-                                    <th>Raspberry Pi 4 Projected</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><span class="badge badge-blue">FULL</span></td>
-                                    <td>LightGBM (150 Trees)</td>
-                                    <td><b>0.8099</b></td>
-                                    <td>1,876.0 µs</td>
-                                    <td>4.1 MB</td>
-                                    <td>9.38 – 12.19 ms</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="badge badge-purple">REDUCED</span></td>
-                                    <td>CompactMLP (64, 32)</td>
-                                    <td><b>0.6432</b></td>
-                                    <td><b>132.1 µs</b></td>
-                                    <td><b>135.4 KB</b></td>
-                                    <td><b>0.66 – 0.86 ms</b></td>
-                                </tr>
-                                <tr>
-                                    <td><span class="badge badge-orange">MINIMAL</span></td>
-                                    <td>LogisticRegression (L2)</td>
-                                    <td>0.5480</td>
-                                    <td>78.6 µs</td>
-                                    <td>5.3 KB</td>
-                                    <td>0.39 – 0.51 ms</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- ================================================================= -->
-        <!-- TAB 3: THREAT VECTOR STUDIO & XAI -->
-        <!-- ================================================================= -->
-        <main id="tab-inspector" class="tab-content">
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title-wrap">
-                        <span class="panel-icon text-orange">🔍</span>
-                        <div>
-                            <h2>Threat Vector Studio & Explainable AI (XAI)</h2>
-                            <p class="panel-desc">Real-time feature attribution, threat scoring, and firewall mitigation triggers</p>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" onclick="executeInspection()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                        <span>Classify Vector Now</span>
+                    <button class="btn btn-sm btn-outline" onclick="checkApiHealth()" title="Refresh Telemetry">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                        <span>Sync</span>
                     </button>
                 </div>
+            </header>
 
-                <!-- Inspector Settings Bar -->
-                <div class="inspector-controls">
-                    <div class="control-card">
-                        <label for="vector-preset">Threat Preset Archetype:</label>
-                        <select id="vector-preset" class="form-control" onchange="loadPresetFeatures(this.value)">
-                            <option value="DDoS-SYN_Flood">DDoS-SYN_Flood (Critical Flood)</option>
-                            <option value="Mirai-greip_flood">Mirai-greip_flood (Critical IoT Botnet)</option>
-                            <option value="DictionaryBruteForce">DictionaryBruteForce (Rare Minority Attack)</option>
-                            <option value="SqlInjection">SqlInjection / Web-Based (Rare Minority Attack)</option>
-                            <option value="Recon-PortScan">Recon-PortScan (Probing Reconnaissance)</option>
-                            <option value="BenignTraffic">BenignTraffic (Normal IoT Flow)</option>
-                        </select>
-                    </div>
-
-                    <div class="control-card">
-                        <label for="inspector-model">Classification Model Family:</label>
-                        <select id="inspector-model" class="form-control" onchange="executeInspection()">
-                            <option value="LightGBM">LightGBM (Full Tier - 0.81 F1)</option>
-                            <option value="CompactMLP">CompactMLP (Reduced Tier - 132 µs)</option>
-                            <option value="LogReg">LogisticRegression (Minimal Tier - 78 µs)</option>
-                            <option value="RandomForest">RandomForest (120 Trees Ensemble)</option>
-                        </select>
-                    </div>
-
-                    <div class="control-card">
-                        <label for="inspector-task">Taxonomy Scope Granularity:</label>
-                        <select id="inspector-task" class="form-control" onchange="executeInspection()">
-                            <option value="8class">8-Class (Category Classification)</option>
-                            <option value="binary">Binary (Benign vs Malicious)</option>
-                            <option value="34class">34-Class (Fine-Grained Sub-Attacks)</option>
-                        </select>
-                    </div>
+            <!-- KPI Metric Cards Grid (Clean, Flat, High-Density) -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-title">8-Class Top Accuracy</div>
+                    <div class="kpi-val text-blue">96.74%</div>
+                    <div class="kpi-sub">0.8099 Macro-F1 (LightGBM)</div>
                 </div>
-
-                <!-- Flow Feature Tuning Sliders -->
-                <div class="feature-sliders-grid">
-                    <div class="feat-card">
-                        <div class="feat-head"><span>Rate (pkts/s):</span><b id="feat-rate-val">980.0</b></div>
-                        <input type="range" id="feat-rate" class="custom-slider" min="0" max="1500" value="980" oninput="document.getElementById('feat-rate-val').innerText=this.value">
-                    </div>
-                    <div class="feat-card">
-                        <div class="feat-head"><span>SYN Count:</span><b id="feat-syn-val">18.0</b></div>
-                        <input type="range" id="feat-syn" class="custom-slider" min="0" max="50" value="18" oninput="document.getElementById('feat-syn-val').innerText=this.value">
-                    </div>
-                    <div class="feat-card">
-                        <div class="feat-head"><span>ACK Count:</span><b id="feat-ack-val">12.0</b></div>
-                        <input type="range" id="feat-ack" class="custom-slider" min="0" max="50" value="12" oninput="document.getElementById('feat-ack-val').innerText=this.value">
-                    </div>
-                    <div class="feat-card">
-                        <div class="feat-head"><span>Total Packet Size:</span><b id="feat-size-val">90.0</b></div>
-                        <input type="range" id="feat-size" class="custom-slider" min="10" max="1500" value="90" oninput="document.getElementById('feat-size-val').innerText=this.value">
-                    </div>
-                    <div class="feat-card">
-                        <div class="feat-head"><span>IAT (Inter-Arrival ms):</span><b id="feat-iat-val">1.2</b></div>
-                        <input type="range" id="feat-iat" class="custom-slider" min="0" max="500" step="0.5" value="1.2" oninput="document.getElementById('feat-iat-val').innerText=this.value">
-                    </div>
-                    <div class="feat-card">
-                        <div class="feat-head"><span>Header Length:</span><b id="feat-hdr-val">65535</b></div>
-                        <input type="range" id="feat-hdr" class="custom-slider" min="20" max="65535" step="100" value="65535" oninput="document.getElementById('feat-hdr-val').innerText=this.value">
-                    </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Edge Streaming Latency</div>
+                    <div class="kpi-val text-purple">132.1 µs</div>
+                    <div class="kpi-sub">135.4 KB Footprint (CompactMLP)</div>
                 </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Minority Attack Recall</div>
+                    <div class="kpi-val text-orange">84.0%</div>
+                    <div class="kpi-sub">Web (84.0%) & Brute Force (73.4%)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Peak Ingestion Speed</div>
+                    <div class="kpi-val text-green">209.8K</div>
+                    <div class="kpi-sub">Flows / Second (Vectorized)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Smart City Nodes</div>
+                    <div class="kpi-val text-cyan">4 Nodes</div>
+                    <div class="kpi-sub">Dynamic Resource Tiering (FR5)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Threats Blocked</div>
+                    <div class="kpi-val text-red" id="kpi-blocked-total">154</div>
+                    <div class="kpi-sub">Automated Line-Rate Drops</div>
+                </div>
+            </section>
 
-                <!-- Prediction Results Dashboard -->
-                <div class="grid-2-1" style="margin-top: 20px;">
-                    <div>
-                        <div class="kpi-grid">
-                            <div class="kpi-card" data-glow="blue">
-                                <div class="kpi-label">PREDICTED THREAT</div>
-                                <div class="kpi-value text-blue" id="insp-prediction" style="font-size: 1.6rem;">DDoS</div>
-                                <div class="kpi-trend" id="insp-category">Category: DDoS</div>
+            <!-- ============================================================= -->
+            <!-- TAB 1: LIVE TRAFFIC STREAM -->
+            <!-- ============================================================= -->
+            <section id="tab-stream" class="tab-panel active">
+                <div class="grid-2-1">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Real-Time Network Ingestion Feed</h2>
+                                <p class="panel-sub">Simulated packet streams captured across smart city fog nodes</p>
                             </div>
-                            <div class="kpi-card" data-glow="green">
-                                <div class="kpi-label">CONFIDENCE SCORE</div>
-                                <div class="kpi-value text-green" id="insp-confidence">99.8%</div>
-                                <div class="kpi-trend">Softmax Probability</div>
-                            </div>
-                            <div class="kpi-card" data-glow="red">
-                                <div class="kpi-label">THREAT SEVERITY</div>
-                                <div style="margin-top: 8px;">
-                                    <span class="severity-pill pill-critical" id="insp-severity">CRITICAL</span>
+                            <div class="panel-actions">
+                                <button id="stream-toggle-btn" class="btn btn-primary" onclick="toggleStream()">Start Ingestion</button>
+                                <button class="btn btn-outline" onclick="clearStreamTable()">Clear</button>
+                                <div class="rate-selector">
+                                    <span>Rate:</span>
+                                    <input type="range" id="stream-rate-slider" min="1" max="10" value="2" oninput="updateStreamRate(this.value)">
+                                    <b id="stream-rate-display">2</b>/s
                                 </div>
-                                <div class="kpi-trend" id="insp-action">Firewall Auto-Drop</div>
-                            </div>
-                            <div class="kpi-card" data-glow="purple">
-                                <div class="kpi-label">INFERENCE LATENCY</div>
-                                <div class="kpi-value text-purple" id="insp-latency">1,876.0 µs</div>
-                                <div class="kpi-trend">Single-Row Ingestion</div>
                             </div>
                         </div>
 
-                        <!-- Local XAI Attribution Table -->
-                        <div class="panel-header" style="margin-top: 16px;">
-                            <h3>🧠 Local Feature Attributions (XAI Waterfall)</h3>
+                        <!-- Live Throughput Chart -->
+                        <div class="chart-box" style="height: 150px;">
+                            <canvas id="liveThroughputChart"></canvas>
                         </div>
-                        <div class="table-container">
-                            <table class="alert-table">
+
+                        <!-- Table -->
+                        <div class="table-container" style="margin-top: 14px;">
+                            <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th>Feature</th>
-                                        <th>Observed Value</th>
-                                        <th>Attribution Score</th>
-                                        <th>Diagnostic Impact</th>
+                                        <th>Timestamp</th>
+                                        <th>Fog Node</th>
+                                        <th>Category</th>
+                                        <th>Predicted Vector</th>
+                                        <th>Confidence</th>
+                                        <th>Latency</th>
+                                        <th>Severity</th>
                                     </tr>
                                 </thead>
-                                <tbody id="xai-table-body">
+                                <tbody id="stream-table-body">
                                     <!-- Populated dynamically -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    <!-- Softmax Multi-Class Probability Distribution Chart -->
-                    <div>
+                    <!-- Smart City Fog Nodes Panel -->
+                    <div class="panel">
                         <div class="panel-header">
-                            <h3>📊 Class Probability Distribution</h3>
+                            <div>
+                                <h2>Smart City Fog Cluster</h2>
+                                <p class="panel-sub">Distributed edge cabinet telemetry</p>
+                            </div>
                         </div>
-                        <div style="height: 280px; position: relative;">
-                            <canvas id="inspProbabilityChart"></canvas>
+
+                        <div class="node-grid">
+                            <div class="node-card" id="node-card-1">
+                                <div class="node-title-row">
+                                    <b>Node-01 (City Gateway)</b>
+                                    <span class="status-tag tag-green">HEALTHY</span>
+                                </div>
+                                <div class="node-stats">
+                                    <div><span>Rate:</span> <b class="text-blue" id="node-1-tput">380 p/s</b></div>
+                                    <div><span>CPU:</span> <b id="node-1-cpu">28%</b></div>
+                                    <div><span>RAM:</span> <b id="node-1-ram">64 MB</b></div>
+                                    <div><span>Blocked:</span> <b class="text-red" id="node-1-blocked">42</b></div>
+                                </div>
+                            </div>
+
+                            <div class="node-card" id="node-card-2">
+                                <div class="node-title-row">
+                                    <b>Node-02 (Traffic Hub)</b>
+                                    <span class="status-tag tag-green">HEALTHY</span>
+                                </div>
+                                <div class="node-stats">
+                                    <div><span>Rate:</span> <b class="text-blue" id="node-2-tput">240 p/s</b></div>
+                                    <div><span>CPU:</span> <b id="node-2-cpu">34%</b></div>
+                                    <div><span>RAM:</span> <b id="node-2-ram">48 MB</b></div>
+                                    <div><span>Blocked:</span> <b class="text-red" id="node-2-blocked">19</b></div>
+                                </div>
+                            </div>
+
+                            <div class="node-card" id="node-card-3">
+                                <div class="node-title-row">
+                                    <b>Node-03 (Edge Router)</b>
+                                    <span class="status-tag tag-orange">PRESSURE</span>
+                                </div>
+                                <div class="node-stats">
+                                    <div><span>Rate:</span> <b class="text-blue" id="node-3-tput">510 p/s</b></div>
+                                    <div><span>CPU:</span> <b id="node-3-cpu" class="text-orange">52%</b></div>
+                                    <div><span>RAM:</span> <b id="node-3-ram">92 MB</b></div>
+                                    <div><span>Blocked:</span> <b class="text-red" id="node-3-blocked">87</b></div>
+                                </div>
+                            </div>
+
+                            <div class="node-card" id="node-card-4">
+                                <div class="node-title-row">
+                                    <b>Node-04 (Grid Sensors)</b>
+                                    <span class="status-tag tag-green">HEALTHY</span>
+                                </div>
+                                <div class="node-stats">
+                                    <div><span>Rate:</span> <b class="text-blue" id="node-4-tput">160 p/s</b></div>
+                                    <div><span>CPU:</span> <b id="node-4-cpu">18%</b></div>
+                                    <div><span>RAM:</span> <b id="node-4-ram">32 MB</b></div>
+                                    <div><span>Blocked:</span> <b class="text-red" id="node-4-blocked">6</b></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
+            </section>
 
-        <!-- ================================================================= -->
-        <!-- TAB 4: BATCH CSV FORENSICS -->
-        <!-- ================================================================= -->
-        <main id="tab-batch" class="tab-content">
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title-wrap">
-                        <span class="panel-icon text-green">📁</span>
+            <!-- ============================================================= -->
+            <!-- TAB 2: DYNAMIC TIER SWITCHER (FR5) -->
+            <!-- ============================================================= -->
+            <section id="tab-tier" class="tab-panel">
+                <div class="grid-1-2">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Resource Pressure Controller</h2>
+                                <p class="panel-sub">Simulate rush hour CPU loads on Smart City Fog Cabinets</p>
+                            </div>
+                        </div>
+
+                        <div class="controller-box">
+                            <div class="slider-title-row">
+                                <span>Simulated CPU Load:</span>
+                                <b class="slider-numeric-val" id="tier-cpu-val">35%</b>
+                            </div>
+                            <input type="range" id="tier-cpu-slider" class="flat-slider" min="0" max="100" value="35" oninput="updateTierSimulation(this.value)">
+                            <div class="slider-bounds">
+                                <span>0% (Idle)</span>
+                                <span>45% (Full / Reduced Boundary)</span>
+                                <span>75% (Reduced / Minimal Boundary)</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+
+                        <div class="tier-card" id="tier-display-card">
+                            <div class="tier-card-badge" id="active-tier-badge">ACTIVE INFERENCE TIER</div>
+                            <div class="tier-card-title text-blue" id="active-tier-title">FULL TIER</div>
+                            <div class="tier-card-model" id="active-tier-model">Model: LightGBM (150 trees)</div>
+                            <p class="tier-card-desc" id="active-tier-desc">Optimal macro-F1 (0.8099) under standard edge CPU load (&lt;45%).</p>
+                        </div>
+
+                        <div class="tier-rules-card">
+                            <h3>⚡ State Transition Rules (FR5)</h3>
+                            <ul>
+                                <li><b>FULL TIER (LightGBM):</b> Active when CPU &lt; 45% (0.8099 Macro-F1)</li>
+                                <li><b>REDUCED TIER (CompactMLP):</b> Active when 45% ≤ CPU ≤ 75% (132.1 µs latency)</li>
+                                <li><b>MINIMAL TIER (LogReg):</b> Active when CPU &gt; 75% (78.6 µs emergency fallback)</li>
+                                <li><b>5% Hysteresis Buffer:</b> Prevents rapid flapping across threshold boundaries</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Pareto Latency-Accuracy Frontier</h2>
+                                <p class="panel-sub">Macro-F1 vs. Single-Row Edge Streaming Latency (Bubble Size = Footprint)</p>
+                            </div>
+                        </div>
+
+                        <div class="chart-box" style="height: 270px;">
+                            <canvas id="tierBubbleChart"></canvas>
+                        </div>
+
+                        <div class="table-container" style="margin-top: 16px;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tier</th>
+                                        <th>Model Family</th>
+                                        <th>Macro-F1</th>
+                                        <th>Streaming Latency</th>
+                                        <th>Footprint</th>
+                                        <th>Raspberry Pi 4 Est.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="status-tag tag-blue">FULL</span></td>
+                                        <td>LightGBM (150 Trees)</td>
+                                        <td><b>0.8099</b></td>
+                                        <td>1,876.0 µs</td>
+                                        <td>4.1 MB</td>
+                                        <td>9.38 – 12.19 ms</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-tag tag-purple">REDUCED</span></td>
+                                        <td>CompactMLP (64, 32)</td>
+                                        <td><b>0.6432</b></td>
+                                        <td><b>132.1 µs</b></td>
+                                        <td><b>135.4 KB</b></td>
+                                        <td><b>0.66 – 0.86 ms</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="status-tag tag-orange">MINIMAL</span></td>
+                                        <td>LogisticRegression (L2)</td>
+                                        <td>0.5480</td>
+                                        <td>78.6 µs</td>
+                                        <td>5.3 KB</td>
+                                        <td>0.39 – 0.51 ms</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================= -->
+            <!-- TAB 3: THREAT STUDIO & XAI -->
+            <!-- ============================================================= -->
+            <section id="tab-inspector" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
                         <div>
-                            <h2>High-Throughput Batch Network Flow Scanner</h2>
-                            <p class="panel-desc">Vectorized multi-class anomaly detection, threat distribution & forensics report generator</p>
+                            <h2>Threat Vector Studio & Explainable AI (XAI)</h2>
+                            <p class="panel-sub">Inspect packet features, compute local attributions, and trigger mitigations</p>
                         </div>
+                        <button class="btn btn-primary" onclick="executeInspection()">Classify Vector</button>
                     </div>
-                </div>
 
-                <!-- Dropzone Area -->
-                <div class="drop-zone" id="drop-zone" onclick="document.getElementById('csv-file-input').click()">
-                    <div class="drop-icon">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="17 8 12 3 7 8"/>
-                            <line x1="12" y1="3" x2="12" y2="15"/>
-                        </svg>
-                    </div>
-                    <p class="drop-title">Drag & Drop network capture CSV or <span class="browse-link">Browse Local Files</span></p>
-                    <p class="drop-sub">Compatible with standard CICIoT2023 46-feature schema or PCAP-derived flow exports.</p>
-                    <input type="file" id="csv-file-input" accept=".csv" style="display: none;" onchange="handleFileSelected(this.files)">
-                </div>
-
-                <div class="batch-action-bar">
-                    <button class="btn btn-secondary" onclick="generateDemoDataset()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                        <span>Load Demo 500-Flow Attack Capture</span>
-                    </button>
-                    <span id="batch-file-status" class="file-status-label">No capture loaded</span>
-                </div>
-
-                <!-- Results Section -->
-                <div id="batch-results-section" style="display: none; margin-top: 24px;">
-                    <div class="kpi-grid">
-                        <div class="kpi-card" data-glow="blue">
-                            <div class="kpi-label">TOTAL FLOWS ANALYZED</div>
-                            <div class="kpi-value text-blue" id="batch-total-flows">500</div>
-                            <div class="kpi-trend">Vectorized Batch Engine</div>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <label for="vector-preset">Threat Preset Archetype:</label>
+                            <select id="vector-preset" class="form-input" onchange="loadPresetFeatures(this.value)">
+                                <option value="DDoS-SYN_Flood">DDoS-SYN_Flood (Critical Flood)</option>
+                                <option value="Mirai-greip_flood">Mirai-greip_flood (Critical IoT Botnet)</option>
+                                <option value="DictionaryBruteForce">DictionaryBruteForce (Rare Minority Attack)</option>
+                                <option value="SqlInjection">SqlInjection / Web-Based (Rare Minority Attack)</option>
+                                <option value="Recon-PortScan">Recon-PortScan (Probing Reconnaissance)</option>
+                                <option value="BenignTraffic">BenignTraffic (Normal IoT Flow)</option>
+                            </select>
                         </div>
-                        <div class="kpi-card" data-glow="purple">
-                            <div class="kpi-label">PROCESSING TIME</div>
-                            <div class="kpi-value text-purple" id="batch-time">2.38 ms</div>
-                            <div class="kpi-trend">4.76 µs / sample</div>
+                        <div class="control-group">
+                            <label for="inspector-model">Model Architecture:</label>
+                            <select id="inspector-model" class="form-input" onchange="executeInspection()">
+                                <option value="LightGBM">LightGBM (Full Tier - 0.81 F1)</option>
+                                <option value="CompactMLP">CompactMLP (Reduced Tier - 132 µs)</option>
+                                <option value="LogReg">LogisticRegression (Minimal Tier - 78 µs)</option>
+                                <option value="RandomForest">RandomForest (120 Trees Ensemble)</option>
+                            </select>
                         </div>
-                        <div class="kpi-card" data-glow="green">
-                            <div class="kpi-label">THROUGHPUT RATE</div>
-                            <div class="kpi-value text-green" id="batch-throughput">210.1K /s</div>
-                            <div class="kpi-trend">Peak Ingestion</div>
-                        </div>
-                        <div class="kpi-card" data-glow="red">
-                            <div class="kpi-label">MALICIOUS INTRUSIONS</div>
-                            <div class="kpi-value text-red" id="batch-attacks">412 (82.4%)</div>
-                            <div class="kpi-trend">88 Benign Flows (17.6%)</div>
+                        <div class="control-group">
+                            <label for="inspector-task">Taxonomy Depth:</label>
+                            <select id="inspector-task" class="form-input" onchange="executeInspection()">
+                                <option value="8class">8-Class (Category Classification)</option>
+                                <option value="binary">Binary (Benign vs Malicious)</option>
+                                <option value="34class">34-Class (Fine-Grained Sub-Attacks)</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="grid-2-1" style="margin-top: 20px;">
-                        <div class="panel">
-                            <div class="panel-header">
-                                <h3>Threat Distribution Breakdown</h3>
-                                <button class="btn btn-sm btn-secondary" onclick="exportBatchReportJson()">Export JSON Audit</button>
+                    <!-- Flow Sliders -->
+                    <div class="sliders-row">
+                        <div class="slider-card">
+                            <div class="slider-head"><span>Rate (pkts/s):</span><b id="feat-rate-val">980.0</b></div>
+                            <input type="range" id="feat-rate" class="flat-slider" min="0" max="1500" value="980" oninput="document.getElementById('feat-rate-val').innerText=this.value">
+                        </div>
+                        <div class="slider-card">
+                            <div class="slider-head"><span>SYN Count:</span><b id="feat-syn-val">18.0</b></div>
+                            <input type="range" id="feat-syn" class="flat-slider" min="0" max="50" value="18" oninput="document.getElementById('feat-syn-val').innerText=this.value">
+                        </div>
+                        <div class="slider-card">
+                            <div class="slider-head"><span>ACK Count:</span><b id="feat-ack-val">12.0</b></div>
+                            <input type="range" id="feat-ack" class="flat-slider" min="0" max="50" value="12" oninput="document.getElementById('feat-ack-val').innerText=this.value">
+                        </div>
+                        <div class="slider-card">
+                            <div class="slider-head"><span>Tot size:</span><b id="feat-size-val">90.0</b></div>
+                            <input type="range" id="feat-size" class="flat-slider" min="10" max="1500" value="90" oninput="document.getElementById('feat-size-val').innerText=this.value">
+                        </div>
+                        <div class="slider-card">
+                            <div class="slider-head"><span>IAT (ms):</span><b id="feat-iat-val">1.2</b></div>
+                            <input type="range" id="feat-iat" class="flat-slider" min="0" max="500" step="0.5" value="1.2" oninput="document.getElementById('feat-iat-val').innerText=this.value">
+                        </div>
+                        <div class="slider-card">
+                            <div class="slider-head"><span>Header Length:</span><b id="feat-hdr-val">65535</b></div>
+                            <input type="range" id="feat-hdr" class="flat-slider" min="20" max="65535" step="100" value="65535" oninput="document.getElementById('feat-hdr-val').innerText=this.value">
+                        </div>
+                    </div>
+
+                    <!-- Output Dashboard -->
+                    <div class="grid-2-1" style="margin-top: 18px;">
+                        <div>
+                            <div class="results-kpi-row">
+                                <div class="res-box">
+                                    <span class="res-label">PREDICTED THREAT</span>
+                                    <span class="res-val text-blue" id="insp-prediction">DDoS</span>
+                                    <span class="res-sub" id="insp-category">Category: DDoS</span>
+                                </div>
+                                <div class="res-box">
+                                    <span class="res-label">CONFIDENCE</span>
+                                    <span class="res-val text-green" id="insp-confidence">99.8%</span>
+                                    <span class="res-sub">Softmax Output</span>
+                                </div>
+                                <div class="res-box">
+                                    <span class="res-label">SEVERITY</span>
+                                    <span class="status-tag tag-red" id="insp-severity" style="margin-top: 6px; font-size: 0.8rem;">CRITICAL</span>
+                                    <span class="res-sub" id="insp-action">Firewall Auto-Drop</span>
+                                </div>
+                                <div class="res-box">
+                                    <span class="res-label">LATENCY</span>
+                                    <span class="res-val text-purple" id="insp-latency">1,876.0 µs</span>
+                                    <span class="res-sub">Single-Row Timing</span>
+                                </div>
+                            </div>
+
+                            <div class="panel-header" style="margin-top: 16px;">
+                                <h3>🧠 Local Feature Attributions (XAI Waterfall)</h3>
                             </div>
                             <div class="table-container">
-                                <table class="alert-table">
+                                <table class="data-table">
                                     <thead>
                                         <tr>
-                                            <th>Threat Category</th>
-                                            <th>Flow Count</th>
-                                            <th>Share %</th>
-                                            <th>Severity</th>
+                                            <th>Feature</th>
+                                            <th>Value</th>
+                                            <th>Attribution</th>
+                                            <th>Diagnostic Impact</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="batch-table-body">
-                                        <!-- Dynamically populated -->
+                                    <tbody id="xai-table-body">
+                                        <!-- Populated dynamically -->
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                        <div class="panel">
+
+                        <div>
                             <div class="panel-header">
-                                <h3>Threat Distribution Donut</h3>
+                                <h3>📊 Multi-Class Probability Distribution</h3>
                             </div>
-                            <div style="height: 220px; position: relative;">
-                                <canvas id="batchDonutChart"></canvas>
+                            <div class="chart-box" style="height: 280px;">
+                                <canvas id="inspProbabilityChart"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
+            </section>
 
-        <!-- ================================================================= -->
-        <!-- TAB 5: EMPIRICAL BENCHMARK (RQ1-5) -->
-        <!-- ================================================================= -->
-        <main id="tab-benchmark" class="tab-content">
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title-wrap">
-                        <span class="panel-icon text-blue">📊</span>
+            <!-- ============================================================= -->
+            <!-- TAB 4: BATCH CSV FORENSICS -->
+            <!-- ============================================================= -->
+            <section id="tab-batch" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2>High-Throughput Batch Network Flow Scanner</h2>
+                            <p class="panel-sub">Upload packet capture CSV files for high-speed anomaly discovery</p>
+                        </div>
+                    </div>
+
+                    <div class="drop-zone" onclick="document.getElementById('csv-file-input').click()">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--blue);">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p style="margin-top: 8px; font-weight: 600;">Drag & drop network capture CSV or <span style="color: var(--blue); text-decoration: underline;">browse files</span></p>
+                        <span style="font-size: 0.78rem; color: var(--text-muted);">Supports 46-feature CICIoT2023 schema</span>
+                        <input type="file" id="csv-file-input" accept=".csv" style="display: none;" onchange="handleFileSelected(this.files)">
+                    </div>
+
+                    <div style="margin-top: 14px; display: flex; gap: 12px; align-items: center;">
+                        <button class="btn btn-secondary" onclick="generateDemoDataset()">Load Demo 500-Flow Attack Capture</button>
+                        <span id="batch-file-status" style="font-size: 0.85rem; color: var(--text-muted); font-family: 'JetBrains Mono';">No capture loaded</span>
+                    </div>
+
+                    <div id="batch-results-section" style="display: none; margin-top: 20px;">
+                        <div class="kpi-grid">
+                            <div class="kpi-card">
+                                <div class="kpi-title">FLOWS ANALYZED</div>
+                                <div class="kpi-val text-blue" id="batch-total-flows">500</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-title">EXECUTION TIME</div>
+                                <div class="kpi-val text-purple" id="batch-time">2.38 ms</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-title">THROUGHPUT RATE</div>
+                                <div class="kpi-val text-green" id="batch-throughput">210.1K /s</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-title">ATTACKS DETECTED</div>
+                                <div class="kpi-val text-red" id="batch-attacks">412 (82.4%)</div>
+                            </div>
+                        </div>
+
+                        <div class="grid-2-1" style="margin-top: 18px;">
+                            <div class="panel">
+                                <div class="panel-header">
+                                    <h3>Threat Distribution Breakdown</h3>
+                                    <button class="btn btn-sm btn-outline" onclick="exportBatchReportJson()">Export JSON Audit</button>
+                                </div>
+                                <div class="table-container">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Category</th>
+                                                <th>Count</th>
+                                                <th>Share %</th>
+                                                <th>Severity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="batch-table-body">
+                                            <!-- Dynamically populated -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="panel">
+                                <div class="panel-header">
+                                    <h3>Distribution Breakdown</h3>
+                                </div>
+                                <div class="chart-box" style="height: 220px;">
+                                    <canvas id="batchDonutChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================= -->
+            <!-- TAB 5: EMPIRICAL BENCHMARK -->
+            <!-- ============================================================= -->
+            <section id="tab-benchmark" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
                         <div>
                             <h2>Empirical Benchmark Results on Real CICIoT2023 Dataset</h2>
-                            <p class="panel-desc">Evaluated across 277,369 balanced sample flows across 4 model families and 3 taxonomy scopes</p>
+                            <p class="panel-sub">277,369 balanced sample flows across 4 model families and 3 taxonomy scopes</p>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Task Scope</th>
+                                    <th>Model Architecture</th>
+                                    <th>Accuracy</th>
+                                    <th>Macro-F1</th>
+                                    <th>Weighted-F1</th>
+                                    <th>Training Support</th>
+                                    <th>Testing Support</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><b>Binary (2-Class)</b></td><td><b>LightGBM</b></td><td><b>0.9803</b></td><td><b>0.9060</b></td><td>0.9816</td><td>152,525</td><td>124,844</td></tr>
+                                <tr><td>Binary</td><td>RandomForest</td><td>0.9786</td><td>0.8972</td><td>0.9799</td><td>152,525</td><td>124,844</td></tr>
+                                <tr><td>Binary</td><td>CompactMLP</td><td>0.9674</td><td>0.7615</td><td>0.9619</td><td>152,525</td><td>124,844</td></tr>
+                                <tr><td>Binary</td><td>LogisticRegression</td><td>0.9611</td><td>0.6889</td><td>0.9521</td><td>152,525</td><td>124,844</td></tr>
+                                <tr style="border-top: 2px solid var(--border);"><td><b>8-Class (Category)</b></td><td><b>LightGBM (Full Tier)</b></td><td><b>0.9674</b></td><td><b>0.8099</b></td><td>0.9707</td><td>152,525</td><td>124,844</td></tr>
+                                <tr><td>8-Class</td><td>RandomForest</td><td>0.9524</td><td>0.7660</td><td>0.9589</td><td>152,525</td><td>124,844</td></tr>
+                                <tr><td>8-Class</td><td>CompactMLP (Reduced Tier)</td><td>0.8338</td><td>0.6432</td><td>0.8245</td><td>152,525</td><td>124,844</td></tr>
+                                <tr><td>8-Class</td><td>LogisticRegression (Minimal Tier)</td><td>0.7699</td><td>0.5480</td><td>0.7391</td><td>152,525</td><td>124,844</td></tr>
+                                <tr style="border-top: 2px solid var(--border);"><td><b>34-Class (Fine-Grained)</b></td><td><b>LightGBM</b></td><td><b>0.9579</b></td><td><b>0.8064</b></td><td>0.9598</td><td>152,525</td><td>124,844</td></tr>
+                                <tr><td>34-Class</td><td>RandomForest</td><td>0.9151</td><td>0.7385</td><td>0.9268</td><td>152,525</td><td>124,844</td></tr>
+                                <tr><td>34-Class</td><td>CompactMLP</td><td>0.8104</td><td>0.6357</td><td>0.8112</td><td>152,525</td><td>124,844</td></tr>
+                                <tr><td>34-Class</td><td>LogisticRegression</td><td>0.7357</td><td>0.5314</td><td>0.7225</td><td>152,525</td><td>124,844</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="grid-2-1" style="margin-top: 20px;">
+                        <div class="panel" style="background: var(--bg-card-subtle);">
+                            <h3>🎯 Minority Class Starvation Solved (RQ4)</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; margin-top: 6px;">
+                                Standard models in IoT literature achieve only 3–30% recall on rare attacks. Our per-class Bernoulli subsampling alongside cost-sensitive balanced class weighting boosted <b>Web-Based Recall to 84.0%</b> and <b>Brute Force Recall to 73.4%</b>.
+                            </p>
+                        </div>
+                        <div class="panel" style="background: var(--bg-card-subtle);">
+                            <h3>⚡ Single-Row Streaming Latency (RQ3)</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; margin-top: 6px;">
+                                True per-packet streaming timing reveals that <b>Random Forest takes 33.8 ms/sample</b> (unviable for edge line-rate processing), whereas <b>CompactMLP operates in 132.1 µs at 135.4 KB</b>.
+                            </p>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="table-container">
-                    <table class="alert-table">
-                        <thead>
-                            <tr>
-                                <th>Task Scope</th>
-                                <th>Model Architecture</th>
-                                <th>Accuracy</th>
-                                <th>Macro-F1</th>
-                                <th>Weighted-F1</th>
-                                <th>Training Samples</th>
-                                <th>Test Samples</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td><b>Binary (2-Class)</b></td><td><b>LightGBM</b></td><td><b>0.9803</b></td><td><b>0.9060</b></td><td>0.9816</td><td>152,525</td><td>124,844</td></tr>
-                            <tr><td>Binary</td><td>RandomForest</td><td>0.9786</td><td>0.8972</td><td>0.9799</td><td>152,525</td><td>124,844</td></tr>
-                            <tr><td>Binary</td><td>CompactMLP</td><td>0.9674</td><td>0.7615</td><td>0.9619</td><td>152,525</td><td>124,844</td></tr>
-                            <tr><td>Binary</td><td>LogisticRegression</td><td>0.9611</td><td>0.6889</td><td>0.9521</td><td>152,525</td><td>124,844</td></tr>
-                            <tr style="border-top: 2px solid rgba(255,255,255,0.1);"><td><b>8-Class (Category)</b></td><td><b>LightGBM</b></td><td><b>0.9674</b></td><td><b>0.8099</b></td><td>0.9707</td><td>152,525</td><td>124,844</td></tr>
-                            <tr><td>8-Class</td><td>RandomForest</td><td>0.9524</td><td>0.7660</td><td>0.9589</td><td>152,525</td><td>124,844</td></tr>
-                            <tr><td>8-Class</td><td>CompactMLP</td><td>0.8338</td><td>0.6432</td><td>0.8245</td><td>152,525</td><td>124,844</td></tr>
-                            <tr><td>8-Class</td><td>LogisticRegression</td><td>0.7699</td><td>0.5480</td><td>0.7391</td><td>152,525</td><td>124,844</td></tr>
-                            <tr style="border-top: 2px solid rgba(255,255,255,0.1);"><td><b>34-Class (Fine-Grained)</b></td><td><b>LightGBM</b></td><td><b>0.9579</b></td><td><b>0.8064</b></td><td>0.9598</td><td>152,525</td><td>124,844</td></tr>
-                            <tr><td>34-Class</td><td>RandomForest</td><td>0.9151</td><td>0.7385</td><td>0.9268</td><td>152,525</td><td>124,844</td></tr>
-                            <tr><td>34-Class</td><td>CompactMLP</td><td>0.8104</td><td>0.6357</td><td>0.8112</td><td>152,525</td><td>124,844</td></tr>
-                            <tr><td>34-Class</td><td>LogisticRegression</td><td>0.7357</td><td>0.5314</td><td>0.7225</td><td>152,525</td><td>124,844</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Research Gap Resolutions Grid -->
-                <div class="panel-header" style="margin-top: 28px;">
-                    <h3>🎯 Research Gap Resolution Summary</h3>
-                </div>
-                <div class="grid-2-1">
-                    <div class="panel" style="background: rgba(15, 23, 42, 0.5);">
-                        <h4>Gap 1: Minority Class Starvation Solved (RQ4)</h4>
-                        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; margin-top: 8px;">
-                            Unweighted models in IoT security literature achieve only 3–30% recall on rare attacks. 
-                            Our per-class Bernoulli subsampling + balanced class-weighting boosted <b>Web-Based Recall to 84.0%</b> and <b>Brute Force Recall to 73.4%</b>.
-                        </p>
-                    </div>
-                    <div class="panel" style="background: rgba(15, 23, 42, 0.5);">
-                        <h4>Gap 3: True Single-Row Streaming Latency (RQ3)</h4>
-                        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; margin-top: 8px;">
-                            Batch timing gives an illusion of low latency. Under true per-packet streaming arrival, 
-                            <b>Random Forest takes 33.8 ms/sample</b> (unviable for edge real-time dropping), whereas <b>CompactMLP consumes only 132.1 µs</b> at 135.4 KB.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- ================================================================= -->
-        <!-- TAB 6: REST API CONSOLE -->
-        <!-- ================================================================= -->
-        <main id="tab-api" class="tab-content">
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title-wrap">
-                        <span class="panel-icon text-purple">🚀</span>
+            <!-- ============================================================= -->
+            <!-- TAB 6: REST API SANDBOX -->
+            <!-- ============================================================= -->
+            <section id="tab-api" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
                         <div>
-                            <h2>Production REST API & Sandbox Console</h2>
-                            <p class="panel-desc">Interactive endpoint testing, automated cURL code generation & Swagger documentation</p>
+                            <h2>Production REST API & Sandbox</h2>
+                            <p class="panel-sub">Test live microservice endpoints and inspect JSON payloads</p>
                         </div>
-                    </div>
-                    <a href="/docs" target="_blank" class="btn btn-primary">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                        <span>Open Swagger Docs</span>
-                    </a>
-                </div>
-
-                <div class="grid-1-2" style="margin-top: 16px;">
-                    <div>
-                        <h3>Live Endpoint Sandbox</h3>
-                        <div class="form-group" style="margin-top: 12px;">
-                            <label>Target Endpoint:</label>
-                            <select id="api-test-endpoint" class="form-control" onchange="updateApiConsolePayload(this.value)">
-                                <option value="/health">GET /health (System Telemetry & Telemetry)</option>
-                                <option value="/api/v1/models">GET /api/v1/models (Registry & SHA256 Checksums)</option>
-                                <option value="/api/v1/predict">POST /api/v1/predict (Single Flow + XAI)</option>
-                                <option value="/api/v1/predict/adaptive">POST /api/v1/predict/adaptive (FR5 Tier Switcher)</option>
-                                <option value="/api/v1/predict/batch">POST /api/v1/predict/batch (Vectorized Ingestion)</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin-top: 12px;">
-                            <label>Request JSON Payload:</label>
-                            <textarea id="api-test-payload" class="form-control code-editor" rows="8"></textarea>
-                        </div>
-                        <button class="btn btn-primary" style="margin-top: 10px; width: 100%;" onclick="sendConsoleApiRequest()">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                            <span>Send API Request</span>
-                        </button>
+                        <a href="/docs" target="_blank" class="btn btn-primary">Open Swagger Docs</a>
                     </div>
 
-                    <div>
-                        <h3>Live Response & Status</h3>
-                        <div style="display: flex; gap: 12px; margin: 12px 0;">
-                            <span class="badge badge-green" id="api-response-status">Status: 200 OK</span>
-                            <span class="badge badge-purple" id="api-response-time">Latency: -- ms</span>
+                    <div class="grid-1-2" style="margin-top: 14px;">
+                        <div>
+                            <div class="control-group">
+                                <label for="api-test-endpoint">Select Target Endpoint:</label>
+                                <select id="api-test-endpoint" class="form-input" onchange="updateApiConsolePayload(this.value)">
+                                    <option value="/health">GET /health (System Telemetry)</option>
+                                    <option value="/api/v1/models">GET /api/v1/models (Registry & Checksums)</option>
+                                    <option value="/api/v1/predict">POST /api/v1/predict (Single Flow + XAI)</option>
+                                    <option value="/api/v1/predict/adaptive">POST /api/v1/predict/adaptive (FR5 Tier Switcher)</option>
+                                    <option value="/api/v1/predict/batch">POST /api/v1/predict/batch (Vectorized Ingestion)</option>
+                                </select>
+                            </div>
+
+                            <div class="control-group" style="margin-top: 12px;">
+                                <label for="api-test-payload">Request JSON Payload:</label>
+                                <textarea id="api-test-payload" class="form-input code-editor" rows="8"></textarea>
+                            </div>
+
+                            <button class="btn btn-primary" style="margin-top: 10px; width: 100%;" onclick="sendConsoleApiRequest()">Send API Request</button>
                         </div>
-                        <pre id="api-response-viewer" class="json-viewer">{
+
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 0.85rem; font-weight: 700;">Live Response:</span>
+                                <div style="display: flex; gap: 8px;">
+                                    <span class="status-tag tag-green" id="api-response-status">Status: 200 OK</span>
+                                    <span class="status-tag tag-purple" id="api-response-time">Latency: -- ms</span>
+                                </div>
+                            </div>
+                            <pre id="api-response-viewer" class="json-box">{
   "status": "Ready",
   "message": "Click 'Send API Request' to test live microservice endpoint."
 }</pre>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </main>
+            </section>
 
-        <!-- ================================================================= -->
-        <!-- FOOTER -->
-        <!-- ================================================================= -->
-        <footer class="footer">
-            <div class="footer-content">
-                <p><b>Fog-IDS Enterprise</b>: Lightweight Multi-Class Intrusion Detection for Edge Nodes in Smart City IoT Networks</p>
-                <p class="footer-sub">Real CICIoT2023 Dataset Evaluation | Dynamic FR5 Tier Switching | 100% Automated Test Suite Passed</p>
-            </div>
-        </footer>
+            <!-- Footer -->
+            <footer class="footer">
+                <span>Fog-IDS Enterprise SOC Dashboard — Smart City IoT Intrusion Detection System</span>
+            </footer>
+        </div>
     </div>
 
     <!-- Scripts -->
