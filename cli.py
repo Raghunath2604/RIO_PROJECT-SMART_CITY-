@@ -39,10 +39,15 @@ def cmd_predict(args):
     
     if args.preset:
         presets = get_preset_attack_samples()
-        if args.preset not in presets:
+        matched_key = None
+        for k in presets.keys():
+            if args.preset.lower() in k.lower():
+                matched_key = k
+                break
+        if not matched_key:
             print(f"Unknown preset '{args.preset}'. Available: {list(presets.keys())}")
             return
-        res = engine.predict_sample(presets[args.preset], model_name=args.model, task=args.task)
+        res = engine.predict_sample(presets[matched_key], model_name=args.model, task=args.task)
         print(json.dumps(res, indent=2))
         return
 
