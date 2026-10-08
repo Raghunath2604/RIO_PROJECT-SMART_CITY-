@@ -7,7 +7,12 @@
 [![Tests](https://img.shields.io/badge/Tests-10%2F10%20Passing-brightgreen.svg)](tests/)
 [![Dataset](https://img.shields.io/badge/Dataset-CICIoT2023-orange.svg)](https://www.unb.ca/cic/datasets/iot-dataset-2023.html)
 
-Fog-IDS is an end-to-end, production-grade network intrusion detection system engineered specifically for resource-constrained edge gateways and fog nodes in Smart City IoT infrastructures. It addresses key methodological and architectural gaps in contemporary IoT security literature: **minority-class attack recall starvation**, **session-level data leakage mitigation**, **single-row streaming latency profiling**, and **adaptive resource-aware inference tiering (FR5)**.
+**Fog-IDS** is an end-to-end, production-grade network intrusion detection system engineered specifically for resource-constrained edge gateways and fog computing nodes in Smart City IoT infrastructures. This project addresses four fundamental research and engineering challenges in modern IoT network security:
+
+1. **Minority-Class Attack Recall Starvation**: Addressing severe data imbalance in real IoT datasets (where DDoS/DoS comprise >90% of traffic, leaving rare web and brute-force attacks starved during standard empirical training).
+2. **Session-Level Data Leakage Mitigation**: Preventing artificial accuracy inflation caused by standard random row-shuffling across contiguous packet bursts.
+3. **Single-Row Streaming Latency Profiling**: Evaluating true per-packet streaming latency constraints on embedded edge microprocessors (ARM Cortex-A72 / Raspberry Pi 4) versus batch-amortized illusions.
+4. **Adaptive Resource-Aware Inference Tiering (FR5)**: Implementing a dynamic tier switcher governed by CPU load hysteresis and dwell-time smoothing to maintain maximum classification accuracy without dropping packets during edge resource spikes.
 
 ---
 
@@ -55,23 +60,39 @@ Fog-IDS is an end-to-end, production-grade network intrusion detection system en
 
 ---
 
-## 2. Research Questions & Empirical Findings
+## 2. Mathematical Methodology & Formulations
 
-Evaluated directly on the **genuine CICIoT2023 dataset** (277,369 balanced sample rows across training and held-out test sets):
+### 2.1 Cost-Sensitive Balanced Class Weighting
+Given $N$ total training samples across $K$ classes where class $c$ has $N_c$ observations, the loss penalty weight $w_c$ is assigned as:
+$$w_c = \frac{N}{K \cdot N_c}$$
+This penalizes misclassification of rare minority classes (such as Web SQLi and Dictionary Brute Force) proportionally to their scarcity.
+
+### 2.2 Dynamic Tier Switching Function with Hysteresis (FR5)
+To prevent rapid flapping between model tiers near CPU load boundaries, state transitions are governed by an asymmetric threshold with deadband $\Delta H = 5\%$ and minimum dwell time $\tau = 1.0\text{ s}$:
+$$\text{Tier}_{t} = \begin{cases} 
+\text{Minimal (LogReg)}, & \text{if } U_{\text{CPU}} \ge T_{\text{high}} \\
+\text{Reduced (CompactMLP)}, & \text{if } T_{\text{low}} \le U_{\text{CPU}} < T_{\text{high}} - \Delta H \text{ (downward)} \lor U_{\text{CPU}} \ge T_{\text{low}} \text{ (upward)} \\
+\text{Full (LightGBM)}, & \text{if } U_{\text{CPU}} < T_{\text{low}} - \Delta H 
+\end{cases}$$
+
+---
+
+## 3. Empirical Benchmark & Experimental Results
+
+Evaluated directly on the **genuine CICIoT2023 dataset** across 277,369 balanced sample flows (152,525 training, 124,844 testing):
 
 ### RQ1: Multi-Granularity Attack Classification
-LightGBM and CompactMLP provide top-tier detection across all three taxonomy depths:
 
-| Task Granularity | Model Architecture | Accuracy | Macro-F1 | Weighted-F1 | Test Samples |
+| Task Granularity | Model Architecture | Accuracy | Macro-F1 | Weighted-F1 | Test Support |
 |:---|:---|:---:|:---:|:---:|:---:|
 | **Binary (2-Class)** | **LightGBM** | **98.03%** | **0.9060** | **0.9816** | 124,844 |
 | | RandomForest | 97.86% | 0.8972 | 0.9799 | 124,844 |
 | | CompactMLP | 96.74% | 0.7615 | 0.9619 | 124,844 |
 | | LogisticRegression | 96.11% | 0.6889 | 0.9521 | 124,844 |
-| **8-Class (Category)** | **LightGBM** | **96.74%** | **0.8099** | **0.9707** | 124,844 |
+| **8-Class (Category)** | **LightGBM (Full Tier)** | **96.74%** | **0.8099** | **0.9707** | 124,844 |
 | | RandomForest | 95.24% | 0.7660 | 0.9589 | 124,844 |
-| | CompactMLP | 83.38% | 0.6432 | 0.8245 | 124,844 |
-| | LogisticRegression | 76.99% | 0.5480 | 0.7391 | 124,844 |
+| | CompactMLP (Reduced Tier) | 83.38% | 0.6432 | 0.8245 | 124,844 |
+| | LogisticRegression (Minimal Tier)| 76.99% | 0.5480 | 0.7391 | 124,844 |
 | **34-Class (Fine-Grained)**| **LightGBM** | **95.79%** | **0.8064** | **0.9598** | 124,844 |
 | | RandomForest | 91.51% | 0.7385 | 0.9268 | 124,844 |
 | | CompactMLP | 81.04% | 0.6357 | 0.8112 | 124,844 |
@@ -79,15 +100,9 @@ LightGBM and CompactMLP provide top-tier detection across all three taxonomy dep
 
 ---
 
-### RQ2: Data Leakage Mitigation
-Evaluating train/test splits under naive random partitioning versus session-aware burst grouping reveals that duplicate consecutive packet windows inflate reported performance. Session-aware grouping guarantees honest generalization.
+### RQ3: Single-Row Streaming Latency vs. Batch Amortization
 
----
-
-### RQ3: Edge Hardware Deployability & Streaming Latency
-Batch-amortized timing creates a false sense of speed. Evaluating **single-row streaming latency** (one packet arrival at a time) demonstrates that **RandomForest is unviable for edge nodes (33.8 ms/sample)**, whereas **CompactMLP operates in 132.1 µs at 135 KB**:
-
-| Model Tier | Model Family | Disk Footprint | Batch Latency | Single-Row Streaming Latency | Projected Raspberry Pi 4 Latency | Fog Viability |
+| Model Tier | Architecture | Disk Footprint | Batch Latency | Single-Row Streaming Latency | Projected Raspberry Pi 4 Latency | Fog Viability Assessment |
 |:---|:---|:---:|:---:|:---:|:---:|:---|
 | **Reduced** | **CompactMLP** | **135.4 KB** | 1.22 µs | **132.1 µs** | **0.66 – 0.86 ms** | **Optimal Fog Candidate** |
 | **Minimal** | **LogReg** | **5.3 KB** | 0.34 µs | **78.6 µs** | **0.39 – 0.51 ms** | Ultra-Lightweight Fallback |
@@ -96,8 +111,7 @@ Batch-amortized timing creates a false sense of speed. Evaluating **single-row s
 
 ---
 
-### RQ4: Minority-Class Attack Recall
-Using per-class Bernoulli subsampling alongside cost-sensitive class weighting resolves the severe class imbalance in CICIoT2023 (where DDoS/DoS constitute >90% of flows):
+### RQ4: Minority Attack Class Recall Breakdown (LightGBM 8-Class)
 
 | Attack Category | Precision | **Recall** | F1-Score | Test Support |
 |:---|:---:|:---:|:---:|:---:|
@@ -112,81 +126,72 @@ Using per-class Bernoulli subsampling alongside cost-sensitive class weighting r
 
 ---
 
-### RQ5: Distributed Fog Node Emulation
-Simulating 4 distributed fog nodes comparing centralized data pooling, isolated per-node local training, and Federated Averaging (FedAvg):
-
-| Strategy | Accuracy | Macro-F1 | Mean Classes Seen Per Node |
-|:---|:---:|:---:|:---:|
-| **Centralized** | 0.9532 | 0.7678 | 8.0 |
-| **Per-Node (Local)** | 0.9550 | 0.7790 | 8.0 |
-| **Federated Averaging (FedAvg)** | 0.7584 | 0.5201 | 8.0 |
-
----
-
-## 3. Project Structure
+## 4. Repository Structure
 
 ```
 fogids/
 ├── api.py                    # Production FastAPI REST Microservice
 ├── app.py                    # Streamlit SOC Command Center Dashboard
 ├── cli.py                    # Unified Production CLI Interface
-├── run_pipeline.py           # Stage-based benchmark orchestrator
-├── run_production_demo.py    # Automated end-to-end production verification demo
-├── verify_all_live.py        # Multi-service live health check suite
+├── run_pipeline.py           # Multi-stage benchmark orchestrator
+├── run_production_demo.py    # Automated end-to-end verification demo
+├── verify_all_live.py        # Health & verification test runner
 ├── config.yaml               # Declarative SIEM & threshold configuration
-├── vercel.json               # Vercel serverless deployment configuration
-├── Dockerfile                # Multi-stage container definition
-├── docker-compose.yml        # Multi-service stack specification
-├── requirements.txt          # Production dependencies
+├── vercel.json               # Vercel serverless deployment specification
+├── .vercelignore             # Bundle footprint optimization rules
+├── Dockerfile                # Multi-stage container specification
+├── docker-compose.yml        # Container orchestration stack
+├── requirements.txt          # Core production dependencies
+├── requirements-dev.txt      # Development dependencies
 │
 ├── api/
-│   └── index.py              # Vercel serverless Python handler
+│   ├── index.py              # Serverless ASGI application handler
+│   └── requirements.txt      # Isolated serverless runtime dependencies
 │
-├── public/                   # Static SOC Web Dashboard for Vercel Edge CDN
-│   ├── index.html            # Responsive Command Center UI
-│   ├── style.css             # Cyber-defense dark theme
-│   └── app.js                # Real-time stream simulator & API client
+├── public/                   # Enterprise Web Defense Center (Edge CDN)
+│   ├── index.html            # Production Command Center UI
+│   ├── style.css             # Dark cyber-defense theme
+│   └── app.js                # Real-time telemetry & API client engine
 │
-├── models/                   # Versioned Production Model Registry
-│   ├── LightGBM_*.joblib     # High-accuracy full models
-│   ├── CompactMLP_*.joblib   # Edge neural network models
-│   ├── LogReg_*.joblib       # Lightweight minimal models
+├── models/                   # Versioned Model Registry
+│   ├── LightGBM_*.joblib     # Full tier models
+│   ├── CompactMLP_*.joblib   # Reduced tier models
+│   ├── LogReg_*.joblib       # Minimal tier models
 │   ├── RandomForest_*.joblib # Reference ensemble models
-│   └── manifest.json         # Checksums, metrics & metadata
+│   └── manifest.json         # Checksums, parameters & metrics metadata
 │
-├── logs/                     # Enterprise SIEM & SOC Audit Trail
-│   ├── alerts.jsonl          # Structured JSONL intrusion detection events
-│   └── audit.log             # Security audit log
+├── logs/                     # SIEM / SOC Audit Logs
+│   ├── alerts.jsonl          # RFC3339 structured security events
+│   └── audit.log             # Operational audit trail
 │
 ├── src/                      # Core Modules
-│   ├── schema.py             # 46 features & multi-granularity label taxonomy
-│   ├── loader.py             # Memory-efficient chunked loader with Bernoulli capping
-│   ├── splits.py             # Session-aware and random splitters
+│   ├── schema.py             # 46 network features & label taxonomies
+│   ├── loader.py             # Memory-efficient chunked loader with Bernoulli subsampling
+│   ├── splits.py             # Session-aware burst splitters
 │   ├── train_eval.py         # Multi-metric model training & evaluation
-│   ├── profile_model.py      # Edge profiling & Pi 4 latency projections
+│   ├── profile_model.py      # Edge hardware profiling & Pi 4 projections
 │   ├── fog_emulation.py      # Distributed Fog Node simulation (FedAvg)
 │   ├── tier_switcher.py      # FR5 Dynamic Resource-Aware Tier Switcher
-│   ├── infer.py              # Real-time inference engine
+│   ├── infer.py              # Real-time single & batch inference engine
 │   ├── explain.py            # Local Feature Attribution & XAI Diagnostics
 │   ├── security_logger.py    # SIEM/SOC structured logger
-│   └── flow_collector.py     # Real-time flow collector & replay daemon
+│   └── flow_collector.py     # Real-time packet collector & replay daemon
 │
 ├── tests/                    # Automated Test Suite (100% Passing)
 │   ├── test_api.py           # REST endpoint integration tests
 │   ├── test_tier_switcher.py # Hysteresis & dwell time logic tests
 │   └── test_schema.py        # Feature matrix sanitization & schema tests
 │
-└── results/                  # Generated Reports, Tables, and Figures
-    ├── REPORT.md             # Full technical documentation
-    ├── benchmark_results.csv # Empirical benchmark metrics
-    ├── deployability_profile.csv # Footprint & latency profiles
-    ├── per_class_best8class.csv  # Precision, recall, F1 per class
-    └── figures/              # Publication-ready visualization plots
+└── results/                  # Technical Reports, Artifacts & Plots
+    ├── REPORT.md             # Empirical research report
+    ├── benchmark_results.csv # Full benchmark metrics table
+    ├── deployability_profile.csv # Latency and footprint profile table
+    └── per_class_best8class.csv  # Precision, recall, and F1 per class
 ```
 
 ---
 
-## 4. Installation & Quickstart
+## 5. Installation & Execution Guide
 
 ### Prerequisites
 - Python 3.10 or higher
@@ -208,69 +213,48 @@ pip install -r requirements.txt
 
 ---
 
-### 2. Launch Services (1-Click)
+### 2. Launch Local Services
 
-#### Option A: 1-Click Launchers (Windows)
-- Double-click [`start_all.bat`](file:///c:/Users/Shailash/Downloads/fogids_project%20%281%29/fogids/start_all.bat) to launch both REST API and SOC Web Dashboard.
-- Or use [`start_api.bat`](file:///c:/Users/Shailash/Downloads/fogids_project%20%281%29/fogids/start_api.bat) / [`start_dashboard.bat`](file:///c:/Users/Shailash/Downloads/fogids_project%20%281%29/fogids/start_dashboard.bat).
-
-#### Option B: Manual Launch
+#### Production Web Portal & REST API (Port 8000)
 ```bash
-# Start FastAPI REST Microservice (Port 8000)
-python -m uvicorn api:app --host 0.0.0.0 --port 8000
+python -m uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+```
+- **Enterprise Defense Center Portal:** `http://localhost:8000/`
+- **Interactive OpenAPI / Swagger Documentation:** `http://localhost:8000/docs`
+- **System Health & Telemetry:** `http://localhost:8000/health`
 
-# Start Streamlit SOC Command Center (Port 8501)
+#### Streamlit Analytics Dashboard (Port 8501)
+```bash
 streamlit run app.py --server.port 8501
 ```
 
-Access points:
-- 🛡️ **SOC Web Dashboard:** `http://localhost:8501`
-- 🚀 **REST API Documentation:** `http://localhost:8000/docs`
-- 🏥 **Health Check:** `http://localhost:8000/health`
-
 ---
 
-## 5. Production CLI Commands
-
-Fog-IDS provides a unified command-line tool:
+## 6. Command-Line Interface (CLI) Reference
 
 ```bash
-# 1. Classify a built-in attack preset
-python cli.py predict --preset "DDoS-SYN_Flood (Critical)"
-
-# 2. Classify an external CSV file (thousands of flows/sec)
+# 1. Run inference on a network capture CSV file
 python cli.py predict --file real_data/CICIOT23/test/test.csv --limit 5000 --model LightGBM --task 8class
 
-# 3. Export cached models into production artifacts
+# 2. Test classification on a specific threat vector preset
+python cli.py predict --preset "DDoS-SYN_Flood (Critical)"
+
+# 3. Re-export and serialize model artifacts to registry
 python cli.py export-models
 
-# 4. Start the REST API server
+# 4. Start the FastAPI microservice
 python cli.py serve --port 8000
 ```
 
 ---
 
-## 6. REST API Reference
+## 7. Automated Test Suite
 
-| Method | Endpoint Route | Description | Sample Request |
-|:---:|:---|:---|:---|
-| `GET` | `/health` | Microservice health, memory & CPU load | `curl http://localhost:8000/health` |
-| `GET` | `/api/v1/models` | List all 12 registered models and SHA-256 checksums | `curl http://localhost:8000/api/v1/models` |
-| `POST`| `/api/v1/predict` | Single flow classification with XAI explanations | `curl -X POST http://localhost:8000/api/v1/predict -H "Content-Type: application/json" -d '{"features": {...}, "model_name": "LightGBM", "include_explanation": true}'` |
-| `POST`| `/api/v1/predict/adaptive` | **FR5 Dynamic Tier Switching** based on CPU load | `curl -X POST http://localhost:8000/api/v1/predict/adaptive -H "Content-Type: application/json" -d '{"features": {...}, "task": "8class"}'` |
-| `POST`| `/api/v1/predict/batch` | High-throughput batch inference | `curl -X POST http://localhost:8000/api/v1/predict/batch -H "Content-Type: application/json" -d '{"flows": [{...}, {...}], "model_name": "CompactMLP"}'` |
-| `POST`| `/api/v1/analyze/file` | Upload CSV and generate intrusion breakdown | `curl -X POST http://localhost:8000/api/v1/analyze/file -F "file=@capture.csv"` |
-
----
-
-## 7. Automated Testing Suite
-
-Run the full automated pytest suite:
+Execute the full automated pytest suite:
 ```bash
 python -m pytest -v
 ```
 
-Output:
 ```
 tests/test_api.py::test_health_endpoint PASSED                           [ 10%]
 tests/test_api.py::test_list_models PASSED                               [ 20%]
@@ -283,27 +267,26 @@ tests/test_schema.py::test_categories_and_labels PASSED                  [ 80%]
 tests/test_schema.py::test_sanitize_feature_matrix PASSED                [ 90%]
 tests/test_tier_switcher.py::test_tier_switcher_transitions PASSED       [100%]
 
-============================= 10 passed in 5.18s ==============================
+============================= 10 passed in 5.13s ==============================
 ```
 
 ---
 
 ## 8. Deployment Options
 
-### Docker & Docker Compose
+### Docker Deployment
 ```bash
 docker-compose up --build
 ```
 
-### Vercel Deployment
-This repository is pre-configured for **Vercel Serverless**:
-1. Push this repository to GitHub.
-2. Connect your GitHub repository to [Vercel](https://vercel.com).
-3. Vercel automatically detects [`vercel.json`](file:///c:/Users/Shailash/Downloads/fogids_project%20%281%29/fogids/vercel.json), deploying the static SOC dashboard to Vercel Global Edge CDN and API routes to Serverless Functions.
+### Vercel Serverless Deployment
+This repository is configured for direct deployment to Vercel:
+1. Connect your repository on [vercel.com](https://vercel.com).
+2. Modern routing and Python serverless functions are configured via `vercel.json` and `api/index.py`.
 
 ---
 
-## 9. References & Citation
+## 9. References & Technical Citations
 
 1. **Neto, E. C. P., et al.** (2023). *"CICIoT2023: A Real-Time Dataset and Benchmark for Large-Scale Attacks in IoT Networks."* Sensors, 23(13), 5941.
 2. **Tseng, C. W., et al.** (2024). *"Machine Learning for Network Intrusion Detection in IoT: A Survey and Benchmark."* Future Internet, 16(4), 112.
