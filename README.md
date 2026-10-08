@@ -7,6 +7,12 @@
 [![Tests](https://img.shields.io/badge/Tests-10%2F10%20Passing-brightgreen.svg)](tests/)
 [![Dataset](https://img.shields.io/badge/Dataset-CICIoT2023-orange.svg)](https://www.unb.ca/cic/datasets/iot-dataset-2023.html)
 
+**Student:** RAGHUNATHAREDDY GR (SRN: R23EA094)  
+**Institution:** School of Computing Science and Engineering, REVA University, Bengaluru, India  
+**Faculty Guide:** Dr. Supreeth S  
+
+---
+
 **Fog-IDS** is an end-to-end, production-grade network intrusion detection system engineered specifically for resource-constrained edge gateways and fog computing nodes in Smart City IoT infrastructures. This project addresses four fundamental research and engineering challenges in modern IoT network security:
 
 1. **Minority-Class Attack Recall Starvation**: Addressing severe data imbalance in real IoT datasets (where DDoS/DoS comprise >90% of traffic, leaving rare web and brute-force attacks starved during standard empirical training).

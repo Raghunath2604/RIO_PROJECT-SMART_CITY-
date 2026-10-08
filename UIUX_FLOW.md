@@ -1,6 +1,9 @@
 # UI/UX Architecture & User Journey Flow (UIUX_FLOW.md)
 
 ## Project: Fog-IDS — Autonomous Multi-Class Network Intrusion Detection System
+**Student:** RAGHUNATHAREDDY GR (SRN: R23EA094)  
+**Institution:** School of Computing Science and Engineering, REVA University, Bengaluru, India  
+**Faculty Guide:** Dr. Supreeth S  
 **Design Standard:** High-Density Enterprise SOC Dashboard (Static, Flat, Zero-Animation Jitter)  
 **Target Screen:** 1080p / 1440p Desktop SOC Workstations, Tablet & Mobile Edge Consoles  
 

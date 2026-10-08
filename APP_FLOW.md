@@ -1,6 +1,9 @@
 # Application Flow & System State Machine (APP_FLOW.md)
 
 ## Project: Fog-IDS — Autonomous Multi-Class Network Intrusion Detection System
+**Student:** RAGHUNATHAREDDY GR (SRN: R23EA094)  
+**Institution:** School of Computing Science and Engineering, REVA University, Bengaluru, India  
+**Faculty Guide:** Dr. Supreeth S  
 **Target Audience:** System Architects, Core Developers, SOC Operators  
 **Document Status:** Production  
 

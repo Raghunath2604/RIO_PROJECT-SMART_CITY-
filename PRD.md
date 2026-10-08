@@ -2,7 +2,9 @@
 
 ## Project Name: Fog-IDS — Autonomous Multi-Class Network Intrusion Detection System for Smart City IoT Fog Nodes
 **Document Version:** 1.0.0  
-**Author:** Raghunathareddy G R (SRN: R23EA094, REVA University)  
+**Student:** RAGHUNATHAREDDY GR (SRN: R23EA094)  
+**Institution:** School of Computing Science and Engineering, REVA University, Bengaluru, India  
+**Faculty Guide:** Dr. Supreeth S  
 **Target Environment:** Edge Gateways, Smart City Fog Nodes, Municipal SOCs  
 **Status:** Production / Implemented  
 

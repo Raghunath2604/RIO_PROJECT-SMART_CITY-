@@ -1,6 +1,9 @@
 # Implementation Plan & Milestone Execution (IMPLEMENTATION_PLAN.md)
 
 ## Project: Fog-IDS — Autonomous Multi-Class Network Intrusion Detection System
+**Student:** RAGHUNATHAREDDY GR (SRN: R23EA094)  
+**Institution:** School of Computing Science and Engineering, REVA University, Bengaluru, India  
+**Faculty Guide:** Dr. Supreeth S  
 **Execution Model:** Phased Milestone Delivery & Empirical Verification  
 **Total Development Phases:** 6 Phases (All Completed & Verified)  
 

@@ -2,6 +2,9 @@
 
 ## Project: Fog-IDS — Technical Architecture & Engineering Specifications
 **Document Version:** 1.0.0  
+**Student:** RAGHUNATHAREDDY GR (SRN: R23EA094)  
+**Institution:** School of Computing Science and Engineering, REVA University, Bengaluru, India  
+**Faculty Guide:** Dr. Supreeth S  
 **Target Environment:** Edge Gateways (ARM Cortex-A72 / Raspberry Pi 4), Linux Server, Vercel Serverless  
 **Module Prefix:** `src.*`, `api.*`, `public.*`  
 
