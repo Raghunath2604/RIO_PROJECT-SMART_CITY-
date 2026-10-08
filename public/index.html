@@ -46,6 +46,10 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     <span>Threat Studio & XAI</span>
                 </button>
+                <button class="nav-item" onclick="switchTab('firewall')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <span>Edge Firewall & Mitigation</span>
+                </button>
                 <button class="nav-item" onclick="switchTab('batch')">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                     <span>Batch CSV Forensics</span>
@@ -61,11 +65,11 @@
             </nav>
 
             <div class="sidebar-footer">
-                <div class="sidebar-section-title">CLUSTER STATUS</div>
+                <div class="sidebar-section-title">SMART CITY CLUSTER</div>
                 <div class="cluster-summary-box">
-                    <div class="cluster-row"><span>Fog Nodes:</span> <b class="text-cyan">4 Active</b></div>
+                    <div class="cluster-row"><span>City Zones:</span> <b class="text-cyan">4 Active</b></div>
                     <div class="cluster-row"><span>Inference Tier:</span> <b class="text-blue" id="sidebar-tier-label">FULL (LightGBM)</b></div>
-                    <div class="cluster-row"><span>Engine:</span> <b class="text-green">CICIoT2023 Real</b></div>
+                    <div class="cluster-row"><span>Dataset Base:</span> <b class="text-green">CICIoT2023 Real</b></div>
                 </div>
                 <div class="sidebar-api-status">
                     <span class="status-dot green-dot" id="sidebar-api-dot"></span>
@@ -81,7 +85,7 @@
             <!-- Top Header Bar -->
             <header class="top-header">
                 <div class="header-breadcrumb">
-                    <span class="breadcrumb-root">Smart City Fog Security</span>
+                    <span class="breadcrumb-root">Smart City Fog Defense Center</span>
                     <span class="breadcrumb-separator">/</span>
                     <span class="breadcrumb-current" id="current-view-title">Live Ingestion & Cluster</span>
                 </div>
@@ -104,7 +108,7 @@
                 </div>
             </header>
 
-            <!-- KPI Metric Cards Grid (Clean, Flat, High-Density) -->
+            <!-- KPI Metric Cards Grid (Flat, High-Density) -->
             <section class="kpi-grid">
                 <div class="kpi-card">
                     <div class="kpi-title">8-Class Top Accuracy</div>
@@ -127,14 +131,14 @@
                     <div class="kpi-sub">Flows / Second (Vectorized)</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-title">Smart City Nodes</div>
-                    <div class="kpi-val text-cyan">4 Nodes</div>
+                    <div class="kpi-title">Smart City Fog Zones</div>
+                    <div class="kpi-val text-cyan">4 Zones</div>
                     <div class="kpi-sub">Dynamic Resource Tiering (FR5)</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-title">Threats Blocked</div>
+                    <div class="kpi-title">Firewall Dropped Attacks</div>
                     <div class="kpi-val text-red" id="kpi-blocked-total">154</div>
-                    <div class="kpi-sub">Automated Line-Rate Drops</div>
+                    <div class="kpi-sub">Real-Time IP Drop Rules</div>
                 </div>
             </section>
 
@@ -147,7 +151,7 @@
                         <div class="panel-header">
                             <div>
                                 <h2>Real-Time Network Ingestion Feed</h2>
-                                <p class="panel-sub">Simulated packet streams captured across smart city fog nodes</p>
+                                <p class="panel-sub">Simulated packet streams captured across smart city municipal zones</p>
                             </div>
                             <div class="panel-actions">
                                 <button id="stream-toggle-btn" class="btn btn-primary" onclick="toggleStream()">Start Ingestion</button>
@@ -160,8 +164,16 @@
                             </div>
                         </div>
 
+                        <!-- Live Wave Injector Bar -->
+                        <div class="injector-bar">
+                            <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted);">SIMULATE ATTACK SURGE:</span>
+                            <button class="btn btn-sm btn-secondary" onclick="injectAttackSurge('DDoS-SYN_Flood')">⚡ Inject DDoS Flood</button>
+                            <button class="btn btn-sm btn-secondary" onclick="injectAttackSurge('Mirai-greip_flood')">⚡ Inject Mirai Botnet</button>
+                            <button class="btn btn-sm btn-secondary" onclick="injectAttackSurge('DictionaryBruteForce')">⚡ Inject SSH Brute Force</button>
+                        </div>
+
                         <!-- Live Throughput Chart -->
-                        <div class="chart-box" style="height: 150px;">
+                        <div class="chart-box" style="height: 150px; margin-top: 10px;">
                             <canvas id="liveThroughputChart"></canvas>
                         </div>
 
@@ -171,12 +183,12 @@
                                 <thead>
                                     <tr>
                                         <th>Timestamp</th>
-                                        <th>Fog Node</th>
+                                        <th>City Zone</th>
                                         <th>Category</th>
                                         <th>Predicted Vector</th>
                                         <th>Confidence</th>
                                         <th>Latency</th>
-                                        <th>Severity</th>
+                                        <th>Mitigation</th>
                                     </tr>
                                 </thead>
                                 <tbody id="stream-table-body">
@@ -190,16 +202,16 @@
                     <div class="panel">
                         <div class="panel-header">
                             <div>
-                                <h2>Smart City Fog Cluster</h2>
-                                <p class="panel-sub">Distributed edge cabinet telemetry</p>
+                                <h2>Smart City Fog Topology</h2>
+                                <p class="panel-sub">Distributed Municipal Infrastructure</p>
                             </div>
                         </div>
 
                         <div class="node-grid">
                             <div class="node-card" id="node-card-1">
                                 <div class="node-title-row">
-                                    <b>Node-01 (City Gateway)</b>
-                                    <span class="status-tag tag-green">HEALTHY</span>
+                                    <b>Zone 1: Traffic Control Hub</b>
+                                    <span class="status-tag tag-green">ONLINE</span>
                                 </div>
                                 <div class="node-stats">
                                     <div><span>Rate:</span> <b class="text-blue" id="node-1-tput">380 p/s</b></div>
@@ -211,8 +223,8 @@
 
                             <div class="node-card" id="node-card-2">
                                 <div class="node-title-row">
-                                    <b>Node-02 (Traffic Hub)</b>
-                                    <span class="status-tag tag-green">HEALTHY</span>
+                                    <b>Zone 2: Smart Power Grid</b>
+                                    <span class="status-tag tag-green">ONLINE</span>
                                 </div>
                                 <div class="node-stats">
                                     <div><span>Rate:</span> <b class="text-blue" id="node-2-tput">240 p/s</b></div>
@@ -224,7 +236,7 @@
 
                             <div class="node-card" id="node-card-3">
                                 <div class="node-title-row">
-                                    <b>Node-03 (Edge Router)</b>
+                                    <b>Zone 3: Water Treatment SCADA</b>
                                     <span class="status-tag tag-orange">PRESSURE</span>
                                 </div>
                                 <div class="node-stats">
@@ -237,8 +249,8 @@
 
                             <div class="node-card" id="node-card-4">
                                 <div class="node-title-row">
-                                    <b>Node-04 (Grid Sensors)</b>
-                                    <span class="status-tag tag-green">HEALTHY</span>
+                                    <b>Zone 4: Airport Transit Gateway</b>
+                                    <span class="status-tag tag-green">ONLINE</span>
                                 </div>
                                 <div class="node-stats">
                                     <div><span>Rate:</span> <b class="text-blue" id="node-4-tput">160 p/s</b></div>
@@ -453,6 +465,7 @@
 
                             <div class="panel-header" style="margin-top: 16px;">
                                 <h3>🧠 Local Feature Attributions (XAI Waterfall)</h3>
+                                <button class="btn btn-sm btn-secondary" onclick="triggerManualFirewallRule()">Block Threat IP</button>
                             </div>
                             <div class="table-container">
                                 <table class="data-table">
@@ -484,7 +497,69 @@
             </section>
 
             <!-- ============================================================= -->
-            <!-- TAB 4: BATCH CSV FORENSICS -->
+            <!-- TAB 4: EDGE FIREWALL & ACTIVE MITIGATION -->
+            <!-- ============================================================= -->
+            <section id="tab-firewall" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Active Edge Firewall & Mitigation Rules</h2>
+                            <p class="panel-sub">Real-time IP drop rules, rate limits, and network containment policies applied at Fog Nodes</p>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn btn-sm btn-secondary" onclick="exportIptablesRules()"><i class="fas fa-terminal"></i> Export iptables (.sh)</button>
+                            <button class="btn btn-sm btn-secondary" onclick="exportSnortRules()"><i class="fas fa-shield-alt"></i> Export Suricata / Snort (.rules)</button>
+                            <button class="btn btn-sm btn-outline" onclick="resetFirewallRules()">Reset All Rules</button>
+                        </div>
+                    </div>
+
+                    <div class="kpi-grid" style="margin-bottom: 16px;">
+                        <div class="kpi-card">
+                            <div class="kpi-title">ACTIVE DROP RULES</div>
+                            <div class="kpi-val text-red" id="fw-active-rules">6</div>
+                            <div class="kpi-sub">Line-Rate Drops Active</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-title">RATE-LIMITED IPS</div>
+                            <div class="kpi-val text-orange">3</div>
+                            <div class="kpi-sub">Slow-Rate Brute Force</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-title">ISOLATED PORTS</div>
+                            <div class="kpi-val text-purple">2</div>
+                            <div class="kpi-sub">IoT Mirai Containment</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-title">DEFENSE ENGINE</div>
+                            <div class="kpi-val text-green">ACTIVE</div>
+                            <div class="kpi-sub">Zero-Packet-Drop Mode</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rule ID</th>
+                                    <th>Target IP / Subnet</th>
+                                    <th>Attack Vector</th>
+                                    <th>Severity</th>
+                                    <th>Action</th>
+                                    <th>Source Node</th>
+                                    <th>Timestamp</th>
+                                    <th>Control</th>
+                                </tr>
+                            </thead>
+                            <tbody id="firewall-rules-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================= -->
+            <!-- TAB 5: BATCH CSV FORENSICS -->
             <!-- ============================================================= -->
             <section id="tab-batch" class="tab-panel">
                 <div class="panel">
@@ -506,8 +581,10 @@
                         <input type="file" id="csv-file-input" accept=".csv" style="display: none;" onchange="handleFileSelected(this.files)">
                     </div>
 
-                    <div style="margin-top: 14px; display: flex; gap: 12px; align-items: center;">
+                    <div style="margin-top: 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
                         <button class="btn btn-secondary" onclick="generateDemoDataset()">Load Demo 500-Flow Attack Capture</button>
+                        <button class="btn btn-secondary" onclick="exportBatchReportJson()">Export JSON Audit Log</button>
+                        <button class="btn btn-primary" onclick="printSocAuditReport()">Generate SOC Audit Report</button>
                         <span id="batch-file-status" style="font-size: 0.85rem; color: var(--text-muted); font-family: 'JetBrains Mono';">No capture loaded</span>
                     </div>
 
@@ -568,7 +645,7 @@
             </section>
 
             <!-- ============================================================= -->
-            <!-- TAB 5: EMPIRICAL BENCHMARK -->
+            <!-- TAB 6: EMPIRICAL BENCHMARK -->
             <!-- ============================================================= -->
             <section id="tab-benchmark" class="tab-panel">
                 <div class="panel">
@@ -627,7 +704,7 @@
             </section>
 
             <!-- ============================================================= -->
-            <!-- TAB 6: REST API SANDBOX -->
+            <!-- TAB 7: REST API SANDBOX -->
             <!-- ============================================================= -->
             <section id="tab-api" class="tab-panel">
                 <div class="panel">
@@ -677,9 +754,9 @@
                 </div>
             </section>
 
-            <!-- Footer -->
+            <!-- Footer (Clean, Zero External Credits) -->
             <footer class="footer">
-                <span>Fog-IDS Enterprise SOC Dashboard — Smart City IoT Intrusion Detection System</span>
+                <span>Fog-IDS: Autonomous Intrusion Detection for Smart City Fog Nodes</span>
             </footer>
         </div>
     </div>

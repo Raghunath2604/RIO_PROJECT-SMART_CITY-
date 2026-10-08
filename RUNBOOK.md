@@ -42,7 +42,7 @@ needing one long uninterrupted session.
 
 - Python 3.10 or newer
 - ~2 GB free disk space (for the dataset + venv + results)
-- VS Code (or Antigravity) with the Python extension — optional but recommended
+- VS Code / Any standard Python IDE with the Python extension — optional but recommended
 - The dataset: `archive3.zip` (CICIoT2023 redistribution, `train.csv` + `test.csv`)
 
 Check your Python version:
@@ -56,7 +56,7 @@ If this says Python 2.x, use `python3` instead of `python` for every command bel
 ## 2. Unzip and open the project
 
 1. Unzip `fogids_project.zip` to a folder of your choice, e.g. `C:\projects\fogids` or `~/projects/fogids`.
-2. Open that folder in VS Code / Antigravity (`File → Open Folder`).
+2. Open that folder in VS Code (`File → Open Folder`).
 3. Open an integrated terminal (`` Ctrl+` ``). All commands below run from the **project root** (the folder containing `run_pipeline.py`) unless stated otherwise.
 
 ---

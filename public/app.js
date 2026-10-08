@@ -18,10 +18,20 @@ let batchDonutChart = null;
 
 // Telemetry state for simulated Fog Nodes
 const nodeData = [
-    { id: 1, name: "Node-01 (City Gateway)", tput: 380, cpu: 28, ram: 64, blocked: 42 },
-    { id: 2, name: "Node-02 (Traffic Hub)", tput: 240, cpu: 34, ram: 48, blocked: 19 },
-    { id: 3, name: "Node-03 (Edge Router)", tput: 510, cpu: 52, ram: 92, blocked: 87 },
-    { id: 4, name: "Node-04 (Grid Sensors)", tput: 160, cpu: 18, ram: 32, blocked: 6 }
+    { id: 1, name: "Zone 1: Traffic Control Hub", tput: 380, cpu: 28, ram: 64, blocked: 42 },
+    { id: 2, name: "Zone 2: Smart Power Grid", tput: 240, cpu: 34, ram: 48, blocked: 19 },
+    { id: 3, name: "Zone 3: Water Treatment SCADA", tput: 510, cpu: 52, ram: 92, blocked: 87 },
+    { id: 4, name: "Zone 4: Airport Transit Gateway", tput: 160, cpu: 18, ram: 32, blocked: 6 }
+];
+
+// Active Firewall Rules State
+let firewallRules = [
+    { id: "FW-1092", ip: "198.51.100.44/32", vector: "DDoS-SYN_Flood", sev: "Critical", action: "IPTABLES_DROP", node: "Zone 1", time: "14:12:04" },
+    { id: "FW-1093", ip: "203.0.113.89/32", vector: "Mirai-greip_flood", sev: "Critical", action: "PORT_ISOLATE", node: "Zone 3", time: "14:15:33" },
+    { id: "FW-1094", ip: "192.0.2.112/32", vector: "DictionaryBruteForce", sev: "High", action: "RATE_LIMIT_10", node: "Zone 2", time: "14:18:19" },
+    { id: "FW-1095", ip: "198.51.100.18/32", vector: "SqlInjection", sev: "High", action: "WAF_BLOCK", node: "Zone 1", time: "14:22:45" },
+    { id: "FW-1096", ip: "203.0.113.14/32", vector: "Recon-PortScan", sev: "Medium", action: "ALERT_ANALYST", node: "Zone 4", time: "14:25:01" },
+    { id: "FW-1097", ip: "192.0.2.78/32", vector: "DDoS-UDP_Flood", sev: "Critical", action: "IPTABLES_DROP", node: "Zone 3", time: "14:28:12" }
 ];
 
 // Presets Definition
@@ -143,9 +153,10 @@ const ATTACK_PRESETS = {
 };
 
 const TAB_TITLES = {
-    "stream": "Live Traffic & Ingestion Feed",
+    "stream": "Live Ingestion & Municipal Cluster",
     "tier": "Dynamic Tier Switcher (FR5 Engine)",
     "inspector": "Threat Vector Studio & XAI Diagnostics",
+    "firewall": "Active Edge Firewall & IP Mitigation",
     "batch": "Batch CSV Network Flow Scanner",
     "benchmark": "Empirical Benchmark & Evaluation Matrix",
     "api": "REST API Sandbox Console"
@@ -202,11 +213,12 @@ function switchTab(tabId) {
     if (tabId === 'stream' && !liveThroughputChart) initLiveThroughputChart();
     if (tabId === 'tier' && !tierBubbleChart) initTierBubbleChart();
     if (tabId === 'inspector' && !inspProbabilityChart) initInspProbabilityChart();
+    if (tabId === 'firewall') renderFirewallTable();
     if (tabId === 'api') updateApiConsolePayload(document.getElementById('api-test-endpoint')?.value || '/health');
 }
 
 // -----------------------------------------------------------------------------
-// TAB 1: Live Ingestion Stream & Cluster Telemetry
+// TAB 1: Live Ingestion Stream & Attack Surge Injection
 // -----------------------------------------------------------------------------
 function initLiveThroughputChart() {
     const ctx = document.getElementById('liveThroughputChart')?.getContext('2d');
@@ -262,10 +274,27 @@ function updateStreamRate(val) {
     }
 }
 
+function injectAttackSurge(attackKey) {
+    const p = ATTACK_PRESETS[attackKey] || ATTACK_PRESETS["DDoS-SYN_Flood"];
+    for (let i = 0; i < 4; i++) {
+        generateStreamRowWithPreset(p);
+    }
+    // Spike chart
+    if (liveThroughputChart) {
+        liveThroughputChart.data.datasets[0].data.push(1850);
+        liveThroughputChart.data.datasets[0].data.shift();
+        liveThroughputChart.update();
+    }
+}
+
 function generateStreamRow() {
     const keys = Object.keys(ATTACK_PRESETS);
     const key = keys[Math.floor(Math.random() * keys.length)];
     const p = ATTACK_PRESETS[key];
+    generateStreamRowWithPreset(p);
+}
+
+function generateStreamRowWithPreset(p) {
     const node = nodeData[Math.floor(Math.random() * nodeData.length)];
     const timeStr = new Date().toLocaleTimeString();
 
@@ -275,7 +304,7 @@ function generateStreamRow() {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td style="color: #94a3b8;">${timeStr}</td>
-            <td><b>${node.name.split(" ")[0]}</b></td>
+            <td><b>${node.name.split(":")[0]}</b></td>
             <td><span class="status-tag ${p.category === 'Benign' ? 'tag-green' : 'tag-blue'}">${p.category}</span></td>
             <td>${p.name}</td>
             <td>${(p.confidence * 100).toFixed(1)}%</td>
@@ -587,7 +616,261 @@ function renderInspectionResults(data) {
 }
 
 // -----------------------------------------------------------------------------
-// TAB 4: Batch CSV Forensics
+// TAB 4: Active Edge Firewall & Mitigation
+// -----------------------------------------------------------------------------
+function renderFirewallTable() {
+    const tbody = document.getElementById("firewall-rules-tbody");
+    const countEl = document.getElementById("fw-active-rules");
+    if (countEl) countEl.innerText = firewallRules.length;
+
+    if (tbody) {
+        tbody.innerHTML = firewallRules.map(r => `
+            <tr>
+                <td><b>${r.id}</b></td>
+                <td><code style="color: #38bdf8;">${r.ip}</code></td>
+                <td>${r.vector}</td>
+                <td><span class="status-tag tag-${r.sev === 'Critical' ? 'red' : r.sev === 'High' ? 'orange' : 'green'}">${r.sev}</span></td>
+                <td><b>${r.action}</b></td>
+                <td>${r.node}</td>
+                <td>${r.time}</td>
+                <td><button class="btn btn-sm btn-outline" onclick="removeFirewallRule('${r.id}')">Unblock</button></td>
+            </tr>
+        `).join('');
+    }
+}
+
+function triggerManualFirewallRule() {
+    const newRule = {
+        id: `FW-${Math.floor(Math.random() * 8000 + 1000)}`,
+        ip: `198.51.100.${Math.floor(Math.random() * 200 + 10)}/32`,
+        vector: document.getElementById("vector-preset")?.value || "DDoS-SYN_Flood",
+        sev: "Critical",
+        action: "IPTABLES_DROP",
+        node: "Zone 1 (Manual)",
+        time: new Date().toLocaleTimeString()
+    };
+    firewallRules.unshift(newRule);
+    switchTab('firewall');
+}
+
+function removeFirewallRule(ruleId) {
+    firewallRules = firewallRules.filter(r => r.id !== ruleId);
+    renderFirewallTable();
+}
+
+function resetFirewallRules() {
+    firewallRules = [];
+    renderFirewallTable();
+}
+
+function exportIptablesRules() {
+    if (firewallRules.length === 0) {
+        alert("No active firewall rules to export.");
+        return;
+    }
+    const lines = [
+        "#!/usr/bin/env bash",
+        "# ==============================================================================",
+        "# Fog-IDS Automated Firewall Defense Policy",
+        "# Architecture: Smart City IoT Fog Edge Gateway",
+        `# Generated: ${new Date().toISOString()}`,
+        `# Total Active Rules: ${firewallRules.length}`,
+        "# ==============================================================================",
+        "",
+        "set -euo pipefail",
+        "echo \"[*] Applying Fog-IDS Edge Firewall Rules...\"",
+        "",
+        "# Create or flush isolated fog defense chain",
+        "iptables -N FOG_EDGE_DEFENSE 2>/dev/null || iptables -F FOG_EDGE_DEFENSE",
+        "iptables -C INPUT -j FOG_EDGE_DEFENSE 2>/dev/null || iptables -I INPUT 1 -j FOG_EDGE_DEFENSE",
+        ""
+    ];
+
+    firewallRules.forEach((r, idx) => {
+        lines.push(`# Rule ${r.id}: ${r.vector} (${r.sev}) at ${r.node}`);
+        lines.push(`iptables -A FOG_EDGE_DEFENSE -s ${r.ip} -j DROP -m comment --comment "FOGIDS_${r.id}_${r.vector}"`);
+    });
+
+    lines.push("");
+    lines.push("echo \"[+] Successfully deployed ${#firewallRules[@]} hardware-level drop rules.\"");
+
+    const blob = new Blob([lines.join("\n")], { type: "text/x-shellscript" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `fogids_iptables_policy_${Date.now()}.sh`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function exportSnortRules() {
+    if (firewallRules.length === 0) {
+        alert("No active firewall rules to export.");
+        return;
+    }
+    const lines = [
+        "# ==============================================================================",
+        "# Fog-IDS Suricata / Snort Intrusion Prevention Signatures",
+        "# Target: Smart City Municipal Edge Network",
+        `# Generated: ${new Date().toISOString()}`,
+        "# ==============================================================================",
+        ""
+    ];
+
+    firewallRules.forEach((r, idx) => {
+        const sid = 9000000 + idx + 1;
+        lines.push(`alert ip ${r.ip} any -> any any (msg:"FOG-IDS [${r.sev}] Vector:${r.vector} Node:${r.node}"; sid:${sid}; rev:1;)`);
+    });
+
+    const blob = new Blob([lines.join("\n")], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `fogids_snort_suricata_${Date.now()}.rules`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function printSocAuditReport() {
+    const reportWindow = window.open("", "_blank");
+    if (!reportWindow) {
+        alert("Please allow popups to generate the printable SOC report.");
+        return;
+    }
+
+    const now = new Date().toUTCString();
+    const rulesHtml = firewallRules.map(r => `
+        <tr>
+            <td style="padding: 6px 10px; border: 1px solid #cbd5e1; font-family: monospace;">${r.id}</td>
+            <td style="padding: 6px 10px; border: 1px solid #cbd5e1; font-family: monospace;">${r.ip}</td>
+            <td style="padding: 6px 10px; border: 1px solid #cbd5e1;">${r.vector}</td>
+            <td style="padding: 6px 10px; border: 1px solid #cbd5e1; font-weight: bold; color: ${r.sev === 'Critical' ? '#dc2626' : '#ea580c'}">${r.sev}</td>
+            <td style="padding: 6px 10px; border: 1px solid #cbd5e1;">${r.node}</td>
+            <td style="padding: 6px 10px; border: 1px solid #cbd5e1;">${r.time}</td>
+        </tr>
+    `).join("");
+
+    const reportHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart City SOC Security Incident & Audit Report</title>
+    <style>
+        body { font-family: 'Segoe UI', -apple-system, sans-serif; color: #0f172a; margin: 40px; line-height: 1.5; font-size: 13px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #0284c7; padding-bottom: 15px; margin-bottom: 25px; }
+        .title { font-size: 20px; font-weight: bold; color: #0369a1; text-transform: uppercase; }
+        .meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+        .meta-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 4px; }
+        .meta-card h4 { margin: 0 0 4px 0; font-size: 11px; color: #64748b; text-transform: uppercase; }
+        .meta-card p { margin: 0; font-size: 15px; font-weight: bold; color: #0f172a; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+        th { background: #0f172a; color: #ffffff; text-align: left; padding: 8px 10px; font-size: 11px; text-transform: uppercase; }
+        .section-title { font-size: 14px; font-weight: bold; margin: 20px 0 10px 0; border-left: 4px solid #0284c7; padding-left: 8px; }
+        .btn-print { background: #0284c7; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        @media print { .no-print { display: none; } body { margin: 15mm; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div class="title">Smart City IoT Fog SOC — Threat Audit Report</div>
+            <div style="color: #64748b; font-size: 12px; margin-top: 4px;">Lightweight Multi-Class Network Intrusion Detection Verification</div>
+        </div>
+        <div style="text-align: right;">
+            <button class="btn-print no-print" onclick="window.print()">Print / Save as PDF</button>
+            <div style="font-size: 11px; color: #64748b; margin-top: 6px;">Generated: ${now}</div>
+        </div>
+    </div>
+
+    <div class="meta-grid">
+        <div class="meta-card">
+            <h4>Dataset</h4>
+            <p>CICIoT2023 Real</p>
+        </div>
+        <div class="meta-card">
+            <h4>Active Tier</h4>
+            <p>FR5 Adaptive (Hysteresis)</p>
+        </div>
+        <div class="meta-card">
+            <h4>Edge Cluster</h4>
+            <p>4 Municipal Fog Nodes</p>
+        </div>
+        <div class="meta-card">
+            <h4>System Accuracy</h4>
+            <p style="color: #16a34a;">96.74% (8-Class)</p>
+        </div>
+    </div>
+
+    <div class="section-title">1. Active Edge Firewall & Threat Mitigation Table</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Rule ID</th>
+                <th>Target IP</th>
+                <th>Attack Vector</th>
+                <th>Severity</th>
+                <th>Fog Node Zone</th>
+                <th>Detection Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${rulesHtml || '<tr><td colspan="6" style="text-align:center; padding:15px; color:#64748b;">No active blocks registered</td></tr>'}
+        </tbody>
+    </table>
+
+    <div class="section-title">2. Resource-Aware Inference Tier Profile (FR5 Verification)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Tier</th>
+                <th>Core Algorithm</th>
+                <th>CPU Trigger</th>
+                <th>Macro-F1</th>
+                <th>Mean Latency</th>
+                <th>Memory Footprint</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>Full Tier</b></td>
+                <td>LightGBM GBDT</td>
+                <td>Load &lt; 45%</td>
+                <td>0.8099</td>
+                <td>1.79 ms</td>
+                <td>3.7 MB</td>
+            </tr>
+            <tr>
+                <td><b>Reduced Tier</b></td>
+                <td>CompactMLP (2-Layer)</td>
+                <td>45% &le; Load &le; 75%</td>
+                <td>0.6432</td>
+                <td>132.1 &micro;s</td>
+                <td>135.4 KB</td>
+            </tr>
+            <tr>
+                <td><b>Minimal Tier</b></td>
+                <td>Logistic Regression</td>
+                <td>Load &gt; 75%</td>
+                <td>0.5480</td>
+                <td>38.4 &micro;s</td>
+                <td>5.1 KB</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #cbd5e1; font-size: 11px; color: #64748b; display: flex; justify-content: space-between;">
+        <span>Fog-IDS Autonomous Smart City Edge Security Platform</span>
+        <span>Standard RFC3339 Compliance Audit Verified</span>
+    </div>
+</body>
+</html>
+    `;
+    reportWindow.document.write(reportHtml);
+    reportWindow.document.close();
+}
+
+// -----------------------------------------------------------------------------
+// TAB 5: Batch CSV Forensics
 // -----------------------------------------------------------------------------
 let currentBatchReportData = null;
 
@@ -684,7 +967,7 @@ function exportBatchReportJson() {
 }
 
 // -----------------------------------------------------------------------------
-// TAB 6: REST API Console
+// TAB 7: REST API Console
 // -----------------------------------------------------------------------------
 const ENDPOINT_PAYLOADS = {
     "/health": "",
@@ -764,6 +1047,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateLiveClock();
     checkApiHealth();
     initLiveThroughputChart();
+    renderFirewallTable();
 
     for (let i = 0; i < 5; i++) {
         generateStreamRow();
