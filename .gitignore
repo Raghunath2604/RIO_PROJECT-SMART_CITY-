@@ -1,34 +1,90 @@
-# Python & Bytecode
+# ==============================================================================
+# Bytecode & Python Runtime
+# ==============================================================================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
+# ==============================================================================
 # Virtual Environments
+# ==============================================================================
 venv/
 env/
 ENV/
 .venv/
+env.bak/
+venv.bak/
 
-# Testing & Caching
+# ==============================================================================
+# Raw Data, Large Datasets & Packet Captures (Strict Ignore)
+# ==============================================================================
+real_data/
+raw_data/
+data/
+datasets/
+archive3.zip
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+*.pcap
+*.pcapng
+*.cap
+*.parquet
+*.h5
+*.hdf5
+*.raw
+*.bin
+*.dat
+*.csv.gz
+*.tsv.gz
+*.csv
+!results/*.csv
+
+# ==============================================================================
+# Testing, Caches & Intermediate Checkpoints
+# ==============================================================================
 .pytest_cache/
 .coverage
 htmlcov/
+.tox/
+.nox/
+.hypothesis/
 results/_cache/
 
-# Large Datasets & Archives
-real_data/
-archive3.zip
-*.pcap
-*.csv.gz
+# ==============================================================================
+# Logs & Runtime Audits
+# ==============================================================================
+logs/
+*.log
+*.jsonl
 
+# ==============================================================================
 # IDE & OS Files
+# ==============================================================================
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-
-# Logs
-logs/*.log
-logs/*.jsonl
+*.sublime-project
+*.sublime-workspace
+.vercel/
