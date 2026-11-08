@@ -53,9 +53,7 @@ synthetic data), and what remains before the real dataset lands.
    (macro-F1 0.52) clearly underperforms centralized/per-node (0.77-0.78)
    on real data, and it's not yet clear how much of that gap is the linear
    model vs. the federation itself.
-6. **Add a resource-aware tier switcher (FR5)** once real per-tier latency
-   numbers exist, so tier selection thresholds are grounded in fog-hardware
-   measurements rather than guessed.
+6. **[COMPLETED] Resource-aware tier switcher (FR5)**: Implemented in `src/tier_switcher.py` with deadband hysteresis ($\Delta H = 5\%$) and dwell-time smoothing ($\tau = 1.0\text{ s}$), wired to `/api/v1/predict/adaptive` and verified by `tests/test_fr5_hysteresis.py`.
 7. **Sweep RandomForest's depth/estimator count** to find the accuracy-vs-size
    knee — at 49-104 MB and 5.6-5.8 ms/sample streaming it is currently the
    least fog-viable model despite strong accuracy; a shallower RF may close
