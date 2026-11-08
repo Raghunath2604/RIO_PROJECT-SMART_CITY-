@@ -75,24 +75,44 @@ class DynamicTierSwitcher:
         self.switch_history: List[Dict[str, Any]] = []
         self.models_cache: Dict[str, Dict[str, Any]] = {}
 
-    def load_cached_models(self, cache_file_path: str, task: str = "8class"):
-        """Loads trained models from pipeline benchmark cache."""
-        if not os.path.exists(cache_file_path):
-            raise FileNotFoundError(f"Cache file not found at {cache_file_path}")
-        with open(cache_file_path, "rb") as f:
-            all_res = pickle.load(f)
-        for r in all_res:
-            if r["task"] == task:
-                self.models_cache[r["model"]] = {
-                    "estimator": r["estimator"],
-                    "scaler": r["scaler"],
-                    "label_encoder": r["label_encoder"],
-                    "classes": list(r["label_encoder"].classes_),
-                }
+    def preload_from_registry(self, task: str = "8class"):
+        """Preloads models from production joblib registry artifacts."""
+        try:
+            from .model_registry import ModelRegistry
+            reg = ModelRegistry()
+            for tier_name, model_name in self.TIERS.items():
+                try:
+                    bundle = reg.load_model(model_name, task)
+                    self.models_cache[model_name] = {
+                        "estimator": bundle["estimator"],
+                        "scaler": bundle["scaler"],
+                        "label_encoder": bundle["label_encoder"],
+                        "classes": list(bundle["label_encoder"].classes_),
+                    }
+                except Exception:
+                    pass
+        except Exception:
+            pass
 
-    def evaluate_tier(self, cpu_pct: float) -> str:
+    def load_cached_models(self, cache_file_path: str = os.path.join("results", "_cache", "benchmark_results_raw.pkl"), task: str = "8class"):
+        """Loads trained models from pipeline benchmark cache or falls back to production registry."""
+        if os.path.exists(cache_file_path):
+            with open(cache_file_path, "rb") as f:
+                all_res = pickle.load(f)
+            for r in all_res:
+                if r["task"] == task:
+                    self.models_cache[r["model"]] = {
+                        "estimator": r["estimator"],
+                        "scaler": r["scaler"],
+                        "label_encoder": r["label_encoder"],
+                        "classes": list(r["label_encoder"].classes_),
+                    }
+        else:
+            self.preload_from_registry(task=task)
+
+    def evaluate_tier(self, cpu_pct: float, current_time: Optional[float] = None) -> str:
         """Determines target tier applying hysteresis rules."""
-        now = time.time()
+        now = current_time if current_time is not None else time.time()
         time_since_switch = now - self.last_switch_time
 
         # Target tier without hysteresis

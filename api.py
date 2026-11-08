@@ -22,6 +22,7 @@ from src.model_registry import ModelRegistry
 from src.infer import FogInferenceEngine, THREAT_LEVELS
 from src.tier_switcher import DynamicTierSwitcher
 from src.explain import explain_prediction
+from src.security_logger import SecurityEventLogger
 
 app = FastAPI(
     title="Fog-IDS Production API",
@@ -47,6 +48,7 @@ from fastapi.responses import JSONResponse, FileResponse
 registry = ModelRegistry()
 inference_engine = FogInferenceEngine()
 tier_switcher = DynamicTierSwitcher(simulate_resources=False)
+security_logger = SecurityEventLogger()
 
 # Public directory path
 PUBLIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public")
@@ -176,6 +178,20 @@ def predict_single_flow(req: FlowFeatures):
             vec = np.array([req.features.get(f, 0.0) for f in FEATURES], dtype=np.float64)
             explanation = explain_prediction(bundle["estimator"], bundle["scaler"], bundle["label_encoder"], vec)
             
+        try:
+            security_logger.log_threat_event(
+                prediction=res["prediction"],
+                category=res["category"],
+                severity=res["severity"],
+                confidence=float(res["confidence"]),
+                latency_us=float(res["latency_us"]),
+                model_used=req.model_name,
+                node_id="edge-node-01",
+                features_summary={k: float(req.features.get(k, 0.0)) for k in list(req.features.keys())[:10]}
+            )
+        except Exception:
+            pass
+
         return {
             "success": True,
             "prediction": res["prediction"],
@@ -201,6 +217,20 @@ def predict_adaptive_flow(req: AdaptiveFlowRequest):
         pred_label = str(res["prediction"][0])
         severity, _ = THREAT_LEVELS.get(pred_label, ("High", "orange"))
         
+        try:
+            security_logger.log_threat_event(
+                prediction=pred_label,
+                category=pred_label,
+                severity=severity,
+                confidence=1.0,
+                latency_us=float(res["latency_us"]),
+                model_used=f"{res['tier']}:{res['model_name']}",
+                node_id="edge-node-01",
+                features_summary={k: float(req.features.get(k, 0.0)) for k in list(req.features.keys())[:10]}
+            )
+        except Exception:
+            pass
+
         return {
             "success": True,
             "prediction": pred_label,
@@ -321,3 +351,13 @@ async def analyze_csv_file(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/alerts", tags=["SIEM"])
+def get_recent_alerts(limit: int = 50):
+    """Returns recent structured SIEM alerts from logs/alerts.jsonl."""
+    records = security_logger.get_recent_alerts(limit=limit)
+    return {
+        "success": True,
+        "count": len(records),
+        "alerts": records
+    }

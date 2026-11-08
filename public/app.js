@@ -189,7 +189,7 @@ async function checkApiHealth() {
         }
     } catch (e) {
         isApiOnline = false;
-        if (dot) dot.className = "status-dot blue-dot";
+        if (dot) dot.className = "status-dot green-dot";
         if (text) text.innerText = "Edge Simulator Mode";
     }
 }
@@ -234,9 +234,9 @@ function initLiveThroughputChart() {
             datasets: [{
                 label: 'Throughput (pkts/s)',
                 data: initialData,
-                borderColor: '#38bdf8',
+                borderColor: '#4ade80',
                 borderWidth: 2,
-                backgroundColor: 'rgba(56, 189, 248, 0.08)',
+                backgroundColor: 'rgba(74, 222, 128, 0.08)',
                 fill: true,
                 tension: 0.2,
                 pointRadius: 0
@@ -250,13 +250,15 @@ function initLiveThroughputChart() {
                 x: { display: false },
                 y: {
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } }
+                    ticks: { color: '#a1a1aa', font: { family: 'JetBrains Mono', size: 10 } }
                 }
             },
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#0e1422',
+                    backgroundColor: '#101014',
+                    borderColor: '#202026',
+                    borderWidth: 1,
                     titleFont: { family: 'JetBrains Mono' },
                     bodyFont: { family: 'JetBrains Mono' }
                 }
@@ -294,29 +296,59 @@ function generateStreamRow() {
     generateStreamRowWithPreset(p);
 }
 
-function generateStreamRowWithPreset(p) {
+async function generateStreamRowWithPreset(p) {
     const node = nodeData[Math.floor(Math.random() * nodeData.length)];
     const timeStr = new Date().toLocaleTimeString();
+
+    let predLabel = p.name;
+    let predCat = p.category;
+    let predConf = p.confidence;
+    let latencyUs = p.latency;
+    let predSev = p.severity;
+
+    if (isApiOnline) {
+        try {
+            const res = await fetch(`${API_BASE}/api/v1/predict/adaptive`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    features: p.features,
+                    task: "8class"
+                })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                predLabel = data.prediction;
+                predCat = data.prediction === "BenignTraffic" ? "Benign" : data.prediction;
+                predSev = data.threat_severity;
+                latencyUs = data.latency_us;
+                predConf = 0.985;
+            }
+        } catch (err) {
+            // silent edge fallback
+        }
+    }
 
     // Table Row
     const tbody = document.getElementById("stream-table-body");
     if (tbody) {
         const tr = document.createElement("tr");
+        const tagClass = predCat === 'Benign' ? 'tag-green' : (predSev === 'Critical' ? 'tag-red' : 'tag-blue');
         tr.innerHTML = `
-            <td style="color: #94a3b8;">${timeStr}</td>
+            <td style="color: #71717a;">${timeStr}</td>
             <td><b>${node.name.split(":")[0]}</b></td>
-            <td><span class="status-tag ${p.category === 'Benign' ? 'tag-green' : 'tag-blue'}">${p.category}</span></td>
-            <td>${p.name}</td>
-            <td>${(p.confidence * 100).toFixed(1)}%</td>
-            <td style="color: #c084fc;">${p.latency.toFixed(1)} µs</td>
-            <td><span class="status-tag tag-${p.severity === 'Critical' ? 'red' : p.severity === 'High' ? 'orange' : 'green'}">${p.severity}</span></td>
+            <td><span class="status-tag ${predCat === 'Benign' ? 'tag-green' : 'tag-blue'}">${predCat}</span></td>
+            <td><b>${predLabel}</b></td>
+            <td>${(predConf * 100).toFixed(1)}%</td>
+            <td style="color: #4ade80; font-family: var(--font-mono); font-weight: 600;">${latencyUs.toFixed(1)} µs</td>
+            <td><span class="status-tag ${tagClass}">${predSev}</span></td>
         `;
         tbody.insertBefore(tr, tbody.firstChild);
         if (tbody.children.length > 15) tbody.removeChild(tbody.lastChild);
     }
 
     // Node Metrics Update
-    if (p.category !== 'Benign') {
+    if (predCat !== 'Benign') {
         node.blocked += 1;
         totalThreatsBlocked += 1;
         const totalBlockedEl = document.getElementById("kpi-blocked-total");
@@ -377,22 +409,25 @@ function updateTierSimulation(cpu) {
 
     if (cpu < 45) {
         titleEl.innerText = "FULL TIER";
-        titleEl.className = "tier-card-title text-blue";
-        card.style.borderColor = "#38bdf8";
+        titleEl.className = "tier-card-title text-green";
+        card.style.borderColor = "#4ade80";
+        card.style.boxShadow = "none";
         modelEl.innerText = "Model: LightGBM (150 trees)";
         descEl.innerText = "Optimal macro-F1 (0.8099) under standard edge CPU load (<45%).";
         if (sidebarTier) sidebarTier.innerText = "FULL (LightGBM)";
     } else if (cpu <= 75) {
         titleEl.innerText = "REDUCED TIER";
-        titleEl.className = "tier-card-title text-purple";
-        card.style.borderColor = "#c084fc";
+        titleEl.className = "tier-card-title text-blue";
+        card.style.borderColor = "#ffffff";
+        card.style.boxShadow = "none";
         modelEl.innerText = "Model: CompactMLP (64, 32)";
         descEl.innerText = "Fast edge neural network (132.1 µs, 135.4 KB) under moderate CPU pressure.";
         if (sidebarTier) sidebarTier.innerText = "REDUCED (CompactMLP)";
     } else {
         titleEl.innerText = "MINIMAL TIER";
-        titleEl.className = "tier-card-title text-orange";
-        card.style.borderColor = "#fb923c";
+        titleEl.className = "tier-card-title text-green";
+        card.style.borderColor = "#22c55e";
+        card.style.boxShadow = "none";
         modelEl.innerText = "Model: LogisticRegression (L2)";
         descEl.innerText = "Ultra-light emergency fallback (78.6 µs, 5.3 KB) under critical CPU spikes.";
         if (sidebarTier) sidebarTier.innerText = "MINIMAL (LogReg)";
@@ -409,20 +444,20 @@ function initTierBubbleChart() {
             datasets: [{
                 label: 'Minimal Tier (LogReg)',
                 data: [{ x: 78.6, y: 0.5480, r: 8 }],
-                backgroundColor: 'rgba(251, 146, 60, 0.8)',
-                borderColor: '#fb923c',
+                backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                borderColor: '#ffffff',
                 borderWidth: 1
             }, {
                 label: 'Reduced Tier (CompactMLP)',
                 data: [{ x: 132.1, y: 0.6432, r: 14 }],
-                backgroundColor: 'rgba(192, 132, 252, 0.8)',
-                borderColor: '#c084fc',
+                backgroundColor: 'rgba(74, 222, 128, 0.75)',
+                borderColor: '#4ade80',
                 borderWidth: 1
             }, {
                 label: 'Full Tier (LightGBM)',
                 data: [{ x: 1876.0, y: 0.8099, r: 24 }],
-                backgroundColor: 'rgba(56, 189, 248, 0.8)',
-                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(34, 197, 94, 0.85)',
+                borderColor: '#4ade80',
                 borderWidth: 1
             }]
         },
@@ -448,7 +483,9 @@ function initTierBubbleChart() {
             plugins: {
                 legend: { labels: { color: '#f8fafc', font: { family: 'Plus Jakarta Sans', size: 11 } } },
                 tooltip: {
-                    backgroundColor: '#0e1422',
+                    backgroundColor: '#101014',
+                    borderColor: '#202026',
+                    borderWidth: 1,
                     titleFont: { family: 'JetBrains Mono' },
                     bodyFont: { family: 'JetBrains Mono' }
                 }
@@ -521,7 +558,9 @@ function initInspProbabilityChart() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#0e1422',
+                    backgroundColor: '#101014',
+                    borderColor: '#202026',
+                    borderWidth: 1,
                     titleFont: { family: 'JetBrains Mono' },
                     bodyFont: { family: 'JetBrains Mono' }
                 }
@@ -598,8 +637,8 @@ function renderInspectionResults(data) {
             <tr>
                 <td><b>${x.feat}</b></td>
                 <td>${x.val.toFixed(2)}</td>
-                <td style="color: ${x.type === 'indicator' ? '#34d399' : '#38bdf8'}; font-weight: 700;">${x.score}</td>
-                <td><span class="status-tag ${x.type === 'indicator' ? 'tag-orange' : 'tag-blue'}">${x.type === 'indicator' ? 'Attack Indicator' : 'Normalizer'}</span></td>
+                <td style="color: ${x.type === 'indicator' ? '#4ade80' : '#ffffff'}; font-weight: 700;">${x.score}</td>
+                <td><span class="status-tag ${x.type === 'indicator' ? 'tag-green' : 'tag-blue'}">${x.type === 'indicator' ? 'Attack Indicator' : 'Normalizer'}</span></td>
             </tr>
         `).join('');
     }
@@ -627,7 +666,7 @@ function renderFirewallTable() {
         tbody.innerHTML = firewallRules.map(r => `
             <tr>
                 <td><b>${r.id}</b></td>
-                <td><code style="color: #38bdf8;">${r.ip}</code></td>
+                <td><code style="color: #4ade80;">${r.ip}</code></td>
                 <td>${r.vector}</td>
                 <td><span class="status-tag tag-${r.sev === 'Critical' ? 'red' : r.sev === 'High' ? 'orange' : 'green'}">${r.sev}</span></td>
                 <td><b>${r.action}</b></td>
@@ -924,9 +963,9 @@ function runBatchSimulation(totalFlows) {
                 labels: breakdown.map(b => b.cat),
                 datasets: [{
                     data: breakdown.map(b => b.count),
-                    backgroundColor: ['#ef4444', '#10b981', '#c084fc', '#f97316', '#38bdf8', '#fb923c', '#06b6d4'],
+                    backgroundColor: ['#ef4444', '#4ade80', '#22c55e', '#f97316', '#ffffff', '#a1a1aa', '#71717a'],
                     borderWidth: 2,
-                    borderColor: '#090d16'
+                    borderColor: '#101014'
                 }]
             },
             options: {

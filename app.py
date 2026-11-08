@@ -31,112 +31,116 @@ st.set_page_config(
 # Custom Styling
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
     
     html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    
+    .stApp {
+        background-color: #050507;
+        color: #e4e4e7;
     }
     
     .main {
-        background: linear-gradient(135deg, #0b0f19 0%, #111827 50%, #0f172a 100%);
-        color: #f1f5f9;
+        background-color: #050507;
+        color: #e4e4e7;
     }
     
+    /* Strict Tab Navigation */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        background-color: rgba(15, 23, 42, 0.6);
-        padding: 8px 12px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        gap: 6px;
+        background-color: #09090c;
+        padding: 6px 8px;
+        border-radius: 4px;
+        border: 1px solid #202026;
     }
     
     .stTabs [data-baseweb="tab"] {
-        height: 48px;
+        height: 42px;
         white-space: pre-wrap;
         background-color: transparent;
-        border-radius: 8px;
-        color: #94a3b8;
+        border-radius: 4px;
+        color: #a1a1aa;
         font-weight: 600;
-        font-size: 0.95rem;
-        padding: 0px 20px;
+        font-size: 0.88rem;
+        padding: 0px 16px;
+        font-family: 'JetBrains Mono', monospace;
+        border: 1px solid transparent;
+        transition: none;
     }
     
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+        background-color: #141419 !important;
         color: #ffffff !important;
-        box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+        border: 1px solid #4ade80 !important;
+        box-shadow: none !important;
     }
     
+    /* Structured KPI Cards: High-Density, Non-Floating */
     .kpi-card {
-        background: rgba(30, 41, 59, 0.7);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 14px;
-        padding: 20px;
-        text-align: center;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: #101014;
+        border: 1px solid #202026;
+        border-radius: 4px;
+        padding: 16px;
+        text-align: left;
+        transition: none;
     }
     .kpi-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4);
-        border-color: rgba(59, 130, 246, 0.4);
+        border-color: #4ade80;
     }
     
     .kpi-val {
-        font-size: 2.2rem;
+        font-size: 1.85rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #60a5fa, #38bdf8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        line-height: 1.2;
+        color: #ffffff;
+        font-family: 'JetBrains Mono', monospace;
+        line-height: 1.1;
     }
     .kpi-val-green {
-        background: linear-gradient(135deg, #4ade80, #22c55e);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: #4ade80 !important;
     }
     .kpi-val-purple {
-        background: linear-gradient(135deg, #c084fc, #a855f7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: #ffffff !important;
     }
     .kpi-val-orange {
-        background: linear-gradient(135deg, #fb923c, #f97316);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: #f97316 !important;
     }
     
     .kpi-lbl {
-        color: #94a3b8;
-        font-size: 0.82rem;
+        color: #a1a1aa;
+        font-size: 0.72rem;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
-        font-weight: 600;
+        letter-spacing: 0.05em;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
         margin-top: 6px;
     }
     
+    /* Threat Tags */
     .threat-pill {
         display: inline-block;
-        padding: 4px 12px;
-        border-radius: 9999px;
-        font-size: 0.8rem;
+        padding: 2px 8px;
+        border-radius: 2px;
+        font-size: 0.72rem;
         font-weight: 700;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
+        font-family: 'JetBrains Mono', monospace;
     }
-    .threat-Critical { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
-    .threat-High { background: rgba(249, 115, 22, 0.2); color: #fb923c; border: 1px solid #f97316; }
-    .threat-Medium { background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid #eab308; }
-    .threat-Low { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid #3b82f6; }
-    .threat-Normal { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #22c55e; }
+    .threat-Critical { background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.35); }
+    .threat-High { background: rgba(249, 115, 22, 0.12); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.35); }
+    .threat-Medium { background: rgba(234, 179, 8, 0.12); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.35); }
+    .threat-Low { background: rgba(255, 255, 255, 0.08); color: #ffffff; border: 1px solid #32323c; }
+    .threat-Normal { background: rgba(74, 222, 128, 0.1); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.35); }
     
     .code-box {
         font-family: 'JetBrains Mono', monospace;
-        background: #090d16;
-        padding: 12px 16px;
-        border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.06);
-        color: #38bdf8;
+        background: #0c0c0f;
+        padding: 10px 14px;
+        border-radius: 4px;
+        border: 1px solid #202026;
+        color: #4ade80;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -177,18 +181,18 @@ engine = load_engine()
 bench_df, prof_df, per_class_df, fog_df, leak_df, meta, report_text = load_results_data()
 
 st.markdown("""
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid #202026;">
     <div>
-        <h1 style="margin: 0; font-size: 2.1rem; font-weight: 800; background: linear-gradient(135deg, #ffffff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-            🛡️ Fog-IDS Defense Center
+        <h1 style="margin: 0; font-size: 1.85rem; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">
+            Fog-IDS Defense Center
         </h1>
-        <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.95rem;">
-            Lightweight Multi-Class Intrusion Detection for Fog Nodes in Smart City IoT Networks
+        <p style="margin: 4px 0 0 0; color: #a1a1aa; font-size: 0.88rem;">
+            Resource-Aware Multi-Class Intrusion Detection for Municipal Fog Nodes (CICIoT2023 Real Dataset)
         </p>
     </div>
     <div style="text-align: right;">
-        <span style="background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid #22c55e; padding: 6px 14px; border-radius: 9999px; font-weight: 700; font-size: 0.85rem;">
-            ● REAL DATA ACTIVE (277,369 Samples)
+        <span style="background: #101014; color: #4ade80; border: 1px solid #4ade80; padding: 5px 12px; border-radius: 3px; font-weight: 700; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace;">
+            ● ONLINE: 277,369 FLOWS VERIFIED
         </span>
     </div>
 </div>
@@ -261,8 +265,8 @@ with tab_sim:
         sim_running = st.toggle("▶️ Start Live Flow Stream", value=False)
         
         st.markdown("""
-        <div style="margin-top: 16px; padding: 14px; background: rgba(15,23,42,0.6); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
-            <div style="font-weight: 700; color: #60a5fa; margin-bottom: 6px;">Edge Hardware Profile:</div>
+        <div style="margin-top: 16px; padding: 14px; background: #101014; border-radius: 4px; border: 1px solid #202026;">
+            <div style="font-weight: 700; color: #4ade80; font-family: monospace; margin-bottom: 6px;">Edge Hardware Profile:</div>
             <div style="font-size: 0.85rem; color: #94a3b8;">• Target Architecture: ARM Cortex-A72 (Pi4-class)</div>
             <div style="font-size: 0.85rem; color: #94a3b8;">• Latency Scaling Budget: < 1.0 ms / sample</div>
             <div style="font-size: 0.85rem; color: #94a3b8;">• Model Footprint: < 500 KB</div>
@@ -320,16 +324,16 @@ with tab_sim:
     for idx, (col, name) in enumerate(zip([n1, n2, n3, n4], node_names)):
         with col:
             st.markdown(f"""
-            <div style="background: rgba(15,23,42,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px;">
+            <div style="background: #101014; border: 1px solid #202026; border-radius: 4px; padding: 16px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="font-weight: 700; font-size: 0.95rem; color: #f1f5f9;">{name}</span>
                     <span style="height: 8px; width: 8px; background: #22c55e; border-radius: 50%; display: inline-block;"></span>
                 </div>
                 <div style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.82rem;">
-                    <div><span style="color:#94a3b8;">Rate:</span> <b style="color:#38bdf8;">{np.random.randint(120, 480)} p/s</b></div>
+                    <div><span style="color:#94a3b8;">Rate:</span> <b style="color:#4ade80;">{np.random.randint(120, 480)} p/s</b></div>
                     <div><span style="color:#94a3b8;">CPU:</span> <b>{np.random.randint(15, 65)}%</b></div>
                     <div><span style="color:#94a3b8;">Memory:</span> <b>{np.random.randint(40, 75)} MB</b></div>
-                    <div><span style="color:#94a3b8;">Alerts:</span> <b style="color:#f87171;">{np.random.randint(2, 14)}</b></div>
+                    <div><span style="color:#94a3b8;">Alerts:</span> <b style="color:#ef4444;">{np.random.randint(2, 14)}</b></div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -366,20 +370,20 @@ with tab_tier:
         st.markdown("#### 🎯 Active Tier State")
         
         tier_colors = {
-            "FULL": "#38bdf8",
-            "REDUCED": "#a855f7",
-            "MINIMAL": "#fb923c"
+            "FULL": "#4ade80",
+            "REDUCED": "#ffffff",
+            "MINIMAL": "#22c55e"
         }
         
         st.markdown(f"""
-        <div style="background: rgba(15,23,42,0.8); border: 2px solid {tier_colors[active_tier]}; border-radius: 12px; padding: 20px; text-align: center;">
-            <div style="color: #94a3b8; font-size: 0.85rem; font-weight: 600;">ACTIVE INFERENCE TIER</div>
-            <div style="font-size: 2rem; font-weight: 800; color: {tier_colors[active_tier]}; margin: 6px 0;">{active_tier} TIER</div>
-            <div style="font-size: 1.1rem; font-weight: 700; color: #ffffff;">Model: {active_model}</div>
-            <div style="margin-top: 10px; font-size: 0.8rem; color: #94a3b8;">
-                { "Maximum macro-F1 (0.81), optimal under low/normal load" if active_tier == 'FULL' else 
-                  "Balanced neural network (132 µs, 135 KB), edge sweet-spot" if active_tier == 'REDUCED' else
-                  "Ultra-fast fallback (78 µs, 5 KB) under severe CPU pressure" }
+        <div style="background: #101014; border: 1px solid {tier_colors[active_tier]}; border-radius: 4px; padding: 18px; text-align: left;">
+            <div style="color: #a1a1aa; font-size: 0.72rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;">ACTIVE INFERENCE TIER</div>
+            <div style="font-size: 1.7rem; font-weight: 800; color: {tier_colors[active_tier]}; margin: 4px 0; font-family: 'JetBrains Mono', monospace;">{active_tier} TIER</div>
+            <div style="font-size: 1.0rem; font-weight: 700; color: #ffffff;">Model: {active_model}</div>
+            <div style="margin-top: 8px; font-size: 0.82rem; color: #a1a1aa;">
+                { "Maximum macro-F1 (0.8099), optimal under edge CPU load (<45%)." if active_tier == 'FULL' else 
+                  "Balanced edge neural network (132.1 µs, 135.4 KB) under moderate load." if active_tier == 'REDUCED' else
+                  "Ultra-light emergency fallback (78.6 µs, 5.3 KB) under CPU pressure." }
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -402,13 +406,13 @@ with tab_tier:
             text="Tier",
             title="FR5 Dynamic Tier Space: Macro-F1 vs. Single-Row Streaming Latency",
             log_x=True,
-            color_discrete_sequence=["#fb923c", "#a855f7", "#38bdf8"]
+            color_discrete_sequence=["#ffffff", "#4ade80", "#22c55e"]
         )
         fig_tradeoff.update_traces(textposition='top center', marker=dict(sizeref=50, sizemin=12))
         fig_tradeoff.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(15,23,42,0.6)",
-            font=dict(color="#94a3b8"),
+            paper_bgcolor="#09090c",
+            plot_bgcolor="#101014",
+            font=dict(color="#a1a1aa", family="JetBrains Mono"),
             height=340
         )
         st.plotly_chart(fig_tradeoff, use_container_width=True)
@@ -443,12 +447,12 @@ with tab_bench:
                 y=["accuracy", "macro_f1", "weighted_f1"],
                 barmode="group",
                 title=f"Performance Comparison — {task_sel.upper()} Task",
-                color_discrete_sequence=["#38bdf8", "#818cf8", "#34d399"]
+                color_discrete_sequence=["#ffffff", "#4ade80", "#22c55e"]
             )
             fig_bar.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(15,23,42,0.6)",
-                font=dict(color="#94a3b8"),
+                paper_bgcolor="#09090c",
+                plot_bgcolor="#101014",
+                font=dict(color="#a1a1aa", family="JetBrains Mono"),
                 height=380,
                 legend=dict(title="Metric")
             )
@@ -470,13 +474,13 @@ with tab_bench:
                 y="class",
                 orientation="h",
                 color="recall",
-                color_continuous_scale="Viridis",
+                color_continuous_scale=[[0, "#101014"], [0.5, "#22c55e"], [1.0, "#4ade80"]],
                 title="Per-Class Recall for Best 8-Class Model (LightGBM)"
             )
             fig_per.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(15,23,42,0.6)",
-                font=dict(color="#94a3b8"),
+                paper_bgcolor="#09090c",
+                plot_bgcolor="#101014",
+                font=dict(color="#a1a1aa", family="JetBrains Mono"),
                 height=350
             )
             st.plotly_chart(fig_per, use_container_width=True)
@@ -505,9 +509,9 @@ with tab_bench:
             )
             fig_lat.update_traces(textposition="top right")
             fig_lat.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(15,23,42,0.6)",
-                font=dict(color="#94a3b8"),
+                paper_bgcolor="#09090c",
+                plot_bgcolor="#101014",
+                font=dict(color="#a1a1aa", family="JetBrains Mono"),
                 height=360
             )
             st.plotly_chart(fig_lat, use_container_width=True)
@@ -527,12 +531,12 @@ with tab_bench:
                 y=["accuracy", "macro_f1"],
                 barmode="group",
                 title="Centralized vs. Per-Node vs. Federated Averaging (FedAvg)",
-                color_discrete_sequence=["#38bdf8", "#818cf8"]
+                color_discrete_sequence=["#ffffff", "#4ade80"]
             )
             fig_fog.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(15,23,42,0.6)",
-                font=dict(color="#94a3b8"),
+                paper_bgcolor="#09090c",
+                plot_bgcolor="#101014",
+                font=dict(color="#a1a1aa", family="JetBrains Mono"),
                 height=340
             )
             st.plotly_chart(fig_fog, use_container_width=True)
@@ -566,7 +570,7 @@ with tab_inspect:
         st.markdown(f"""
         <div class="kpi-card">
             <div style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">PREDICTED ATTACK</div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #38bdf8; margin: 4px 0;">{pred_res['prediction']}</div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #ffffff; margin: 4px 0;">{pred_res['prediction']}</div>
             <div style="font-size: 0.8rem; color: #64748b;">Category: {pred_res['category']}</div>
         </div>
         """, unsafe_allow_html=True)
@@ -613,12 +617,12 @@ with tab_inspect:
             orientation="h",
             title=f"Class Probability Distribution — {chosen_model}",
             color="Probability",
-            color_continuous_scale="Blues"
+            color_continuous_scale=[[0, "#202026"], [1.0, "#4ade80"]]
         )
         fig_prob.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(15,23,42,0.6)",
-            font=dict(color="#94a3b8"),
+            paper_bgcolor="#09090c",
+            plot_bgcolor="#101014",
+            font=dict(color="#a1a1aa", family="JetBrains Mono"),
             height=320
         )
         st.plotly_chart(fig_prob, use_container_width=True)

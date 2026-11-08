@@ -67,7 +67,7 @@
             <div class="sidebar-footer">
                 <div class="sidebar-section-title">SMART CITY CLUSTER</div>
                 <div class="cluster-summary-box">
-                    <div class="cluster-row"><span>City Zones:</span> <b class="text-cyan">4 Active</b></div>
+                    <div class="cluster-row"><span>City Zones:</span> <b class="text-green">4 Active</b></div>
                     <div class="cluster-row"><span>Inference Tier:</span> <b class="text-blue" id="sidebar-tier-label">FULL (LightGBM)</b></div>
                     <div class="cluster-row"><span>Dataset Base:</span> <b class="text-green">CICIoT2023 Real</b></div>
                 </div>
@@ -132,7 +132,7 @@
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-title">Smart City Fog Zones</div>
-                    <div class="kpi-val text-cyan">4 Zones</div>
+                    <div class="kpi-val text-green">4 Zones</div>
                     <div class="kpi-sub">Dynamic Resource Tiering (FR5)</div>
                 </div>
                 <div class="kpi-card">
@@ -571,12 +571,12 @@
                     </div>
 
                     <div class="drop-zone" onclick="document.getElementById('csv-file-input').click()">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--blue);">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--green-lite);">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="17 8 12 3 7 8"/>
                             <line x1="12" y1="3" x2="12" y2="15"/>
                         </svg>
-                        <p style="margin-top: 8px; font-weight: 600;">Drag & drop network capture CSV or <span style="color: var(--blue); text-decoration: underline;">browse files</span></p>
+                        <p style="margin-top: 8px; font-weight: 600;">Drag & drop network capture CSV or <span style="color: var(--green-lite); text-decoration: underline;">browse files</span></p>
                         <span style="font-size: 0.78rem; color: var(--text-muted);">Supports 46-feature CICIoT2023 schema</span>
                         <input type="file" id="csv-file-input" accept=".csv" style="display: none;" onchange="handleFileSelected(this.files)">
                     </div>
@@ -674,11 +674,11 @@
                                 <tr><td>Binary</td><td>RandomForest</td><td>0.9786</td><td>0.8972</td><td>0.9799</td><td>152,525</td><td>124,844</td></tr>
                                 <tr><td>Binary</td><td>CompactMLP</td><td>0.9674</td><td>0.7615</td><td>0.9619</td><td>152,525</td><td>124,844</td></tr>
                                 <tr><td>Binary</td><td>LogisticRegression</td><td>0.9611</td><td>0.6889</td><td>0.9521</td><td>152,525</td><td>124,844</td></tr>
-                                <tr style="border-top: 2px solid var(--border);"><td><b>8-Class (Category)</b></td><td><b>LightGBM (Full Tier)</b></td><td><b>0.9674</b></td><td><b>0.8099</b></td><td>0.9707</td><td>152,525</td><td>124,844</td></tr>
+                                <tr style="border-top: 1px solid var(--border-subtle);"><td><b>8-Class (Category)</b></td><td><b>LightGBM (Full Tier)</b></td><td><b>0.9674</b></td><td><b>0.8099</b></td><td>0.9707</td><td>152,525</td><td>124,844</td></tr>
                                 <tr><td>8-Class</td><td>RandomForest</td><td>0.9524</td><td>0.7660</td><td>0.9589</td><td>152,525</td><td>124,844</td></tr>
                                 <tr><td>8-Class</td><td>CompactMLP (Reduced Tier)</td><td>0.8338</td><td>0.6432</td><td>0.8245</td><td>152,525</td><td>124,844</td></tr>
                                 <tr><td>8-Class</td><td>LogisticRegression (Minimal Tier)</td><td>0.7699</td><td>0.5480</td><td>0.7391</td><td>152,525</td><td>124,844</td></tr>
-                                <tr style="border-top: 2px solid var(--border);"><td><b>34-Class (Fine-Grained)</b></td><td><b>LightGBM</b></td><td><b>0.9579</b></td><td><b>0.8064</b></td><td>0.9598</td><td>152,525</td><td>124,844</td></tr>
+                                <tr style="border-top: 1px solid var(--border-subtle);"><td><b>34-Class (Fine-Grained)</b></td><td><b>LightGBM</b></td><td><b>0.9579</b></td><td><b>0.8064</b></td><td>0.9598</td><td>152,525</td><td>124,844</td></tr>
                                 <tr><td>34-Class</td><td>RandomForest</td><td>0.9151</td><td>0.7385</td><td>0.9268</td><td>152,525</td><td>124,844</td></tr>
                                 <tr><td>34-Class</td><td>CompactMLP</td><td>0.8104</td><td>0.6357</td><td>0.8112</td><td>152,525</td><td>124,844</td></tr>
                                 <tr><td>34-Class</td><td>LogisticRegression</td><td>0.7357</td><td>0.5314</td><td>0.7225</td><td>152,525</td><td>124,844</td></tr>
@@ -687,13 +687,13 @@
                     </div>
 
                     <div class="grid-2-1" style="margin-top: 20px;">
-                        <div class="panel" style="background: var(--bg-card-subtle);">
+                        <div class="panel" style="background: var(--black-panel); border: 1px solid var(--border-subtle);">
                             <h3>🎯 Minority Class Starvation Solved (RQ4)</h3>
                             <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; margin-top: 6px;">
                                 Standard models in IoT literature achieve only 3–30% recall on rare attacks. Our per-class Bernoulli subsampling alongside cost-sensitive balanced class weighting boosted <b>Web-Based Recall to 84.0%</b> and <b>Brute Force Recall to 73.4%</b>.
                             </p>
                         </div>
-                        <div class="panel" style="background: var(--bg-card-subtle);">
+                        <div class="panel" style="background: var(--black-panel); border: 1px solid var(--border-subtle);">
                             <h3>⚡ Single-Row Streaming Latency (RQ3)</h3>
                             <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; margin-top: 6px;">
                                 True per-packet streaming timing reveals that <b>Random Forest takes 33.8 ms/sample</b> (unviable for edge line-rate processing), whereas <b>CompactMLP operates in 132.1 µs at 135.4 KB</b>.

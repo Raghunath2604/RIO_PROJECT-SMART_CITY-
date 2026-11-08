@@ -40,19 +40,54 @@ class FogInferenceEngine:
             self.load_models()
 
     def load_models(self):
-        with open(self.cache_file, "rb") as f:
-            all_res = pickle.load(f)
-        for r in all_res:
-            key = (r["model"], r["task"])
-            self.models[key] = {
-                "estimator": r["estimator"],
-                "scaler": r["scaler"],
-                "label_encoder": r["label_encoder"],
-                "classes": list(r["label_encoder"].classes_),
-                "macro_f1": r.get("macro_f1", 0.0),
-                "accuracy": r.get("accuracy", 0.0),
-            }
-        self.loaded = True
+        if os.path.exists(self.cache_file):
+            with open(self.cache_file, "rb") as f:
+                all_res = pickle.load(f)
+            for r in all_res:
+                key = (r["model"], r["task"])
+                self.models[key] = {
+                    "estimator": r["estimator"],
+                    "scaler": r["scaler"],
+                    "label_encoder": r["label_encoder"],
+                    "classes": list(r["label_encoder"].classes_),
+                    "macro_f1": r.get("macro_f1", 0.0),
+                    "accuracy": r.get("accuracy", 0.0),
+                }
+            self.loaded = True
+        else:
+            self._load_from_registry()
+
+    def _load_from_registry(self):
+        try:
+            from src.model_registry import ModelRegistry
+            import joblib
+            reg = ModelRegistry()
+            models_dir = reg.models_dir
+            if os.path.exists(models_dir):
+                for fname in os.listdir(models_dir):
+                    if fname.endswith(".joblib"):
+                        base = fname[:-7]
+                        parts = base.split("_")
+                        if len(parts) >= 2:
+                            m_name = parts[0]
+                            t_name = "_".join(parts[1:])
+                            try:
+                                bundle = joblib.load(os.path.join(models_dir, fname))
+                                key = (m_name, t_name)
+                                self.models[key] = {
+                                    "estimator": bundle["estimator"],
+                                    "scaler": bundle["scaler"],
+                                    "label_encoder": bundle["label_encoder"],
+                                    "classes": list(bundle["label_encoder"].classes_),
+                                    "macro_f1": bundle.get("macro_f1", 0.0),
+                                    "accuracy": bundle.get("accuracy", 0.0),
+                                }
+                            except Exception:
+                                pass
+            if self.models:
+                self.loaded = True
+        except Exception:
+            pass
 
     def predict_sample(
         self,

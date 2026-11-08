@@ -38,7 +38,8 @@ venv.bak/
 real_data/
 raw_data/
 data/
-datasets/
+datasets/*
+!datasets/sample_test.csv
 archive3.zip
 *.zip
 *.tar
@@ -88,3 +89,7 @@ Thumbs.db
 *.sublime-project
 *.sublime-workspace
 .vercel/
+
+# Environment Secrets
+.env
+.env.local
