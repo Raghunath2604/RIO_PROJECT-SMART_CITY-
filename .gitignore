@@ -93,3 +93,5 @@ Thumbs.db
 # Environment Secrets
 .env
 .env.local
+.vercel
+.env*

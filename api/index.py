@@ -41,7 +41,8 @@ try:
         predict_single_flow,
         predict_adaptive_flow,
         predict_batch_flows,
-        analyze_csv_file
+        analyze_csv_file,
+        get_recent_alerts
     )
 
     app.add_api_route("/health", health_check, methods=["GET"], tags=["System"])
@@ -50,6 +51,7 @@ try:
     app.add_api_route("/api/v1/predict/adaptive", predict_adaptive_flow, methods=["POST"], tags=["Inference"])
     app.add_api_route("/api/v1/predict/batch", predict_batch_flows, methods=["POST"], tags=["Inference"])
     app.add_api_route("/api/v1/analyze/file", analyze_csv_file, methods=["POST"], tags=["Batch Analytics"])
+    app.add_api_route("/api/v1/alerts", get_recent_alerts, methods=["GET"], tags=["SIEM"])
 except Exception as e:
     # Serverless edge fallback routes
     @app.get("/health", tags=["System"])

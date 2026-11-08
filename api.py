@@ -143,14 +143,20 @@ class AdaptiveFlowRequest(BaseModel):
 @app.get("/health", tags=["System"])
 def health_check():
     """Returns microservice health, memory usage, and active models."""
-    import psutil
+    try:
+        import psutil
+        cpu_usage = psutil.cpu_percent()
+        ram_usage = psutil.virtual_memory().percent
+    except Exception:
+        cpu_usage = 0.0
+        ram_usage = 0.0
     return {
         "status": "HEALTHY",
         "service": "Fog-IDS Edge Defense Microservice",
         "version": "1.0.0",
         "timestamp": time.time(),
-        "cpu_usage_pct": psutil.cpu_percent(),
-        "ram_usage_pct": psutil.virtual_memory().percent,
+        "cpu_usage_pct": cpu_usage,
+        "ram_usage_pct": ram_usage,
         "available_models_count": len(registry.list_available_models())
     }
 
