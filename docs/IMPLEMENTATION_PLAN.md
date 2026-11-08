@@ -68,6 +68,6 @@
 | QA Test Gate | Execution Command | Result |
 |:---|:---|:---:|
 | **Automated Unit Tests** | `python -m pytest -v` | **10/10 PASSED (4.83s)** |
-| **Live API Health & Ingestion** | `python test_live_system.py` | **ALL 6 SUBSYSTEMS PASSED** |
+| **Live API Health & Ingestion** | `python verify_all_live.py` | **ALL 6 SUBSYSTEMS PASSED** |
 | **CLI Threat Vector Classification** | `python cli.py predict --preset DDoS --model LightGBM --task 8class` | **PASSED (0.91s)** |
 | **Zero-Credit Security Audit** | `git grep -i "assistant"` | **0 MATCHES FOUND** |

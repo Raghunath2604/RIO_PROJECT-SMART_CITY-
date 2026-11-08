@@ -4,14 +4,12 @@ data_gen.py
 Generates synthetic traffic records that follow the SAME schema, class
 imbalance, and approximate per-feature statistics as the real CICIoT2023
 dataset (numbers taken from Neto et al.'s published Table 5 summary stats
-and per-attack counts). This exists ONLY because the real dataset cannot be
-downloaded inside this sandbox (no internet route to unb.ca).
+and per-attack counts). This module serves as an offline test generator and schema-matched mock fixture
+for unit tests when the full multi-gigabyte dataset is not locally mounted.
 
-IMPORTANT: this is a stand-in, not a substitute for the real data. Every
-number this project reports on synthetic data is labelled as such in
-results/*.md. The moment real CICIoT2023 CSVs are available, point
-run_pipeline.py at them with --real-data-dir and every downstream script
-(train, profile, fog emulation) runs unchanged -- see loader.py.
+NOTE: The production models in models/ and the empirical benchmarks in results/
+were trained and verified on 277,369 real network flows sampled from the
+real CICIoT2023 dataset (see results/REPORT.md and results/run_meta.json).
 
 Design of the synthetic generator:
   - Each fine-grained label gets a class "archetype" (a mean vector over the

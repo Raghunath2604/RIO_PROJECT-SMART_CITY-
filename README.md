@@ -233,8 +233,7 @@ RIO_PROJECT-SMART_CITY-/
 │   └── figures/                   # High-resolution benchmark figures
 │
 ├── scripts/                       # Auxiliary Tooling & Generators
-│   ├── generate_architecture_diagram.py # Architecture PNG generator
-│   └── test_live_system.py        # Standalone sanity script
+│   └── generate_architecture_diagram.py # Publication architecture generator (4K)
 │
 ├── src/                           # Core ML & Fog Computing Modules
 │   ├── schema.py                  # 46 network features & taxonomy labels

@@ -113,7 +113,7 @@ Deploying standard deep neural networks directly onto edge fog nodes (such as AR
 ### 4.1 One-Click Launch (Recommended)
 Run the automated batch script to start both the FastAPI SOC Dashboard and the Streamlit Cyber Forensics Studio simultaneously:
 ```powershell
-.\start_all.bat
+python cli.py serve
 ```
 
 ### 4.2 Starting Services Individually
@@ -299,7 +299,7 @@ fogids/
 ├── api.py                      # Production FastAPI REST microservice
 ├── app.py                      # Streamlit Cyber Forensics Studio
 ├── cli.py                      # Unified Command-Line Interface
-├── test_live_system.py         # Automated live subsystem verification script
+├── verify_all_live.py         # Full-stack automated verification script
 ├── vercel.json                 # Vercel serverless routing rewrites
 ├── .vercelignore               # Serverless bundle size exclusion rules
 ├── .gitignore                  # Strict raw dataset & cache exclusion rules
