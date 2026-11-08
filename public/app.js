@@ -3,10 +3,7 @@
 // Clean, Fast, Non-Animated Real-Time Telemetry & Client Controller
 // ==========================================================================
 
-// Dynamic API Endpoint Discovery: Connects to local FastAPI or Cloud Serverless Microservice
-const API_BASE = (typeof window !== "undefined" && window.location.hostname.includes("vercel.app") && !window.location.hostname.includes("api-"))
-    ? "https://api-alpha-eight-29.vercel.app"
-    : "";
+const API_BASE = "";
 let isApiOnline = false;
 let streamInterval = null;
 let isStreaming = false;
