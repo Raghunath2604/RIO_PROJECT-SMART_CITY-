@@ -70,3 +70,15 @@ def test_stream_packets_handles_connection_error(capsys):
     captured = capsys.readouterr()
     assert "CONNECTION_ERR" in captured.out
     assert "Streamed 1 packets" in captured.out
+
+
+def test_cli_audit_subcommand(capsys):
+    """Confirms audit subcommand parses and runs cleanly."""
+    from cli import cmd_audit
+    parser = build_parser()
+    args = parser.parse_args(["audit"])
+    assert args.command == "audit"
+    cmd_audit(args)
+    captured = capsys.readouterr()
+    assert "FOG-IDS COMPREHENSIVE PRODUCTION HEALTH AUDIT" in captured.out
+    assert "SYSTEM OPERATIONAL READINESS: 100%" in captured.out

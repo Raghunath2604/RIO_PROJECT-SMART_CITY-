@@ -2,10 +2,11 @@
 
 [![CI/CD Pipeline](https://github.com/Raghunath2604/RIO_PROJECT-SMART_CITY-/actions/workflows/ci.yml/badge.svg)](https://github.com/Raghunath2604/RIO_PROJECT-SMART_CITY-/actions)
 [![Vercel Production](https://img.shields.io/badge/Vercel-Live%20Production-22c55e.svg)](https://rio-project-smart-city.vercel.app/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Raghunath2604/RIO_PROJECT-SMART_CITY-/blob/main/notebooks/Fog_IDS_Walkthrough.ipynb)
 [![Python Version](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-22c55e.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Production%20Microservice-22c55e.svg)](https://fastapi.tiangolo.com)
 [![Streamlit](https://img.shields.io/badge/Streamlit-SOC%20Console-22c55e.svg)](https://streamlit.io)
-[![Test Suite](https://img.shields.io/badge/Tests-22%2F22%20Passing-22c55e.svg)](tests/)
+[![Test Suite](https://img.shields.io/badge/Tests-23%2F23%20Passing-22c55e.svg)](tests/)
 [![Dataset](https://img.shields.io/badge/Dataset-CICIoT2023%20(Real)-ffffff.svg)](https://www.unb.ca/cic/datasets/iot-dataset-2023.html)
 [![License](https://img.shields.io/badge/License-MIT-ffffff.svg)](LICENSE)
 
@@ -132,6 +133,7 @@ RIO_PROJECT-SMART_CITY-/
 ├── requirements.txt           # Production runtime dependencies
 ├── requirements-dev.txt       # Development & testing tooling
 ├── pytest.ini                 # Pytest configuration
+├── Makefile                   # Enterprise developer automation tooling
 ├── vercel.json                # Vercel Edge routing & reverse proxy rewrites
 ├── .env.example               # Environment variables template
 ├── LICENSE                    # MIT License
@@ -157,6 +159,9 @@ RIO_PROJECT-SMART_CITY-/
 │   ├── PRESENTATION_GUIDE.md  # Stakeholder Presentation Script
 │   ├── IMPLEMENTATION_PLAN.md # Milestone Checklist & Verification
 │   └── PROJECT_PLAN.md        # Literature Review & RQ Mappings
+│
+├── notebooks/                 # Interactive Jupyter & Colab Walkthroughs
+│   └── Fog_IDS_Walkthrough.ipynb # Zero-setup interactive cloud demonstration
 │
 ├── models/                    # Versioned Model Artifacts (12 Models)
 │   ├── CompactMLP_*.joblib    # Reduced-tier neural estimators
@@ -276,7 +281,12 @@ PKT ID   | PREDICTED CLASS        | CONFIDENCE | LATENCY (µs)   | STATUS
 
 ### 4. Verification & Testing
 
-Run the automated test suite:
+Run the unified CLI system health audit:
+```bash
+python cli.py audit --run-tests
+```
+
+Run the automated test suite (23 tests):
 ```bash
 pytest tests/ --disable-warnings -v
 ```

@@ -62,6 +62,10 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                     <span>REST API Sandbox</span>
                 </button>
+                <button class="nav-item" onclick="switchTab('architecture')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                    <span>System Architecture</span>
+                </button>
             </nav>
 
             <div class="sidebar-footer">
@@ -749,6 +753,68 @@
   "status": "Ready",
   "message": "Click 'Send API Request' to test live microservice endpoint."
 }</pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================= -->
+            <!-- TAB 8: SYSTEM ARCHITECTURE & ENGINEERING FLOW -->
+            <!-- ============================================================= -->
+            <section id="tab-architecture" class="tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Multi-Tier System Architecture & Operational Blueprint</h2>
+                            <p class="panel-sub">End-to-end edge pipeline topology from IoT sensor telemetry to SIEM event audit</p>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="/assets/architecture.png" target="_blank" class="btn btn-primary">Open Full Resolution (4K)</a>
+                            <a href="https://github.com/Raghunath2604/RIO_PROJECT-SMART_CITY-" target="_blank" class="btn btn-secondary">GitHub Repository</a>
+                        </div>
+                    </div>
+
+                    <!-- Architecture Diagram Container -->
+                    <div style="margin-top: 16px; border: 1px solid var(--border-dark); border-radius: 4px; overflow: hidden; background: #07080b;">
+                        <img src="/assets/architecture.png" alt="Fog-IDS System Architecture" style="width: 100%; height: auto; display: block; border-radius: 4px;" />
+                    </div>
+
+                    <!-- Architecture Key Subsystems Grid -->
+                    <div class="grid-3" style="margin-top: 20px;">
+                        <div class="card">
+                            <div class="card-title text-green">1. Smart City IoT Layer</div>
+                            <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-top: 6px;">
+                                High-velocity packet captures &amp; NetFlow records streamed across municipal zones (Traffic, Water SCADA, Transit, Power). Ingests 46 numeric features according to the CICIoT2023 benchmark standard.
+                            </p>
+                            <div style="margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #a1a1aa;">
+                                &bull; Ingestion Latency: &lt; 1 &micro;s/row<br>
+                                &bull; Feature Matrix: 46 numeric dimensions<br>
+                                &bull; Cleans NaN/Inf dynamically
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title text-blue">2. FR5 Dynamic Tier Switcher</div>
+                            <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-top: 6px;">
+                                Closed-loop hardware headroom manager. Applies asymmetric deadband hysteresis (&Delta;H = 5%) and minimum dwell-time smoothing (&tau; = 1.0s) to dynamically route traffic across Full, Reduced, and Minimal tiers without flapping.
+                            </p>
+                            <div style="margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #a1a1aa;">
+                                &bull; Normal (&lt; 45% CPU): Full Tier (LightGBM)<br>
+                                &bull; Moderate (45-75%): Reduced Tier (CompactMLP)<br>
+                                &bull; Critical (&gt; 75%): Minimal Tier (LogReg)
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title text-purple">3. Intelligence &amp; SIEM Audit</div>
+                            <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-top: 6px;">
+                                Dual-layer threat verification: multi-class inference (Binary, 8-Class, 34-Class) with real-time local XAI feature attribution. Appends tamper-resistant, RFC3339-compliant records to <code>logs/alerts.jsonl</code>.
+                            </p>
+                            <div style="margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #a1a1aa;">
+                                &bull; Real-Time XAI Feature Impacts<br>
+                                &bull; Zero-Drop SIEM JSONL Audit Bus<br>
+                                &bull; Firewall Rule Export (iptables / Snort)
+                            </div>
                         </div>
                     </div>
                 </div>

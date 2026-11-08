@@ -159,7 +159,8 @@ const TAB_TITLES = {
     "firewall": "Active Edge Firewall & IP Mitigation",
     "batch": "Batch CSV Network Flow Scanner",
     "benchmark": "Empirical Benchmark & Evaluation Matrix",
-    "api": "REST API Sandbox Console"
+    "api": "REST API Sandbox Console",
+    "architecture": "System Architecture & Engineering Topology"
 };
 
 // -----------------------------------------------------------------------------
