@@ -2,6 +2,7 @@
 cli.py
 ======
 Unified Production Command-Line Interface for Fog-IDS.
+Includes Live Packet Streaming CLI generator for Edge and Fog Gateways.
 """
 
 from __future__ import annotations
@@ -10,6 +11,9 @@ import sys
 import os
 import json
 import time
+import urllib.request
+import urllib.error
+from typing import List, Dict, Any, Optional
 import pandas as pd
 import numpy as np
 
@@ -18,17 +22,94 @@ from src.model_registry import ModelRegistry
 from src.infer import FogInferenceEngine, get_preset_attack_samples
 
 
+def stream_packets(
+    records: List[Dict[str, Any]],
+    url: str = "http://127.0.0.1:8000/api/v1/predict",
+    model: str = "LightGBM",
+    task: str = "8class",
+    delay: float = 0.1
+) -> None:
+    """Streams flow records to a live API endpoint and prints latency and predictions."""
+    print("=" * 82)
+    print(" FOG-IDS REAL-TIME PACKET STREAM GENERATOR (EDGE / FOG SIMULATOR)")
+    print(f" Target API: {url} | Model: {model} | Task: {task} | Delay: {delay}s")
+    print("=" * 82)
+    print(f"{'PKT ID':<8} | {'PREDICTED CLASS':<22} | {'CONFIDENCE':<10} | {'LATENCY (us)':<14} | {'STATUS':<8}")
+    print("-" * 82)
+
+    latencies = []
+    for idx, row in enumerate(records, start=1):
+        payload = {
+            "features": row,
+            "model_name": model,
+            "task": task,
+            "include_explanation": False
+        }
+        data_bytes = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            url,
+            data=data_bytes,
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+
+        t0 = time.perf_counter()
+        try:
+            with urllib.request.urlopen(req, timeout=10.0) as resp:
+                elapsed_us = (time.perf_counter() - t0) * 1e6
+                status_code = resp.status if hasattr(resp, "status") else 200
+                res_data = json.loads(resp.read().decode("utf-8"))
+                pred_label = res_data.get("prediction", "Unknown")
+                conf = res_data.get("confidence", 0.0)
+                lat = res_data.get("latency_us", elapsed_us)
+                latencies.append(lat)
+
+                print(f"#{idx:<7} | {pred_label:<22} | {conf * 100:>8.1f}% | {lat:>10.2f} us | {status_code:<8}")
+        except (urllib.error.URLError, TimeoutError, Exception) as err:
+            err_msg = "CONNECTION_ERR" if isinstance(err, urllib.error.URLError) else "ERR"
+            print(f"#{idx:<7} | {err_msg:<22} | {'N/A':>10} | {'N/A':>10} us | {getattr(err, 'code', 'FAIL')}")
+
+        if delay > 0 and idx < len(records):
+            time.sleep(delay)
+
+    avg_lat = sum(latencies) / max(1, len(latencies)) if latencies else 0.0
+    print("-" * 82)
+    print(f"[SUMMARY] Streamed {len(records)} packets | Average Latency: {avg_lat:.2f} us")
+    print("=" * 82)
+
+
+def cmd_stream(args):
+    """Executes live streaming from a dataset file."""
+    file_path = args.file or os.path.join(os.path.dirname(__file__), "datasets", "sample_test.csv")
+    if not os.path.exists(file_path):
+        print(f"Error: dataset file '{file_path}' not found.")
+        return
+
+    df = pd.read_csv(file_path, nrows=args.limit)
+    feature_cols = [c for c in FEATURES if c in df.columns]
+    records = df[feature_cols].to_dict(orient="records")
+    print(f"Loaded {len(records)} feature rows from {file_path}. Commencing live stream...")
+
+    stream_packets(
+        records=records,
+        url=args.url,
+        model=args.model,
+        task=args.task,
+        delay=args.delay
+    )
+
+
 def cmd_serve(args):
     """Starts the FastAPI production microservice."""
     import uvicorn
-    print(f"🚀 Starting Fog-IDS Microservice on {args.host}:{args.port}...")
+    print(f"Starting Fog-IDS Microservice on {args.host}:{args.port}...")
     uvicorn.run("api:app", host=args.host, port=args.port, reload=args.reload)
 
 
 def cmd_dashboard(args):
     """Starts the interactive Streamlit command center."""
     import subprocess
-    print(f"🛡️ Launching Fog-IDS Cyber Defense Dashboard on port {args.port}...")
+    print(f"Launching Fog-IDS Cyber Defense Dashboard on port {args.port}...")
     cmd = [sys.executable, "-m", "streamlit", "run", "app.py", "--server.port", str(args.port)]
     subprocess.run(cmd)
 
@@ -91,7 +172,8 @@ def cmd_export_models(args):
     print(f"[SUCCESS] Successfully exported {len(exported)} model artifacts to 'models/'")
 
 
-def main():
+def build_parser() -> argparse.ArgumentParser:
+    """Constructs the unified CLI argument parser."""
     parser = argparse.ArgumentParser(prog="fogids", description="Fog-IDS: Lightweight IoT Intrusion Detection System")
     subparsers = parser.add_subparsers(dest="command", help="Available subcommands")
 
@@ -114,9 +196,23 @@ def main():
     p_pred.add_argument("--limit", type=int, default=10000, help="Max rows to process")
     p_pred.add_argument("--output", help="Output CSV path")
 
+    # stream
+    p_stream = subparsers.add_parser("stream", help="Stream packet rows sequentially to REST API")
+    p_stream.add_argument("--file", help="Path to input CSV packet dataset")
+    p_stream.add_argument("--url", default="http://127.0.0.1:8000/api/v1/predict", help="Target API URL")
+    p_stream.add_argument("--model", default="LightGBM", help="Model name for classification")
+    p_stream.add_argument("--task", default="8class", choices=["binary", "8class", "34class"], help="Task classification level")
+    p_stream.add_argument("--limit", type=int, default=50, help="Max packets to stream")
+    p_stream.add_argument("--delay", type=float, default=0.05, help="Delay between packet requests (seconds)")
+
     # export-models
     subparsers.add_parser("export-models", help="Export cached models to production registry")
 
+    return parser
+
+
+def main():
+    parser = build_parser()
     args = parser.parse_args()
 
     if args.command == "serve":
@@ -125,6 +221,8 @@ def main():
         cmd_dashboard(args)
     elif args.command == "predict":
         cmd_predict(args)
+    elif args.command == "stream":
+        cmd_stream(args)
     elif args.command == "export-models":
         cmd_export_models(args)
     else:
