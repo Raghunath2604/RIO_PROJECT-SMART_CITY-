@@ -10,6 +10,12 @@ import json
 import hashlib
 from typing import Dict, Any, Optional
 import joblib
+import warnings
+try:
+    from sklearn.exceptions import InconsistentVersionWarning
+    warnings.filterwarnings('ignore', category=InconsistentVersionWarning)
+except ImportError:
+    pass
 
 MODELS_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_MANIFEST_PATH = os.path.join(MODELS_DIR, "manifest.json")

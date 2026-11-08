@@ -10,6 +10,12 @@ from __future__ import annotations
 import os
 import json
 import joblib
+import warnings
+try:
+    from sklearn.exceptions import InconsistentVersionWarning
+    warnings.filterwarnings('ignore', category=InconsistentVersionWarning)
+except ImportError:
+    pass
 import hashlib
 import time
 from typing import Dict, Any, Optional, List
