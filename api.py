@@ -11,7 +11,7 @@ import time
 import io
 import numpy as np
 import pandas as pd
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Union
 from pydantic import BaseModel, Field
 from fastapi import FastAPI, HTTPException, UploadFile, File, BackgroundTasks, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -96,7 +96,7 @@ except Exception as e:
 # Pydantic Schemas
 # -----------------------------------------------------------------------------
 class FlowFeatures(BaseModel):
-    features: Dict[str, float] = Field(
+    features: Union[Dict[str, float], List[float]] = Field(
         ...,
         description="Dictionary mapping 46 CICIoT2023 feature names to their numeric values."
     )
@@ -133,7 +133,7 @@ class BatchFlowFeatures(BaseModel):
 
 
 class AdaptiveFlowRequest(BaseModel):
-    features: Dict[str, float]
+    features: Union[Dict[str, float], List[float]]
     task: Optional[str] = "8class"
 
 
@@ -176,12 +176,15 @@ def list_models():
 def predict_single_flow(req: FlowFeatures):
     """Classifies a single incoming network flow vector."""
     try:
-        res = inference_engine.predict_sample(req.features, model_name=req.model_name, task=req.task)
+        feat_dict = req.features
+        if isinstance(req.features, (list, tuple)):
+            feat_dict = {f: float(req.features[i]) if i < len(req.features) else 0.0 for i, f in enumerate(FEATURES)}
+        res = inference_engine.predict_sample(feat_dict, model_name=req.model_name, task=req.task)
         
         explanation = None
         if req.include_explanation:
             bundle = registry.load_model(req.model_name, req.task)
-            vec = np.array([req.features.get(f, 0.0) for f in FEATURES], dtype=np.float64)
+            vec = np.array([feat_dict.get(f, 0.0) for f in FEATURES], dtype=np.float64)
             explanation = explain_prediction(bundle["estimator"], bundle["scaler"], bundle["label_encoder"], vec)
             
         try:
@@ -193,7 +196,7 @@ def predict_single_flow(req: FlowFeatures):
                 latency_us=float(res["latency_us"]),
                 model_used=req.model_name,
                 node_id="edge-node-01",
-                features_summary={k: float(req.features.get(k, 0.0)) for k in list(req.features.keys())[:10]}
+                features_summary={k: float(feat_dict.get(k, 0.0)) for k in list(feat_dict.keys())[:10]}
             )
         except Exception:
             pass
@@ -218,7 +221,10 @@ def predict_single_flow(req: FlowFeatures):
 def predict_adaptive_flow(req: AdaptiveFlowRequest):
     """Classifies input using Dynamic Resource-Aware Tier Switcher (FR5)."""
     try:
-        vec = np.array([req.features.get(f, 0.0) for f in FEATURES], dtype=np.float64).reshape(1, -1)
+        feat_dict = req.features
+        if isinstance(req.features, (list, tuple)):
+            feat_dict = {f: float(req.features[i]) if i < len(req.features) else 0.0 for i, f in enumerate(FEATURES)}
+        vec = np.array([feat_dict.get(f, 0.0) for f in FEATURES], dtype=np.float64).reshape(1, -1)
         res = tier_switcher.predict(vec, task=req.task)
         pred_label = str(res["prediction"][0])
         severity, _ = THREAT_LEVELS.get(pred_label, ("High", "orange"))
@@ -232,7 +238,7 @@ def predict_adaptive_flow(req: AdaptiveFlowRequest):
                 latency_us=float(res["latency_us"]),
                 model_used=f"{res['tier']}:{res['model_name']}",
                 node_id="edge-node-01",
-                features_summary={k: float(req.features.get(k, 0.0)) for k in list(req.features.keys())[:10]}
+                features_summary={k: float(feat_dict.get(k, 0.0)) for k in list(feat_dict.keys())[:10]}
             )
         except Exception:
             pass

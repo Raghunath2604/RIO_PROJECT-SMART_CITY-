@@ -128,9 +128,15 @@ if not native_loaded:
 
     @app.post("/api/v1/predict", tags=["Inference"])
     def serverless_predict(req: dict):
-        features = req.get("features", req)
-        rate = float(features.get("Rate", features.get("rate", 100.0)))
-        syn = float(features.get("syn_count", features.get("syn_flag_number", 0.0)))
+        raw_feat = req.get("features", req)
+        if isinstance(raw_feat, (list, tuple)):
+            rate = float(raw_feat[4]) if len(raw_feat) > 4 else 100.0
+            syn = float(raw_feat[15]) if len(raw_feat) > 15 else 0.0
+        elif isinstance(raw_feat, dict):
+            rate = float(raw_feat.get("Rate", raw_feat.get("rate", 100.0)))
+            syn = float(raw_feat.get("syn_count", raw_feat.get("syn_flag_number", 0.0)))
+        else:
+            rate, syn = 100.0, 0.0
 
         if rate > 500.0 and syn > 5.0:
             pred = "DDoS-SYN_Flood"
@@ -170,8 +176,13 @@ if not native_loaded:
 
     @app.post("/api/v1/predict/adaptive", tags=["Inference"])
     def serverless_adaptive_predict(req: dict):
-        features = req.get("features", req)
-        rate = float(features.get("Rate", features.get("rate", 100.0)))
+        raw_feat = req.get("features", req)
+        if isinstance(raw_feat, (list, tuple)):
+            rate = float(raw_feat[4]) if len(raw_feat) > 4 else 100.0
+        elif isinstance(raw_feat, dict):
+            rate = float(raw_feat.get("Rate", raw_feat.get("rate", 100.0)))
+        else:
+            rate = 100.0
 
         if rate > 600.0:
             tier = "MINIMAL"
