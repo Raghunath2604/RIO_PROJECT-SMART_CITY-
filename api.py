@@ -82,6 +82,16 @@ def serve_js():
         return FileResponse(js_path, media_type="application/javascript")
     raise HTTPException(status_code=404, detail="JS not found")
 
+@app.get("/assets/{file_path:path}", include_in_schema=False)
+def serve_assets(file_path: str):
+    p = os.path.join(PUBLIC_DIR, "assets", file_path)
+    if os.path.exists(p):
+        return FileResponse(p)
+    p_root = os.path.join(os.path.dirname(__file__), "assets", file_path)
+    if os.path.exists(p_root):
+        return FileResponse(p_root)
+    raise HTTPException(status_code=404, detail="Asset not found")
+
 
 # Preload default models
 try:
