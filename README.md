@@ -1,5 +1,7 @@
 # Fog-IDS: Resource-Aware Multi-Class Intrusion Detection for Fog Computing Nodes in Smart City IoT
 
+[![CI/CD Pipeline](https://github.com/Raghunath2604/RIO_PROJECT-SMART_CITY-/actions/workflows/ci.yml/badge.svg)](https://github.com/Raghunath2604/RIO_PROJECT-SMART_CITY-/actions)
+[![Vercel Production](https://img.shields.io/badge/Vercel-Live%20Production-22c55e.svg)](https://rio-project-smart-city.vercel.app/)
 [![Python Version](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-22c55e.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Production%20Microservice-22c55e.svg)](https://fastapi.tiangolo.com)
 [![Streamlit](https://img.shields.io/badge/Streamlit-SOC%20Console-22c55e.svg)](https://streamlit.io)
@@ -11,63 +13,45 @@
 - **Author:** Raghunatha Reddy G R (SRN: R23EA094)  
 - **Affiliation:** School of Computing Science and Engineering, REVA University, Bengaluru, India  
 - **Faculty Supervisor:** Dr. Supreeth S  
+- **Live Production Web Console:** [https://rio-project-smart-city.vercel.app/](https://rio-project-smart-city.vercel.app/)  
+- **Live API Edge Gateway:** [https://api-alpha-eight-29.vercel.app/](https://api-alpha-eight-29.vercel.app/)  
+
+---
+
+## System Architecture
+
+![Fog-IDS System Architecture](assets/architecture.png)
 
 ---
 
 ## Overview
 
-**Fog-IDS** is a resource-aware, multi-class network intrusion detection system designed for deployment on edge gateways and municipal fog computing nodes (e.g., ARM Cortex-A72 / Raspberry Pi 4) in Smart City IoT environments. 
+**Fog-IDS** is a resource-aware, multi-class network intrusion detection system engineered for deployment on edge gateways and municipal fog computing nodes (e.g., ARM Cortex-A72 / Raspberry Pi 4) in Smart City IoT environments. 
 
-The system operates across three classification depths (Binary, 8-Class Category, and 34-Class Fine-Grained) on 277,369 balanced real-world flow samples from the **CICIoT2023** benchmark. It resolves four core engineering challenges in edge intrusion detection:
+The system operates across three classification depths (Binary, 8-Class Category, and 34-Class Fine-Grained) evaluated on 277,369 balanced real-world flow samples from the **CICIoT2023** benchmark. It resolves four core engineering challenges in edge intrusion detection:
 
-1. **Minority-Class Recall Starvation**: Mitigating severe class imbalance (>90% DDoS/DoS vs. <0.1% Web and Brute-Force flows) via cost-sensitive balanced loss weighting and per-class Bernoulli subsampling.
+1. **Minority-Class Recall Starvation**: Mitigating severe class imbalance (>90% DDoS/DoS vs. <0.1% Web and Brute-Force flows) via cost-sensitive balanced loss weighting ($w_c = \frac{N}{K \cdot N_c}$) and per-class Bernoulli subsampling.
 2. **Session-Level Data Leakage**: Eliminating artificial accuracy inflation caused by random packet shuffling across contiguous burst flows through deterministic session-aware partitioning.
 3. **True Single-Row Streaming Latency**: Benchmarking per-packet arrival latencies to identify unviable edge models (e.g., Random Forest at 33.8 ms/sample) and validating sub-millisecond edge neural architectures (CompactMLP at 132.1 µs, 135.4 KB).
-4. **Adaptive Resource Tiering (FR5)**: Implementing a dynamic tier switcher governed by CPU load hysteresis (ΔH = 5%) and dwell-time smoothing (τ = 1.0s) to switch between full, reduced, and emergency minimal models without frame drops or tier flapping.
+4. **Adaptive Resource Tiering (FR5)**: Implementing a dynamic tier switcher governed by CPU load hysteresis ($\Delta H = 5\%$) and dwell-time smoothing ($\tau = 1.0\text{s}$) to transition between full, reduced, and emergency minimal models without frame drops or tier flapping.
 
 ---
 
-## Architectural Workflow
+## Documentation Hub
 
-```
-                        [ IoT Edge Network Ingestion ]
-                                      │
-                                      ▼
-                        ┌───────────────────────────┐
-                        │ 46-Feature Network Matrix │
-                        │  (Rate, IAT, Flags, Pkt)  │
-                        └─────────────┬─────────────┘
-                                      │
-                                      ▼
-                       ┌─────────────────────────────┐
-                       │  FR5 Dynamic Tier Manager   │
-                       │  (Hysteresis & Dwell Time)  │
-                       └──────────────┬──────────────┘
-                                      │
-         ┌────────────────────────────┼────────────────────────────┐
-         ▼                            ▼                            ▼
-┌──────────────────┐         ┌──────────────────┐         ┌──────────────────┐
-│    FULL TIER     │         │   REDUCED TIER   │         │   MINIMAL TIER   │
-│     LightGBM     │         │    CompactMLP    │         │    LogReg (L2)   │
-│ Macro-F1: 0.8099 │         │ Latency: 132.1µs │         │ Footprint: 5.3KB │
-│  CPU Load < 45%  │         │ 45% ≤ Load ≤ 75% │         │  CPU Load > 75%  │
-└────────┬─────────┘         └────────┬─────────┘         └────────┬─────────┘
-         │                            │                            │
-         └────────────────────────────┼────────────────────────────┘
-                                      │
-                                      ▼
-                        ┌───────────────────────────┐
-                        │ Multi-Class Threat Engine │
-                        │   (8-Class / 34-Class)    │
-                        └─────────────┬─────────────┘
-                                      │
-         ┌────────────────────────────┴────────────────────────────┐
-         ▼                                                         ▼
-┌──────────────────┐                                      ┌──────────────────┐
-│ Local XAI Impact │                                      │ SIEM Audit Trail │
-│   Attributions   │                                      │  (RFC3339 JSONL) │
-└──────────────────┘                                      └──────────────────┘
-```
+Complete engineering, operational, and research specifications are organized in the [`docs/`](docs/) directory:
+
+| Document | Primary Focus & System Role |
+| :--- | :--- |
+| [**PRD.md**](docs/PRD.md) | Product Requirements Document: problem formulation, requirements (FR1–FR9), SLA latency bounds |
+| [**TRD.md**](docs/TRD.md) | Technical Requirements Document: algorithmic equations, telemetry schemas, edge hardware constraints |
+| [**RUNBOOK.md**](docs/RUNBOOK.md) | Production Operations Runbook: incident handling, health probes, zero-downtime tier recovery |
+| [**UIUX_FLOW.md**](docs/UIUX_FLOW.md) | Design System Specification: Obsidian Black (`#050507`), Pure White, and Cyber Lite Green (`#4ade80`) |
+| [**APP_FLOW.md**](docs/APP_FLOW.md) | End-to-End Application Flow: packet vectorization, FR5 routing, XAI attributions, and SIEM logging |
+| [**COMPLETE_PROJECT_GUIDE.md**](docs/COMPLETE_PROJECT_GUIDE.md) | Full Pipeline Guide: dataset ingestion, multi-model training, profiling, and CLI simulation |
+| [**PRESENTATION_GUIDE.md**](docs/PRESENTATION_GUIDE.md) | Stakeholder Demo Script: research highlights, technical Q&A defense, and architecture walkthrough |
+| [**IMPLEMENTATION_PLAN.md**](docs/IMPLEMENTATION_PLAN.md) | Engineering Milestone Tracker: completed deliverables, verification matrix, test coverage |
+| [**PROJECT_PLAN.md**](docs/PROJECT_PLAN.md) | Research Questions Mapping: literature review synthesis (RQ1–RQ5) and experimental results |
 
 ---
 
@@ -103,7 +87,7 @@ Evaluated across 277,369 balanced flow samples (152,525 train / 124,844 test) us
 
 ### 3. Rare Attack Class Recall Breakdown (LightGBM 8-Class)
 
-Cost-sensitive loss weighting ($w_c = rac{N}{K \cdot N_c}$) restores high detection capability on rare attack classes:
+Cost-sensitive loss weighting ($w_c = \frac{N}{K \cdot N_c}$) restores high detection capability on rare attack classes:
 
 | Attack Category | Precision | **Recall** | F1-Score | Test Support |
 | :--- | :---: | :---: | :---: | :---: |
@@ -120,86 +104,106 @@ Cost-sensitive loss weighting ($w_c = rac{N}{K \cdot N_c}$) restores high detec
 
 ## Mathematical Specification (FR5 Dynamic Hysteresis)
 
-To eliminate state flapping under bursty IoT traffic, the tier switcher enforces asymmetric deadband hysteresis ($\Delta H = 5.0\%$) and minimum dwell-time smoothing ($	au = 1.0	ext{ s}$):
+To eliminate state flapping under bursty IoT traffic, the tier switcher enforces asymmetric deadband hysteresis ($\Delta H = 5.0\%$) and minimum dwell-time smoothing ($\tau = 1.0\text{ s}$):
 
-$$	ext{Tier}_{t} = egin{cases} 
-	ext{Minimal (LogReg)}, & 	ext{if } U_{	ext{CPU}} \ge T_{	ext{high}} \
-	ext{Reduced (CompactMLP)}, & 	ext{if } T_{	ext{low}} \le U_{	ext{CPU}} < T_{	ext{high}} - \Delta H 	ext{ (downward)} \lor U_{	ext{CPU}} \ge T_{	ext{low}} 	ext{ (upward)} \
-	ext{Full (LightGBM)}, & 	ext{if } U_{	ext{CPU}} < T_{	ext{low}} - \Delta H 
+$$\text{Tier}_{t} = \begin{cases} 
+\text{Minimal (LogReg)}, & \text{if } U_{\text{CPU}} \ge T_{\text{high}} \\
+\text{Reduced (CompactMLP)}, & \text{if } T_{\text{low}} \le U_{\text{CPU}} < T_{\text{high}} - \Delta H \text{ (downward)} \lor U_{\text{CPU}} \ge T_{\text{low}} \text{ (upward)} \\
+\text{Full (LightGBM)}, & \text{if } U_{\text{CPU}} < T_{\text{low}} - \Delta H 
 \end{cases}$$
 
-Where default thresholds are $T_{	ext{low}} = 45.0\%$ and $T_{	ext{high}} = 75.0\%$. State transitions are suppressed if elapsed time since the last transition $t - t_{	ext{last}} < 	au$.
+Where default thresholds are $T_{\text{low}} = 45.0\%$ and $T_{\text{high}} = 75.0\%$. State transitions are suppressed if elapsed time since the last transition $t - t_{\text{last}} < \tau$.
 
 ---
 
-## User Interface & SOC Operational Flow
-
-Both web interfaces (the static console at `public/` and the Streamlit Command Center at `app.py`) are styled using a high-density **Obsidian Black, Crisp White, and Cyber Lite Green** design system. Visual bloat, neon blur, and generic decorative gradients have been removed in favor of structural 1px borders and monospaced telemetry figures.
-
-The interface implements a 7-tab operational flow:
-
-1. **Tab 1: Live Traffic Ingestion**: Real-time packet throughput, simulated attack wave injectors (DDoS, Mirai, Brute Force), and distributed municipal fog cluster telemetry.
-2. **Tab 2: Dynamic Tier Switcher (FR5)**: Interactive CPU pressure simulator demonstrating hysteresis deadband transitions and Pareto latency-accuracy trade-offs.
-3. **Tab 3: Threat Vector Studio & XAI Diagnostics**: Interactive 46-feature adjustment sliders, multi-class prediction, and local feature attribution impacts.
-4. **Tab 4: Active Edge Firewall & Mitigation**: Live IP drop table with one-click unblock, export to Linux `iptables` rules, and Suricata/Snort `.rules` format.
-5. **Tab 5: Batch CSV Forensics**: High-speed network flow scanner (210,000 flows/sec), threat distribution charts, and JSON audit log export.
-6. **Tab 6: Empirical Benchmark**: Evaluation matrix on genuine CICIoT2023 flows across 4 model families and 3 taxonomy depths.
-7. **Tab 7: REST API Sandbox**: Live interactive API console for executing and inspecting JSON payloads against `/health`, `/api/v1/predict`, and `/api/v1/predict/adaptive`.
-
----
-
-## Repository Structure
+## Clean Repository Structure
 
 ```
 RIO_PROJECT-SMART_CITY-/
-├── api.py                    # Production FastAPI REST microservice
-├── app.py                    # Streamlit SOC command center dashboard
-├── cli.py                    # Production CLI (serve, dashboard, predict, stream)
-├── run_pipeline.py           # Multi-stage ML pipeline orchestrator
-├── run_production_demo.py    # Automated 6-step end-to-end verification demo
-├── verify_all_live.py        # System health audit and verification suite
-├── Dockerfile                # Production container specification
-├── docker-compose.yml        # Multi-container service orchestration
-├── requirements.txt          # Production runtime dependencies
-├── pytest.ini                # Pytest path and filter configuration
-├── .env.example              # Production environment configuration template
+├── .github/workflows/ci.yml   # Continuous Integration & Automated Test Suite
+├── api.py                     # Production FastAPI REST microservice
+├── app.py                     # Streamlit SOC command center dashboard
+├── cli.py                     # Production CLI (serve, dashboard, predict, stream)
+├── run_pipeline.py            # Multi-stage ML pipeline orchestrator
+├── run_production_demo.py     # Automated 6-step end-to-end verification demo
+├── verify_all_live.py         # Full-stack sanity & health audit suite
+├── Dockerfile                 # Production container specification
+├── docker-compose.yml         # Container orchestration manifest
+├── requirements.txt           # Production runtime dependencies
+├── requirements-dev.txt       # Development & testing tooling
+├── pytest.ini                 # Pytest configuration
+├── vercel.json                # Vercel Edge routing & reverse proxy rewrites
+├── .env.example               # Environment variables template
+├── LICENSE                    # MIT License
+├── README.md                  # System overview, benchmarks, & quickstart
 │
-├── models/                   # Versioned production model artifacts
-│   ├── LightGBM_*.joblib     # Full-tier GBDT estimators
-│   ├── CompactMLP_*.joblib   # Reduced-tier neural estimators
-│   ├── LogReg_*.joblib       # Minimal-tier linear estimators
-│   ├── manifest.json         # SHA256 checksums and parameter metadata
-│   └── model_loader.py       # Automated checksum verification & loader
+├── api/                       # Cloud Edge Gateway (Vercel Serverless)
+│   ├── index.py               # Edge entrypoint with fallback resilience
+│   └── requirements.txt       # Serverless edge dependencies
 │
-├── public/                   # Static SOC Web Console (FastAPI hosted)
-│   ├── index.html            # 7-tab operational interface
-│   ├── style.css             # Obsidian Black, White, and Lite Green styles
-│   └── app.js                # Telemetry controller and API client
+├── assets/                    # Presentation assets
+│   └── architecture.png       # Publication-quality system architecture visual
 │
-├── src/                      # Core engineering modules
-│   ├── schema.py             # 46 network features and taxonomy labels
-│   ├── tier_switcher.py      # FR5 Dynamic Resource-Aware Tier Switcher
-│   ├── infer.py              # Single-flow and vectorized inference engine
-│   ├── explain.py            # Local feature attribution (XAI)
-│   ├── model_registry.py     # Versioned artifact management
-│   ├── security_logger.py    # RFC3339-compliant SIEM JSONL logger
-│   ├── flow_collector.py     # Real-time packet collector daemon
-│   ├── loader.py             # Bernoulli subsampling flow loader
-│   ├── splits.py             # Session-aware burst train/test splitters
-│   ├── train_eval.py         # Multi-metric model training & evaluation
-│   └── profile_model.py      # Edge streaming latency profiler
+├── datasets/                  # Evaluation datasets
+│   └── sample_test.csv        # Real CICIoT2023 sample test flows
 │
-├── tests/                    # Automated test suite (22/22 passing)
-│   ├── conftest.py           # Path resolution fixtures
-│   ├── test_api.py           # REST API endpoint integration tests
-│   ├── test_cli_stream.py    # Live streaming generator CLI tests
-│   ├── test_fr5_hysteresis.py# Hysteresis and dwell-time unit tests
-│   ├── test_model_loader.py  # SHA256 artifact verification tests
-│   ├── test_schema.py        # Feature matrix sanitization tests
-│   └── test_tier_switcher.py # Tier transition unit tests
+├── docs/                      # Comprehensive Documentation Hub
+│   ├── PRD.md                 # Product Requirements Document
+│   ├── TRD.md                 # Technical Requirements Document
+│   ├── RUNBOOK.md             # Operations & Incident Runbook
+│   ├── UIUX_FLOW.md           # Cyber Theme & Design System Spec
+│   ├── APP_FLOW.md            # Telemetry & Flow Routing Guide
+│   ├── COMPLETE_PROJECT_GUIDE.md # Comprehensive Engineering Guide
+│   ├── PRESENTATION_GUIDE.md  # Stakeholder Presentation Script
+│   ├── IMPLEMENTATION_PLAN.md # Milestone Checklist & Verification
+│   └── PROJECT_PLAN.md        # Literature Review & RQ Mappings
 │
-└── logs/                     # SIEM Audit Logs
-    └── alerts.jsonl          # RFC3339 structured intrusion alert events
+├── models/                    # Versioned Model Artifacts (12 Models)
+│   ├── CompactMLP_*.joblib    # Reduced-tier neural estimators
+│   ├── LightGBM_*.joblib      # Full-tier gradient boosted trees
+│   ├── LogReg_*.joblib        # Minimal-tier linear classifiers
+│   ├── RandomForest_*.joblib  # Reference baseline models
+│   ├── manifest.json          # SHA-256 checksums & model parameters
+│   └── model_loader.py        # Checksum verification & model loader
+│
+├── public/                    # Static Web Console (Pure HTML/CSS/JS)
+│   ├── index.html             # 7-tab SOC operational interface
+│   ├── style.css              # Obsidian Black & Cyber Lite Green styles
+│   └── app.js                 # Real-time telemetry engine & API client
+│
+├── results/                   # Reproducible Benchmark Artifacts
+│   ├── REPORT.md              # Complete empirical benchmark report
+│   ├── benchmark_results.csv  # 12-model performance metrics table
+│   ├── deployability_profile.csv # Latency & memory profile across tiers
+│   ├── per_class_best8class.csv  # Precision, recall, F1 per attack category
+│   ├── fog_emulation.csv      # Centralized vs. FedAvg comparison
+│   ├── leakage_effect.csv     # Session split vs random split ablation
+│   └── figures/               # High-resolution benchmark figures
+│
+├── scripts/                   # Auxiliary Tooling & Generators
+│   ├── generate_architecture_diagram.py # Architecture PNG generator
+│   └── test_live_system.py    # Standalone sanity script
+│
+├── src/                       # Core ML & Fog Computing Modules
+│   ├── schema.py              # 46 network features & taxonomy labels
+│   ├── tier_switcher.py       # FR5 Dynamic Resource-Aware Tier Switcher
+│   ├── infer.py               # Flow inference engine & threat levels
+│   ├── explain.py             # Local feature attribution (XAI)
+│   ├── model_registry.py      # Artifact registry & preloader
+│   ├── security_logger.py     # RFC3339 SIEM JSONL logger
+│   ├── loader.py              # Stratified Bernoulli dataset loader
+│   ├── splits.py              # Session-aware burst partitioning
+│   ├── train_eval.py          # Cost-sensitive training & evaluation
+│   └── profile_model.py       # Streaming single-row latency profiler
+│
+└── tests/                     # Automated Test Suites (22/22 Passing)
+    ├── conftest.py            # Path resolution fixtures
+    ├── test_api.py            # FastAPI REST microservice integration tests
+    ├── test_cli_stream.py     # Live streaming packet generator tests
+    ├── test_fr5_hysteresis.py # FR5 hysteresis & dwell-time unit tests
+    ├── test_model_loader.py   # SHA-256 artifact integrity unit tests
+    ├── test_schema.py         # Feature matrix sanitization unit tests
+    └── test_tier_switcher.py  # Tier transition state-machine tests
 ```
 
 ---
@@ -226,7 +230,12 @@ pip install -r requirements.txt
 
 ### 2. Launch Services
 
-#### FastAPI Microservice & Static SOC Console (Port 8000)
+#### Cloud Production Deployment (Zero Setup)
+- **Live SOC Web Portal:** [https://rio-project-smart-city.vercel.app/](https://rio-project-smart-city.vercel.app/)
+- **Live API Documentation:** [https://rio-project-smart-city.vercel.app/docs](https://rio-project-smart-city.vercel.app/docs)
+- **Health Telemetry Endpoint:** [https://rio-project-smart-city.vercel.app/health](https://rio-project-smart-city.vercel.app/health)
+
+#### Local FastAPI Microservice & Static SOC Console (Port 8000)
 ```bash
 python cli.py serve --host 0.0.0.0 --port 8000
 ```
@@ -234,7 +243,7 @@ python cli.py serve --host 0.0.0.0 --port 8000
 - Interactive OpenAPI Docs: `http://localhost:8000/docs`
 - Health Endpoint: `http://localhost:8000/health`
 
-#### Streamlit Command Center (Port 8501)
+#### Local Streamlit SOC Command Center (Port 8501)
 ```bash
 python cli.py dashboard --port 8501
 ```
@@ -242,7 +251,7 @@ python cli.py dashboard --port 8501
 
 ### 3. Real-Time Packet Streaming CLI
 
-Stream real-time packet feature vectors to the live API microservice:
+Stream genuine network flow feature vectors to the live API microservice:
 ```bash
 # Stream 20 packets with 50ms delay
 python cli.py stream --url http://localhost:8000/api/v1/predict --limit 20 --delay 0.05
