@@ -49,36 +49,22 @@ The primary milestone requirements for Week 4 mandate the concrete implementatio
 
 ---
 
-## II. System Architecture & Module Decomposition
+## II. System Architectural Design & Module Decomposition
 
-The Fog-IDS appliance decomposes intrusion detection across four coordinated architectural planes, illustrated below:
+The Fog-IDS appliance decomposes intrusion detection across four coordinated operational planes, as illustrated in the system architecture topology (Fig. 1):
 
-```text
-+----------------------------------------------------------------------------------------------------+
-|                                    FOG-IDS SYSTEM TOPOLOGY                                         |
-+---------------------------------+----------------------------------+-------------------------------+
-|  1. INGESTION & FEATURE PLANE   |  2. ADAPTIVE CONTROL PLANE (FR5) |  3. MULTI-TIER INFERENCE ZOO  |
-|                                 |                                  |                               |
-|  • Traffic & SCADA Sensors      |  • ARM Cortex-A72 CPU Telemetry  |  • FULL TIER (LightGBM)       |
-|  • NetFlow Capture (46 feats)   |  • Asymmetric Hysteresis Engine  |    Acc: 98.03%, F1: 0.9060    |
-|  • SIMD Scaling & Vectorizer    |    T_low = 45%, T_high = 75%     |  • REDUCED TIER (CompactMLP)  |
-|  • Session Burst Partitioning   |    Deadband Buffer: ΔH = 5%      |    Acc: 83.38%, Lat: 132 µs   |
-|    (Zero Data Leakage - RQ1)    |    Dwell Smoothing: τ = 1.0s     |  • MINIMAL TIER (LogReg)      |
-|  • Cost-Sensitive Balanced Loss |  • Dynamic Model Dispatcher      |    Acc: 76.99%, Size: 5.3 KB  |
-|    w_c = N / (K * N_c) (RQ2)    |    (Zero-Flapping State Machine) |  • 12 Verified SHA-256 Models |
-+---------------------------------+----------------------------------+-------------------------------+
-                                                  |
-                                                  v
-+----------------------------------------------------------------------------------------------------+
-|                               4. SOC & SECURITY OPERATIONS PLANE                                   |
-|  • FastAPI REST Microservice (Port 8000)      • RFC3339 SIEM Audit Event Bus (logs/alerts.jsonl)   |
-|  • Real-Time CLI Packet Stream Generator      • Streamlit SOC Command Center Dashboard (Port 8501) |
-+----------------------------------------------------------------------------------------------------+
-```
+![Fig. 1: System Architecture and Dynamic Control Topology](../assets/architecture.png)
+*Fig. 1. Fog-IDS System Architecture and Dynamic Control Topology across the four coordinated operational planes (Smart City Ingestion Plane, FR5 Adaptive Control Plane, Multi-Tier ML Inference Zoo, and SOC Telemetry Plane).*
+
+### Architectural Plane Decomposition:
+* **Ingestion Plane:** Handles real-time pcap flow extraction, feature vectorization across 46 network metrics, and deterministic session-aware burst partitioning.
+* **Adaptive Control Plane (FR5):** Continuously samples node CPU headroom and applies asymmetric hysteresis ($\Delta H = 5\%$, $\tau = 1.0\text{s}$) to dynamically dispatch flows without tier flapping.
+* **Multi-Tier Inference Zoo:** Houses 12 versioned models (SHA-256 verified) operating across three operational tiers (Full LightGBM, Reduced CompactMLP, Minimal LogReg).
+* **SOC & Telemetry Plane:** Delivers real-time SIEM audit logging (RFC3339 JSONL format), high-throughput FastAPI REST microservices, and interactive dashboard telemetry.
 
 ---
 
-## III. Core Implementation Details (Primary Functionality)
+## III. Core Module Implementation Details (Primary Functionality)
 
 ### A. Module 1: Ingestion & Feature Preprocessing Engine (`src/schema.py`, `src/loader.py`, `src/splits.py`)
 
@@ -99,21 +85,15 @@ The Fog-IDS appliance decomposes intrusion detection across four coordinated arc
 
 ### B. Module 2: FR5 Dynamic Adaptive Controller (`src/tier_switcher.py`)
 
-Under fluctuating IoT traffic bursts, edge node CPU load $U_{\text{CPU}}(t)$ oscillates rapidly near operational boundary thresholds. Standard naive thresholding triggers catastrophic high-frequency model swapping (tier flapping), saturating memory buses and dropping frames.
+Under bursty IoT traffic, node CPU utilization oscillates near operational boundaries. To prevent high-frequency tier flapping, `src/tier_switcher.py` implements an asymmetric deadband hysteresis state machine governed by the following formulation:
 
-1. **Mathematical State Machine Specification:**
-   The adaptive controller enforces an asymmetric deadband hysteresis state machine with minimum dwell-time smoothing:
-   $$\text{Tier}_{t} = \begin{cases} 
-   \text{Minimal (LogReg)}, & \text{if } U_{\text{CPU}}(t) \ge T_{\text{high}} \\
-   \text{Reduced (CompactMLP)}, & \text{if } T_{\text{low}} \le U_{\text{CPU}}(t) < T_{\text{high}} - \Delta H \text{ (downward)} \lor U_{\text{CPU}}(t) \ge T_{\text{low}} \text{ (upward)} \\
-   \text{Full (LightGBM)}, & \text{if } U_{\text{CPU}}(t) < T_{\text{low}} - \Delta H 
-   \end{cases}$$
+$$\text{Tier}_{t} = \begin{cases} 
+\text{Minimal (LogReg)}, & \text{if } U_{\text{CPU}}(t) \ge T_{\text{high}} \\
+\text{Reduced (CompactMLP)}, & \text{if } T_{\text{low}} \le U_{\text{CPU}}(t) < T_{\text{high}} - \Delta H \text{ (downward)} \lor U_{\text{CPU}}(t) \ge T_{\text{low}} \text{ (upward)} \\
+\text{Full (LightGBM)}, & \text{if } U_{\text{CPU}}(t) < T_{\text{low}} - \Delta H 
+\end{cases}$$
 
-2. **Transition Constraints:**
-   * **Low Load Threshold ($T_{\text{low}}$):** $45.0\%$ CPU utilization.
-   * **High Load Threshold ($T_{\text{high}}$):** $75.0\%$ CPU utilization.
-   * **Hysteresis Deadband ($\Delta H$):** $5.0\%$ buffer preventing downward flapping.
-   * **Minimum Dwell Window ($\tau$):** $1.0\,\text{s}$ stability lock: state changes are suppressed if $\Delta t = t - t_{\text{last}} < \tau$.
+Where default thresholds are $T_{\text{low}} = 45.0\%$ and $T_{\text{high}} = 75.0\%$, with deadband buffer $\Delta H = 5.0\%$ and dwell smoothing $\tau = 1.0\,\text{s}$. State transitions within $\Delta t < \tau$ are suppressed to guarantee zero tier flapping.
 
 ```python
 # Core logic from src/tier_switcher.py
@@ -243,9 +223,12 @@ Evaluated across **124,844 test flow records** sampled from the 5.49-million rea
 | | CompactMLP | 81.04% | 0.6357 | 0.8112 | 124,844 | Edge Neural Mode |
 | | Logistic Regression | 73.57% | 0.5314 | 0.7225 | 124,844 | Ultra-Low Footprint Mode |
 
-### C. True Single-Row Streaming Latency vs. Batch Amortization Profile
+### C. True Single-Row Streaming Latency vs. Batch Amortization Profile (Gap 4)
 
-A critical finding of this milestone addresses **Gap 4**: measuring single-packet arrival latency ($N=1$) rather than artificial batch-vectorized matrix multiplication ($N=10,000$):
+A critical empirical discovery achieved in this milestone addresses **Gap 4**: measuring single-packet arrival latency ($N=1$) rather than artificial batch-vectorized matrix multiplication ($N=10,000$). The relationship between model size and single-row streaming latency is visualized in Fig. 2:
+
+![Fig. 2: Model Size vs. Single-Row Streaming Latency](../results/figures/size_vs_latency.png)
+*Fig. 2. Empirical trade-off curve between model artifact storage footprint (KB) and single-row streaming latency (µs) demonstrating the edge feasibility of CompactMLP over Random Forest.*
 
 | Architecture | Model Tier | Artifact Size | Batch Amortized ($N=10\text{k}$) | Single-Row Streaming ($N=1$) | Est. Raspberry Pi 4 Latency | Edge Feasibility |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
@@ -254,9 +237,12 @@ A critical finding of this milestone addresses **Gap 4**: measuring single-packe
 | **LightGBM** | Full | **4.1 MB** | $18.69\,\mu\text{s}$ | **1,876.0 µs** | **9.38 – 12.19 ms** | Standard Gateway Mode |
 | **Random Forest** | Reference | 48.5 MB | $5.05\,\mu\text{s}$ | $33,755.7\,\mu\text{s}$ | 168.8 – 219.4 ms | **Infeasible on Fog Hardware** |
 
-### D. Rare Attack Recall Recovery Breakdown (8-Class Task)
+### D. Rare Attack Recall Recovery Breakdown (Gap 1)
 
-Cost-sensitive loss weighting directly resolved minority starvation (**Gap 1**):
+Cost-sensitive loss weighting directly resolved minority starvation (**Gap 1**). The per-class recall distribution is depicted in Fig. 3:
+
+![Fig. 3: Rare Minority Attack Recall Recovery](../results/figures/per_class_recall.png)
+*Fig. 3. Per-class recall restoration across rare attack categories (Web-based, Brute Force, Spoofing, Recon) on the held-out test support of CICIoT2023 under cost-sensitive balanced loss weighting.*
 
 | Attack Category | Precision | **Recall** | F1-Score | Support | Research Impact |
 | :--- | :---: | :---: | :---: | :---: | :--- |
@@ -271,12 +257,17 @@ Cost-sensitive loss weighting directly resolved minority starvation (**Gap 1**):
 
 ## V. Literature Review Gap Resolution Progress
 
+Fig. 4 highlights the impact of **Gap 2** (Evaluation Protocol Leakage), demonstrating the severe accuracy overestimation induced by random row shuffling compared against our deterministic session burst splitting:
+
+![Fig. 4: Session Split vs. Random Hold-Out Leakage Ablation](../results/figures/leakage_effect.png)
+*Fig. 4. Evaluation protocol ablation comparing naive random hold-out packet shuffling against deterministic session-aware burst partitioning, illustrating the artificial accuracy inflation caused by inter-split leakage.*
+
 | Research Gap from Phase 1 Review (*R23EA094*) | Target Status | Week 4 Implementation Status |
 | :--- | :---: | :--- |
 | **Gap 1: Minority-Class Performance** | In Progress / Validated | Inverse class-frequency weighting implemented; Web-based recall lifted to $84.0\%$, Brute Force to $73.4\%$. |
 | **Gap 2: Evaluation Leakage Protocol** | Completed | Deterministic session-aware burst partitioning implemented in `src/splits.py` to prevent train/test bleed. |
 | **Gap 3: Full 34-Class Coverage** | Completed | Full 34-class task implemented across LightGBM ($95.79\%$), CompactMLP ($81.04\%$), and LogReg ($73.57\%$). |
-| **Gap 4: Deployability & Streaming Latency** | Completed | Single-row streaming latency benchmarked; CompactMLP ($132.1\,\mu\text{s}$) validated for $<1.0\,\text{ms}$ edge SLA. |
+| **Gap 4: Deployability & Streaming Latency** | Completed | Single-row streaming latency benchmarked; CompactMLP ($132.1\,\mu\text{s}$) validated for edge line-rate processing. |
 | **Gap 5: Dynamic Resource Tiering** | Completed | FR5 Hysteresis State Machine ($\Delta H = 5\%$, $\tau = 1.0\text{s}$) built, wired to API, and verified against tier flapping. |
 | **Gap 6: Feature Efficiency & Explainability** | In Progress | Fast surrogate feature attributions implemented; top-5 attack signatures extracted in $<15\,\text{ms}$. |
 

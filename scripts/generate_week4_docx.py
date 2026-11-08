@@ -3,7 +3,7 @@ generate_week4_docx.py
 ======================
 Generates an official, publication-grade IEEE Technical Milestone Report
 for Week 4: "Core Implementation of the Module (30% Checkpoint)"
-as a formatted Microsoft Word (.docx) document.
+as a formatted Microsoft Word (.docx) document with embedded empirical figures.
 """
 
 import os
@@ -11,9 +11,9 @@ import docx
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
-from docx.oxml import OxmlElement, parse_xml
-from docx.oxml.ns import nsdecls, qn
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.oxml import parse_xml
+from docx.oxml.ns import nsdecls
 
 def set_cell_background(cell, fill_hex):
     tcPr = cell._tc.get_or_add_tcPr()
@@ -43,10 +43,7 @@ def create_week4_report():
         section.right_margin = Inches(1.0)
 
     # Base Colors
-    NAVY_HEX = "0F172A"
-    BLUE_HEX = "1E3A8A"
-    DARK_GRAY = RGBColor(51, 65, 85)
-    BLACK = RGBColor(15, 23, 42)
+    DARK_GRAY = RGBColor(71, 85, 105)
     HEADER_BLUE = RGBColor(30, 58, 138)
 
     # -------------------------------------------------------------
@@ -146,7 +143,7 @@ def create_week4_report():
     r_terms.font.size = Pt(9.5)
     r_terms.font.italic = True
 
-    # Helper for adding IEEE style headings
+    # Helper functions
     def add_sec_heading(num_str, title_str):
         h = doc.add_paragraph()
         h.paragraph_format.space_before = Pt(14)
@@ -176,6 +173,30 @@ def create_week4_report():
         r.font.size = Pt(9.5)
         return p
 
+    def add_figure(img_rel_path, fig_num_str, caption_str, width_in=5.6):
+        if not os.path.exists(img_rel_path):
+            print(f"[WARN] Image file not found: {img_rel_path}")
+            return
+        p_img = doc.add_paragraph()
+        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_img.paragraph_format.space_before = Pt(6)
+        p_img.paragraph_format.space_after = Pt(2)
+        run_img = p_img.add_run()
+        run_img.add_picture(img_rel_path, width=Inches(width_in))
+
+        p_cap = doc.add_paragraph()
+        p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_cap.paragraph_format.space_after = Pt(10)
+        r_f = p_cap.add_run(f"Fig. {fig_num_str}. ")
+        r_f.font.name = "Arial"
+        r_f.font.size = Pt(8.5)
+        r_f.font.bold = True
+        r_c = p_cap.add_run(caption_str)
+        r_c.font.name = "Arial"
+        r_c.font.size = Pt(8.5)
+        r_c.font.italic = True
+        r_c.font.color.rgb = DARK_GRAY
+
     # -------------------------------------------------------------
     # SECTION I
     # -------------------------------------------------------------
@@ -204,7 +225,14 @@ def create_week4_report():
     # -------------------------------------------------------------
     add_sec_heading("II", "System Architectural Design & Module Decomposition")
     add_body_p(
-        "The Fog-IDS appliance is architected across four coordinated operational planes, designed to satisfy the strict line-rate requirements of municipal IoT gateways:\n"
+        "The Fog-IDS appliance is architected across four coordinated operational planes, designed to satisfy the strict line-rate requirements of municipal IoT gateways. "
+        "Fig. 1 depicts the complete system topology and telemetry dispatch bus:"
+    )
+
+    # Figure 1: Architecture Diagram
+    add_figure("assets/architecture.png", "1", "Fog-IDS System Architecture and Dynamic Control Topology across the four coordinated operational planes (Smart City Ingestion Plane, FR5 Adaptive Control Plane, Multi-Tier ML Inference Zoo, and SOC Telemetry Plane).", width_in=6.2)
+
+    add_body_p(
         "• Ingestion Plane: Handles real-time pcap flow extraction, feature vectorization across 46 network metrics, and deterministic session-aware burst partitioning.\n"
         "• Adaptive Control Plane: Continuously samples node CPU headroom and applies asymmetric hysteresis (ΔH = 5%, τ = 1.0s) to dynamically dispatch flows without tier flapping.\n"
         "• Multi-Tier Inference Zoo: Houses 12 versioned models (SHA-256 verified) operating across three operational tiers (Full LightGBM, Reduced CompactMLP, Minimal LogReg).\n"
@@ -311,21 +339,37 @@ def create_week4_report():
         "A critical empirical discovery achieved in this milestone addresses Gap 4: measuring true single-row streaming latency (N=1) "
         "rather than artificial batch-vectorized matrix multiplication (N=10,000). While Random Forest appears fast under batch amortization (5.05 µs), "
         "evaluating single packet flows takes 33.8 ms due to Python tree traversal dispatch overhead, rendering it infeasible on edge hardware. "
-        "In contrast, CompactMLP executes in 132.1 µs at 135.4 KB footprint, satisfying the <1.0 ms real-time line-rate SLA for ARM Cortex-A72 nodes."
+        "In contrast, CompactMLP executes in 132.1 µs at 135.4 KB footprint, satisfying the <1.0 ms real-time line-rate SLA for ARM Cortex-A72 nodes. "
+        "Fig. 2 visualizes this trade-off curve across all four evaluated architectures:"
     )
+
+    # Figure 2: Size vs Latency
+    add_figure("results/figures/size_vs_latency.png", "2", "Empirical trade-off curve between model artifact storage footprint (KB) and single-row streaming latency (µs) demonstrating the edge feasibility of CompactMLP over Random Forest.", width_in=4.8)
 
     add_sub_heading("D", "Rare Attack Recall Recovery (Gap 1)")
     add_body_p(
         "Under standard training in published literature, Web-based attacks and Brute Force suffer from severe starvation (<30% recall). "
-        "By enforcing cost-sensitive loss weighting, Fog-IDS lifted Web-based attack recall to 84.0% and Brute Force recall to 73.4% on held-out test data."
+        "By enforcing cost-sensitive balanced loss weighting, Fog-IDS lifted Web-based attack recall to 84.0% and Brute Force recall to 73.4% on held-out test data. "
+        "Fig. 3 illustrates the restored per-class recall distribution across all eight attack categories:"
     )
+
+    # Figure 3: Per-Class Recall
+    add_figure("results/figures/per_class_recall.png", "3", "Per-class recall restoration across rare attack categories (Web-based, Brute Force, Spoofing, Recon) on the held-out test support of CICIoT2023 under cost-sensitive balanced loss weighting.", width_in=5.0)
 
     # -------------------------------------------------------------
     # SECTION V
     # -------------------------------------------------------------
     add_sec_heading("V", "Literature Review Gap Resolution Progress")
     add_body_p(
-        "Mapping progress against the 6 research gaps formulated in the Phase 1 Literature Review Report (R23EA094):\n"
+        "A central evaluation contribution of this project is demonstrating the danger of data leakage caused by naive random hold-out packet shuffling (Gap 2). "
+        "Fig. 4 highlights the ablation comparison between random hold-out and our deterministic session-aware burst partitioning:"
+    )
+
+    # Figure 4: Leakage Effect
+    add_figure("results/figures/leakage_effect.png", "4", "Evaluation protocol ablation comparing naive random hold-out packet shuffling against deterministic session-aware burst partitioning, illustrating the artificial accuracy inflation caused by inter-split leakage.", width_in=4.8)
+
+    add_body_p(
+        "Progress against the 6 research gaps formulated in the Phase 1 Literature Review Report (R23EA094):\n"
         "• Gap 1 (Minority Starvation): Solved — inverse class-frequency loss weighting restored Web recall to 84.0% and Brute Force to 73.4%.\n"
         "• Gap 2 (Data Leakage): Solved — deterministic session burst partitioning implemented in src/splits.py.\n"
         "• Gap 3 (34-Class Coverage): Solved — 34-class fine-grained models trained and serialized across all three tiers.\n"
@@ -378,7 +422,7 @@ def create_week4_report():
     out_docx = "docs/WEEK4_CORE_IMPLEMENTATION_REPORT_R23EA094.docx"
     os.makedirs(os.path.dirname(out_docx), exist_ok=True)
     doc.save(out_docx)
-    print(f"[SUCCESS] Official IEEE Word Document successfully generated at: {out_docx} ({os.path.getsize(out_docx):,} bytes)")
+    print(f"[SUCCESS] Official IEEE Word Document successfully generated with embedded figures at: {out_docx} ({os.path.getsize(out_docx):,} bytes)")
 
 if __name__ == "__main__":
     create_week4_report()
