@@ -61,15 +61,18 @@ def remove_shapes_by_name(slide, shape_names):
             slide.shapes._spTree.remove(s._element)
 
 # ==========================================================
-# SLIDE 1: Title Slide with Professional UN SDG Card
+# SLIDE 1: Title Slide with Top-Right Corner UN SDG Badge Card
 # ==========================================================
 slide1 = prs.slides[0]
 for s in slide1.shapes:
     if s.name == 'Text 1':
+        s.width = Inches(9.00)
         set_text(s, "REVA UNIVERSITY  |  MAJOR PROJECT PHASE-1 REVIEW", font_size=14, bold=True, color=RGBColor(56, 189, 248))
     elif s.name == 'Text 2':
+        s.width = Inches(9.00)
         set_text(s, "Smart City IoT Intrusion Detection System\nwith Sub-Millisecond Fog Triage", font_size=26, bold=True, color=RGBColor(255, 255, 255))
     elif s.name == 'Text 3':
+        s.width = Inches(9.00)
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
@@ -90,40 +93,35 @@ for s in slide1.shapes:
         p3.font.size = Pt(10.5)
         p3.font.color.rgb = RGBColor(148, 163, 184)
 
-# Add Executive White Badge Card for the SDG Logo and Alignment
+# Top-Right Corner UN SDG Badge Card (Clean, Professional, Zero Text Overlap)
 if os.path.exists(SDG_LOGO_PATH):
-    card = slide1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(9.30), Inches(1.10), Inches(3.40), Inches(5.60))
-    card.fill.solid()
-    card.fill.fore_color.rgb = RGBColor(255, 255, 255)
-    card.line.color.rgb = RGBColor(226, 232, 240)
-    card.line.width = Pt(1.5)
+    badge = slide1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(10.40), Inches(0.45), Inches(2.45), Inches(3.25))
+    badge.fill.solid()
+    badge.fill.fore_color.rgb = RGBColor(255, 255, 255)
+    badge.line.color.rgb = RGBColor(226, 232, 240)
+    badge.line.width = Pt(1.5)
     
-    # Add Logo centered inside top of card
-    slide1.shapes.add_picture(SDG_LOGO_PATH, Inches(9.65), Inches(1.25), width=Inches(2.70), height=Inches(2.65))
+    # Add Logo centered inside top of badge
+    slide1.shapes.add_picture(SDG_LOGO_PATH, Inches(10.67), Inches(0.58), width=Inches(1.90), height=Inches(1.90))
     
-    # Text inside card below logo
-    tf = card.text_frame
+    # Text inside badge below logo
+    tf = badge.text_frame
     tf.word_wrap = True
     tf.clear()
     
     p0 = tf.paragraphs[0]
-    p0.text = "\n\n\n\n\n\n\n\n\n\nUN Sustainable Development Goals"
-    p0.font.size = Pt(10.5)
+    p0.text = "\n\n\n\n\n\n\nUN SDG 17 ALIGNED"
+    p0.font.size = Pt(9.5)
     p0.font.bold = True
     p0.font.color.rgb = RGBColor(11, 60, 93)
     p0.alignment = PP_ALIGN.CENTER
-    p0.space_after = Pt(4)
+    p0.space_after = Pt(2)
     
     p1 = tf.add_paragraph()
-    p1.text = "• Goal 9: Industry & Innovation\n  Sub-50 μs edge cyber-defense triage"
-    p1.font.size = Pt(9.0)
-    p1.font.color.rgb = RGBColor(30, 41, 59)
-    p1.space_after = Pt(3)
-    
-    p2 = tf.add_paragraph()
-    p2.text = "• Goal 11: Sustainable Cities\n  Securing smart municipal water & grids"
-    p2.font.size = Pt(9.0)
-    p2.font.color.rgb = RGBColor(30, 41, 59)
+    p1.text = "Goal 9: Industry & Innovation\nGoal 11: Sustainable Cities"
+    p1.font.size = Pt(8.0)
+    p1.font.color.rgb = RGBColor(71, 85, 105)
+    p1.alignment = PP_ALIGN.CENTER
 
 # ==========================================================
 # SLIDE 2: Problem Statement & Literature Gaps
