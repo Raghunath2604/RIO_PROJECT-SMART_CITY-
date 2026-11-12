@@ -2,6 +2,7 @@ import pptx
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
+from pptx.enum.shapes import MSO_SHAPE
 import os
 import shutil
 import win32com.client
@@ -14,10 +15,15 @@ OUTPUT_PPTX = 'docs/RIO_Internship_Presentation_R23EA094.pptx'
 OUTPUT_PDF = 'docs/RIO_Internship_Presentation_R23EA094.pdf'
 DOWNLOADS_DIR = 'C:/Users/raghu/Downloads'
 
+SDG_LOGO_PATH = os.path.abspath('assets/sdg_logo/sdg_logo_transparent.png')
 ARCH_IMG_PATH = os.path.abspath('assets/architecture.png')
+
 STUDENT_NAME = "Raghunatha Reddy G R"
 SRN = "R23EA094"
 GUIDE_NAME = "Dr. Supreeth S"
+GITHUB_REPO = "https://github.com/Raghunath2604/RIO_PROJECT-SMART_CITY-"
+LINKEDIN_URL = "https://www.linkedin.com/in/raghunatha-reddy-gr"
+EMAIL_ADDR = "raghunathareddygr94@gmail.com"
 FOOTER_TEXT = f"RIO Internship Presentation  |  {STUDENT_NAME}  |  {SRN}"
 
 prs = pptx.Presentation(TEMPLATE_PATH)
@@ -47,34 +53,67 @@ def remove_shapes_by_name(slide, shape_names):
             slide.shapes._spTree.remove(s._element)
 
 # ==========================================================
-# SLIDE 1: Title Slide (High Contrast Pure White on Navy)
+# SLIDE 1: Title Slide with UN SDG Card & High Contrast Typography
 # ==========================================================
 slide1 = prs.slides[0]
 for s in slide1.shapes:
     if s.name == 'Text 1':
-        set_text(s, "INTERNSHIP PRESENTATION  |  PHASE-1", font_size=15, bold=True, color=RGBColor(56, 189, 248))
+        set_text(s, "THE RIO CENTER  |  INTERNSHIP PRESENTATION (PHASE-1)", font_size=14, bold=True, color=RGBColor(56, 189, 248))
     elif s.name == 'Text 2':
         set_text(s, "Smart City IoT Fog-IDS Triage Module\nEdge AI & Cyber Defense Pod", font_size=26, bold=True, color=RGBColor(255, 255, 255))
     elif s.name == 'Text 3':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
-        p1.text = f"{STUDENT_NAME}  |  SRN: {SRN}  |  B.Tech CSE (Cyber Security / AI), 6th Sem"
+        p1.text = f"Candidate: {STUDENT_NAME}  |  SRN: {SRN}  |  B.Tech CSE (Cyber Security / AI), 6th Sem"
         p1.font.size = Pt(13)
         p1.font.bold = True
         p1.font.color.rgb = RGBColor(241, 245, 249)
         p1.space_after = Pt(4)
         
         p2 = tf.add_paragraph()
-        p2.text = f"Faculty & Workplace Guide: {GUIDE_NAME}, Associate Professor, School of C&SE"
-        p2.font.size = Pt(12)
+        p2.text = f"Faculty & Workplace Mentor: {GUIDE_NAME}, Associate Professor, School of C&SE"
+        p2.font.size = Pt(11.5)
         p2.font.color.rgb = RGBColor(203, 213, 225)
         p2.space_after = Pt(4)
         
         p3 = tf.add_paragraph()
         p3.text = "Host Center: The RIO Center, REVA University  |  Academic Year 2025–2026"
-        p3.font.size = Pt(11)
+        p3.font.size = Pt(10.5)
         p3.font.color.rgb = RGBColor(148, 163, 184)
+
+# Add Executive White Badge Card for the SDG Logo
+if os.path.exists(SDG_LOGO_PATH):
+    card = slide1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(9.30), Inches(1.10), Inches(3.40), Inches(5.60))
+    card.fill.solid()
+    card.fill.fore_color.rgb = RGBColor(255, 255, 255)
+    card.line.color.rgb = RGBColor(226, 232, 240)
+    card.line.width = Pt(1.5)
+    
+    slide1.shapes.add_picture(SDG_LOGO_PATH, Inches(9.65), Inches(1.25), width=Inches(2.70), height=Inches(2.65))
+    
+    tf = card.text_frame
+    tf.word_wrap = True
+    tf.clear()
+    
+    p0 = tf.paragraphs[0]
+    p0.text = "\n\n\n\n\n\n\n\n\n\nUN Sustainable Development Goals"
+    p0.font.size = Pt(10.5)
+    p0.font.bold = True
+    p0.font.color.rgb = RGBColor(11, 60, 93)
+    p0.alignment = PP_ALIGN.CENTER
+    p0.space_after = Pt(4)
+    
+    p1 = tf.add_paragraph()
+    p1.text = "• Goal 9: Industry & Innovation\n  Sub-50 μs edge cyber-defense triage"
+    p1.font.size = Pt(9.0)
+    p1.font.color.rgb = RGBColor(30, 41, 59)
+    p1.space_after = Pt(3)
+    
+    p2 = tf.add_paragraph()
+    p2.text = "• Goal 11: Sustainable Cities\n  Securing smart municipal water & grids"
+    p2.font.size = Pt(9.0)
+    p2.font.color.rgb = RGBColor(30, 41, 59)
 
 # ==========================================================
 # SLIDE 2: Organisation and Team
@@ -129,7 +168,7 @@ for s in slide2.shapes:
         p3.font.color.rgb = RGBColor(40, 50, 60)
 
 # ==========================================================
-# SLIDE 3: Assigned Module & Problem Statement (Cleaned: No Dashed Box)
+# SLIDE 3: Assigned Module & Problem Statement (Clean: No Dashed Box)
 # ==========================================================
 slide3 = prs.slides[2]
 update_footer(slide3)
@@ -154,7 +193,6 @@ for s in slide3.shapes:
         p4.font.size = Pt(11.5)
         p4.font.color.rgb = RGBColor(40, 50, 60)
 
-# Remove dashed box Shape 8 and Text 9
 remove_shapes_by_name(slide3, ['Shape 8', 'Text 9'])
 
 if os.path.exists(ARCH_IMG_PATH):
@@ -348,8 +386,8 @@ for s in slide8.shapes:
         p3.font.size = Pt(11.5)
         p3.font.color.rgb = RGBColor(40, 50, 60)
     elif s.name == 'Text 9':
-        set_text(s, f"Email: raghunathareddygr94@gmail.com  |  LinkedIn: linkedin.com/in/raghunatha-reddy-gr  |  GitHub: github.com/raghu-23\nCandidate: {STUDENT_NAME} ({SRN})  |  Faculty Guide: {GUIDE_NAME}  |  The RIO Center, REVA University",
-                 font_size=12, color=RGBColor(0, 114, 206), bold=True, align=PP_ALIGN.CENTER)
+        set_text(s, f"Email: {EMAIL_ADDR}  |  LinkedIn: {LINKEDIN_URL}\nGitHub: {GITHUB_REPO}\nCandidate: {STUDENT_NAME} ({SRN})  |  Faculty Guide: {GUIDE_NAME}  |  The RIO Center, REVA University",
+                 font_size=11, color=RGBColor(0, 114, 206), bold=True, align=PP_ALIGN.CENTER)
 
 # Save PPTX
 prs.save(OUTPUT_PPTX)
@@ -376,4 +414,4 @@ except Exception as e:
 finally:
     powerpoint.Quit()
 
-print("RIO Internship Presentation Update Complete!")
+print("RIO Presentation Update Complete!")

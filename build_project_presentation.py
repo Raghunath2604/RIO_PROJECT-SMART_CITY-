@@ -1,7 +1,7 @@
 import pptx
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from pptx.enum.text import PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
 import os
 import shutil
@@ -15,7 +15,7 @@ OUTPUT_PPTX = 'docs/Project_Presentation_R23EA094.pptx'
 OUTPUT_PDF = 'docs/Project_Presentation_R23EA094.pdf'
 DOWNLOADS_DIR = 'C:/Users/raghu/Downloads'
 
-SDG_LOGO_PATH = os.path.abspath('assets/sdg_logo/IMG-20261112-WA0041.jpg')
+SDG_LOGO_PATH = os.path.abspath('assets/sdg_logo/sdg_logo_transparent.png')
 ARCH_IMG_PATH = os.path.abspath('assets/architecture.png')
 FLOWCHART_IMG_PATH = os.path.abspath('docs/figures/slide6_flowchart.png')
 UML_IMG_PATH = os.path.abspath('docs/figures/slide6_uml_sequence.png')
@@ -29,6 +29,9 @@ AFTER_IMG_PATH = os.path.abspath('docs/figures/slide10_after.png')
 STUDENT_NAME = "Raghunatha Reddy G R"
 SRN = "R23EA094"
 GUIDE_NAME = "Dr. Supreeth S"
+GITHUB_REPO = "https://github.com/Raghunath2604/RIO_PROJECT-SMART_CITY-"
+LINKEDIN_URL = "https://www.linkedin.com/in/raghunatha-reddy-gr"
+EMAIL_ADDR = "raghunathareddygr94@gmail.com"
 FOOTER_TEXT = f"Project Presentation  |  {STUDENT_NAME}  |  {SRN}"
 
 prs = pptx.Presentation(TEMPLATE_PATH)
@@ -63,29 +66,28 @@ def remove_shapes_by_name(slide, shape_names):
 slide1 = prs.slides[0]
 for s in slide1.shapes:
     if s.name == 'Text 1':
-        set_text(s, "PROJECT PRESENTATION  |  PHASE-1 REVIEW", font_size=15, bold=True, color=RGBColor(56, 189, 248))
+        set_text(s, "REVA UNIVERSITY  |  MAJOR PROJECT PHASE-1 REVIEW", font_size=14, bold=True, color=RGBColor(56, 189, 248))
     elif s.name == 'Text 2':
-        # High-Contrast Pure White Title on Dark Navy Canvas
         set_text(s, "Smart City IoT Intrusion Detection System\nwith Sub-Millisecond Fog Triage", font_size=26, bold=True, color=RGBColor(255, 255, 255))
     elif s.name == 'Text 3':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
-        p1.text = f"{STUDENT_NAME}  |  SRN: {SRN}  |  B.Tech CSE (Cyber Security / AI), 6th Sem"
+        p1.text = f"Candidate: {STUDENT_NAME}  |  SRN: {SRN}  |  B.Tech CSE (Cyber Security / AI), 6th Sem"
         p1.font.size = Pt(13)
         p1.font.bold = True
         p1.font.color.rgb = RGBColor(241, 245, 249)
         p1.space_after = Pt(4)
         
         p2 = tf.add_paragraph()
-        p2.text = f"Faculty Guide: {GUIDE_NAME}, Associate Professor, School of C&SE"
-        p2.font.size = Pt(12)
+        p2.text = f"Faculty Guide: {GUIDE_NAME}, Associate Professor, School of C&SE, REVA University"
+        p2.font.size = Pt(11.5)
         p2.font.color.rgb = RGBColor(203, 213, 225)
         p2.space_after = Pt(4)
         
         p3 = tf.add_paragraph()
         p3.text = "School of Computing Science and Engineering, REVA University  |  Academic Year 2025–2026"
-        p3.font.size = Pt(11)
+        p3.font.size = Pt(10.5)
         p3.font.color.rgb = RGBColor(148, 163, 184)
 
 # Add Executive White Badge Card for the SDG Logo and Alignment
@@ -204,11 +206,10 @@ for s in slide4.shapes:
                 p.font.color.rgb = RGBColor(30, 40, 50)
 
 # ==========================================================
-# SLIDE 5: System Design (Cleaned: No Dashed Placeholder)
+# SLIDE 5: System Design
 # ==========================================================
 slide5 = prs.slides[4]
 update_footer(slide5)
-# Remove dashed placeholder box Shape 5 and Text 6
 remove_shapes_by_name(slide5, ['Shape 5', 'Text 6'])
 
 if os.path.exists(ARCH_IMG_PATH):
@@ -231,11 +232,10 @@ for s in slide5.shapes:
             p.space_after = Pt(6)
 
 # ==========================================================
-# SLIDE 6: Detailed Design (Cleaned: No Dashed Placeholders)
+# SLIDE 6: Detailed Design
 # ==========================================================
 slide6 = prs.slides[5]
 update_footer(slide6)
-# Remove all dashed outline shapes Shape 5, Shape 7, Shape 9 and text placeholders
 remove_shapes_by_name(slide6, ['Shape 5', 'Text 6', 'Shape 7', 'Text 8', 'Shape 9', 'Text 10'])
 
 if os.path.exists(FLOWCHART_IMG_PATH):
@@ -278,7 +278,7 @@ for s in slide7.shapes:
             p.space_after = Pt(6)
 
 # ==========================================================
-# SLIDE 8: Key Features and Demo (Cleaned: No Dashed Placeholders)
+# SLIDE 8: Key Features and Demo
 # ==========================================================
 slide8 = prs.slides[7]
 update_footer(slide8)
@@ -343,14 +343,12 @@ for s in slide9.shapes:
                 p.font.color.rgb = RGBColor(30, 40, 50)
 
 # ==========================================================
-# SLIDE 10: Debugging and Integration (Cleaned: Perfect Alignment)
+# SLIDE 10: Debugging and Integration (Zero Overlap)
 # ==========================================================
 slide10 = prs.slides[9]
 update_footer(slide10)
-# Remove dashed boxes Shape 5 and Shape 7, and placeholder texts Text 6 and Text 8
 remove_shapes_by_name(slide10, ['Shape 5', 'Text 6', 'Shape 7', 'Text 8'])
 
-# Place Before and After screenshots perfectly in left side without overlapping right side!
 if os.path.exists(BEFORE_IMG_PATH):
     slide10.shapes.add_picture(BEFORE_IMG_PATH, Inches(0.70), Inches(1.60), width=Inches(3.00), height=Inches(2.60))
 if os.path.exists(AFTER_IMG_PATH):
@@ -446,8 +444,8 @@ for s in slide12.shapes:
             p.font.color.rgb = RGBColor(40, 50, 60)
             p.space_after = Pt(4)
     elif s.name == 'Text 9':
-        set_text(s, f"Email: raghunathareddygr94@gmail.com  |  GitHub: https://github.com/raghu-23/RIO_PROJECT-SMART_CITY-\nCandidate: {STUDENT_NAME} ({SRN})  |  Faculty Guide: {GUIDE_NAME}  |  REVA University",
-                 font_size=12, color=RGBColor(0, 114, 206), bold=True, align=PP_ALIGN.CENTER)
+        set_text(s, f"Email: {EMAIL_ADDR}  |  LinkedIn: {LINKEDIN_URL}\nGitHub: {GITHUB_REPO}\nCandidate: {STUDENT_NAME} ({SRN})  |  Faculty Guide: {GUIDE_NAME}  |  REVA University",
+                 font_size=11, color=RGBColor(0, 114, 206), bold=True, align=PP_ALIGN.CENTER)
 
 # Save PPTX
 os.makedirs('docs', exist_ok=True)
