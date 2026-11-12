@@ -95,3 +95,4 @@ Thumbs.db
 .env.local
 .vercel
 .env*
+scratch/
