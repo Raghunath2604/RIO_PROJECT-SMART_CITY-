@@ -28,7 +28,7 @@ BUG1_IMG_PATH = os.path.abspath('docs/figures/week5_bug1_before_after.png')
 BEFORE_IMG_PATH = os.path.abspath('docs/figures/slide10_before.png')
 AFTER_IMG_PATH = os.path.abspath('docs/figures/slide10_after.png')
 
-STUDENT_NAME = "Raghunatha Reddy G R"
+STUDENT_NAME = "RAGHUNATHAREDDY GR"
 SRN = "R23EA094"
 GUIDE_NAME = "Dr. Supreeth S"
 GITHUB_REPO = "https://github.com/Raghunath2604/RIO_PROJECT-SMART_CITY-"
@@ -86,7 +86,7 @@ t1 = doc.tables[0]
 t1_data = [
     ('Student name', f"{STUDENT_NAME}"),
     ('SRN / Roll number', f"{SRN}"),
-    ('Program and Section', "B.Tech Computer Science & Engineering (Cyber Security & AI), 6th Sem, Section B"),
+    ('Program and Section', "B.Tech Computer Science & Engineering (AIML), 7th Sem"),
     ('Project title', "Smart City IoT Intrusion Detection System with Sub-Millisecond Fog Triage"),
     ('Faculty guide', f"{GUIDE_NAME}, Associate Professor, School of C&SE, REVA University")
 ]

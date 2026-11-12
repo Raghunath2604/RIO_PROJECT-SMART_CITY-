@@ -18,7 +18,7 @@ DOWNLOADS_DIR = 'C:/Users/raghu/Downloads'
 SDG_LOGO_PATH = os.path.abspath('assets/sdg_logo/sdg_logo_transparent.png')
 ARCH_IMG_PATH = os.path.abspath('assets/architecture.png')
 
-STUDENT_NAME = "Raghunatha Reddy G R"
+STUDENT_NAME = "RAGHUNATHAREDDY GR"
 SRN = "R23EA094"
 GUIDE_NAME = "Dr. Supreeth S"
 GITHUB_REPO = "https://github.com/Raghunath2604/RIO_PROJECT-SMART_CITY-"
@@ -65,7 +65,7 @@ for s in slide1.shapes:
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
-        p1.text = f"Candidate: {STUDENT_NAME}  |  SRN: {SRN}  |  B.Tech CSE (Cyber Security / AI), 6th Sem"
+        p1.text = f"Candidate: {STUDENT_NAME}  |  SRN: {SRN}  |  B.Tech CSE (AIML), 7th Sem"
         p1.font.size = Pt(13)
         p1.font.bold = True
         p1.font.color.rgb = RGBColor(241, 245, 249)

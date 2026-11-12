@@ -26,7 +26,7 @@ STREAM_IMG_PATH = os.path.abspath('docs/figures/week5_module_output_stream.png')
 PARETO_IMG_PATH = os.path.abspath('results/figures/size_vs_latency.png')
 BUG1_IMG_PATH = os.path.abspath('docs/figures/week5_bug1_before_after.png')
 
-STUDENT_NAME = "Raghunatha Reddy G R"
+STUDENT_NAME = "RAGHUNATHAREDDY GR"
 SRN = "R23EA094"
 GUIDE_NAME = "Dr. Supreeth S"
 GITHUB_REPO = "https://github.com/Raghunath2604/RIO_PROJECT-SMART_CITY-"
@@ -84,7 +84,7 @@ t1 = doc.tables[0]
 t1_data = [
     ('Student name', f"{STUDENT_NAME}"),
     ('SRN / Roll number', f"{SRN}"),
-    ('Program and Section', "B.Tech Computer Science & Engineering (Cyber Security & AI), 6th Sem, Section B"),
+    ('Program and Section', "B.Tech Computer Science & Engineering (AIML), 7th Sem"),
     ('Organization', "The RIO Center, REVA University (Research & Innovation Opportunities)"),
     ('Workplace mentor (name, designation)', f"{GUIDE_NAME}, Associate Professor & Edge AI Pod Lead, School of C&SE"),
     ('Faculty mentor', f"{GUIDE_NAME}, Associate Professor, School of C&SE, REVA University")
