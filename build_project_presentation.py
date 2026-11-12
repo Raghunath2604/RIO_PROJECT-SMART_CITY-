@@ -54,6 +54,9 @@ def update_footer(slide):
     for s in slide.shapes:
         if s.has_text_frame and "Project Presentation  |  [Student name]" in s.text_frame.text:
             set_text(s, FOOTER_TEXT, font_size=10, color=RGBColor(120, 130, 140))
+    # Top-Right Corner UN SDG 17 Logo on all content slides
+    if os.path.exists(SDG_LOGO_PATH):
+        slide.shapes.add_picture(SDG_LOGO_PATH, Inches(12.00), Inches(0.28), width=Inches(0.88), height=Inches(0.88))
 
 def remove_shapes_by_name(slide, shape_names):
     for s in list(slide.shapes):
