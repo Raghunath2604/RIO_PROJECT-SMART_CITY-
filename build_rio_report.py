@@ -54,7 +54,7 @@ def format_table(table, header_bg="0B3C5D"):
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     for i, row in enumerate(table.rows):
         is_header = (i == 0)
-        for cell in row.cells:
+        for c_idx, cell in enumerate(row.cells):
             set_cell_margins(cell, top=120, bottom=120, left=160, right=160)
             cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
             if is_header:
@@ -71,9 +71,30 @@ def format_table(table, header_bg="0B3C5D"):
                 else:
                     set_cell_background(cell, "FFFFFF")
                 for p in cell.paragraphs:
+                    p.alignment = WD_ALIGN_PARAGRAPH.LEFT
                     for run in p.runs:
                         run.font.color.rgb = CHARCOAL
                         run.font.size = Pt(9.5)
+
+def insert_figure_after(doc, target_element, img_path, caption_text, width_inches=5.8):
+    if os.path.exists(img_path):
+        p_img = doc.add_paragraph()
+        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run = p_img.add_run()
+        run.add_picture(img_path, width=Inches(width_inches))
+        
+        p_cap = doc.add_paragraph()
+        p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run_cap = p_cap.add_run(caption_text)
+        run_cap.font.italic = True
+        run_cap.font.size = Pt(9.5)
+        run_cap.font.color.rgb = MUTED
+        p_cap.space_after = Pt(12)
+        
+        target_element.addnext(p_img._element)
+        p_img._element.addnext(p_cap._element)
+        return p_cap._element
+    return target_element
 
 # ==========================================================
 # 1. POPULATE & STYLE ALL 7 TABLES
@@ -101,9 +122,9 @@ format_table(t1)
 # Table 2: Tech Stack
 t2 = doc.tables[1]
 t2_data = [
-    ('Network Ingestion Layer', 'Python 3.12, Async Sockets, NumPy', 'Line-rate NetFlow packet stream parsing & 1,000-flow circular buffering', '2 / 5 -> 5 / 5'),
-    ('Edge Machine Learning', 'Scikit-Learn, NumPy SIMD Vectorization', '40-tree Random Forest triage running in 48 μs with 99.4% F1-score', '2 / 5 -> 5 / 5'),
-    ('Triage & Telemetry Gateway', 'FastAPI, Uvicorn, Streamlit', 'Dual-threshold hysteresis filter [0.20, 0.80] & live monitoring', '2 / 5 -> 5 / 5')
+    ('Network Ingestion Layer', 'Python 3.12, Async Sockets, NumPy', 'Line-rate NetFlow packet stream parsing & 1,000-flow circular buffering', 'Baseline: 2/5 -> Current: 5/5'),
+    ('Edge Machine Learning', 'Scikit-Learn, NumPy SIMD Vectorization', '40-tree Random Forest triage running in 48 μs with 99.4% F1-score', 'Baseline: 2/5 -> Current: 5/5'),
+    ('Triage & Telemetry Gateway', 'FastAPI, Uvicorn, Streamlit', 'Dual-threshold hysteresis filter [0.20, 0.80] & live monitoring', 'Baseline: 2/5 -> Current: 5/5')
 ]
 for row_idx, row in enumerate(t2_data):
     for col_idx, text in enumerate(row):
@@ -167,7 +188,7 @@ t7.rows[1].cells[1].text = f"Faculty & Workplace Guide Signature:\n\n___________
 format_table(t7)
 
 # ==========================================================
-# 2. EXACT CONTENT-BASED REPLACEMENTS (ZERO TEMPLATE PROMPTS)
+# 2. EXACT CONTENT-BASED REPLACEMENTS WITH JUSTIFIED TEXT
 # ==========================================================
 
 rio_map = {
@@ -178,13 +199,17 @@ rio_map = {
     ),
     "1.2 Assigned module and problem": (
         "1.2 Assigned Engineering Module & Threat Model",
-        "Assigned Module: Fog-Tier IoT Intrusion Detection & Sub-Millisecond Traffic Triage Engine.\n\n"
+        "Assigned Module: Fog-Tier IoT Intrusion Detection & Sub-Millisecond Traffic Triage Engine as architected in Figure 1 below.\n\n"
         "Problem Context: Smart municipal grids connect tens of thousands of IoT devices across water distribution SCADA systems and intelligent traffic grids. Offloading raw telemetry to distant cloud Security Operations Centers (SOCs) induces 150–400 ms WAN latency and exhausts uplink bandwidth during volumetric DDoS floods.\n\n"
         "Operational Scope: Ingests NetFlow packet streams at line rate (>=1,000 flows/sec), performs deterministic Random Forest classification in <100 μs, triages >85% of traffic locally, and eliminates false alarm flapping via a dual-threshold hysteresis filter [0.20, 0.80]."
     ),
+    "1.3 Technology stack": (
+        "1.3 Technology Stack and Module Architecture",
+        "The technology stack powering the edge ingestion, classification, and telemetry layers was engineered to guarantee sub-millisecond execution, thread safety, and line-rate reliability. The assigned technologies and their architectural roles are detailed in Table 2, while the underlying logic flow, UML interactions, and data transformations are showcased in Figures 2, 3, and 4."
+    ),
     "2.1 Fundamentals: baseline vs now": (
         "2.1 Engineering Fundamentals: Baseline vs. Current Proficiency",
-        "At the start of the internship (Week 1), my proficiency in systems programming and edge concurrency was evaluated at a baseline of 2/5 across key areas. Through rigorous engineering under mentor supervision, I advanced to 5/5 proficiency across Data Structures, Operating Systems, Computer Networks, and Machine Learning systems engineering."
+        "At the start of the internship (Week 1), my proficiency in systems programming and edge concurrency was evaluated at a baseline of 2/5 across key areas. Through rigorous engineering under mentor supervision, I advanced to 5/5 proficiency across Data Structures, Operating Systems, Computer Networks, and Machine Learning systems engineering as quantified in Table 3. The edge model latency-footprint optimization achieved is illustrated in Figure 5."
     ),
     "3.1 Coding and documentation standards": (
         "3.1 Enterprise Coding and Version Control Standards",
@@ -192,13 +217,25 @@ rio_map = {
         "2. Semantic Branching Model: The pod enforces a Git feature branching model (`feat/hysteresis-triage`, `fix/schema-padding`, `docs/presentation-guide`). All commits follow the Conventional Commits specification (`feat:`, `fix:`, `refactor:`, `test:`).\n\n"
         "3. Defensive Error Handling: Code includes robust exception handling for socket dropouts, missing NetFlow attributes, and telemetry queue saturation, utilizing structured logging to prevent silent failures."
     ),
+    "3.2 Tools used": (
+        "3.2 Industry Engineering and DevOps Tooling",
+        "Enterprise development, containerization, and automated verification tools utilized during the internship to enforce software reliability and reproducible deployments are listed in Table 4. Subsystem health diagnostic audits are demonstrated in Figure 6."
+    ),
     "4.1 Requirement review": (
         "4.1 Formal Requirement Review and Milestone Validation",
         "On 25-09-2026 (Week 7 Milestone Review), Dr. Supreeth S validated the module's core ingestion pipeline and approved the transition from monolithic deep learning to a vectorized Random Forest. The mentor instructed the incorporation of a dual-threshold hysteresis filter [0.20, 0.80] to suppress benign sensor false alarms, which was successfully implemented and verified in Week 9."
     ),
+    "4.2 Guide feedback and my response": (
+        "4.2 Guide Feedback and Engineering Actions",
+        "Structured mentor feedback received during technical reviews and the corresponding engineering actions taken to optimize system performance and suppress false alarms are documented in Table 5. The schema mismatch defect resolution guided by mentor feedback is illustrated in Figure 7."
+    ),
     "4.3 Professional conduct": (
         "4.3 Professional Conduct and Agile Accountability",
         "During the 14-week internship tenure, I maintained a 100% on-time attendance record across all daily stand-ups, weekly technical demos, and mentor alignment sessions. When encountering the critical feature dimension mismatch during Week 6, I immediately flagged the issue in the morning stand-up, documented the reproducible failure case, and collaborated with pod members to implement schema zero-padding within two hours."
+    ),
+    "5.1 Mock interviews": (
+        "5.1 Mock Technical Interviews and Viva Readiness",
+        "Comprehensive mock technical interviews and viva defense reviews were conducted with the workplace mentor to assess systems engineering proficiency, algorithmic understanding, and design trade-off justifications as recorded in Table 6."
     ),
     "5.2 Resume, LinkedIn and portfolio": (
         "5.2 Career Portfolio, GitHub and Industry Profiles",
@@ -214,19 +251,22 @@ rio_map = {
         "5.4 Capstone Showcase Demonstration Architecture",
         "1. Architectural Paradigm: Demonstrate the WAN backhaul bottleneck of cloud-only IDS and articulate the necessity of autonomous sub-millisecond Fog triage for municipal smart city resilience.\n\n"
         "2. Algorithmic Innovation & Optimization: Present the 48 μs Random Forest model alongside the dual-threshold hysteresis filter [0.20, 0.80], highlighting the Pareto curve and the reduction of false alarms from 14.2% to 0.4%.\n\n"
-        "3. Live Operational Demonstration: Execute the live Streamlit dashboard and FastAPI backend against simulated volumetric DDoS and benign IoT packet streams, demonstrating real-time alert triage, ring buffer throughput, and 100% test verification (23/23 tests passing)."
+        "3. Live Operational Demonstration: Execute the live Streamlit dashboard (demonstrated in Figure 8) and FastAPI backend against simulated volumetric DDoS and benign IoT packet streams, demonstrating real-time alert triage, ring buffer throughput, and 100% test verification (23/23 tests passing)."
     )
 }
+
+inserted_paras = {}
 
 for p in list(doc.paragraphs):
     text_clean = p.text.strip()
     
     matched = False
     for prefix, (new_heading, new_body) in rio_map.items():
-        if text_clean.startswith(prefix):
+        if text_clean.lower().startswith(prefix.lower()):
             matched = True
             p.text = new_heading
             p.style = 'Heading 3'
+            p.alignment = WD_ALIGN_PARAGRAPH.LEFT
             for r in p.runs:
                 r.font.bold = True
                 r.font.color.rgb = NAVY
@@ -236,60 +276,72 @@ for p in list(doc.paragraphs):
                 new_p = doc.add_paragraph()
                 new_p.text = new_body
                 new_p.style = 'Normal'
+                new_p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
                 for r in new_p.runs:
                     r.font.color.rgb = CHARCOAL
                     r.font.size = Pt(10.5)
                 p._element.addnext(new_p._element)
+                inserted_paras[prefix] = new_p
             break
             
     if not matched:
         if text_clean.startswith("Evidence:"):
             p.text = ""
 
+# ==========================================================
+# 3. SHOWCASE DIAGRAMS INLINE WHEREVER REQUIRED (NOT AT LAST)
+# ==========================================================
+
+# 1. Section 1.2: System Architecture Diagram right under 1.2 text
+if "1.2 Assigned module and problem" in inserted_paras:
+    insert_figure_after(doc, inserted_paras["1.2 Assigned module and problem"]._element,
+                        ARCH_IMG_PATH, "Figure 1: Hierarchical Three-Tier Fog-IDS System Architecture Topology", width_inches=5.8)
+
+# 2. Section 1.3: Flowchart, UML Sequence, and DFD right under Table 2
+elem_t2 = doc.tables[1]._element
+elem_t2 = insert_figure_after(doc, elem_t2, FLOWCHART_IMG_PATH, "Figure 2: Sub-Millisecond Fog Packet Ingestion and Dual-Threshold Triage Flowchart", width_inches=5.5)
+elem_t2 = insert_figure_after(doc, elem_t2, UML_IMG_PATH, "Figure 3: UML Sequence Diagram of End-to-End Fog Ingestion, Classification, and Tier-2 Escalation", width_inches=5.5)
+elem_t2 = insert_figure_after(doc, elem_t2, DFD_IMG_PATH, "Figure 4: Data Flow Diagram (DFD Level 0 and Level 1) of Telemetry Transformations", width_inches=5.5)
+
+# 3. Section 2.1: Pareto Frontier Curve right under Table 3
+elem_t3 = doc.tables[2]._element
+elem_t3 = insert_figure_after(doc, elem_t3, PARETO_IMG_PATH, "Figure 5: Model Size vs Inference Latency Pareto Curve (Random Forest 48 μs vs CNN 185 ms)", width_inches=5.2)
+
+# 4. Section 3.2: Edge Diagnostic Audit right under Table 4
+elem_t4 = doc.tables[3]._element
+elem_t4 = insert_figure_after(doc, elem_t4, AUDIT_IMG_PATH, "Figure 6: Edge Telemetry Health and System Diagnostic Audit Output", width_inches=5.5)
+
+# 5. Section 4.2: Bug 1 Defect Resolution right under Table 5
+elem_t5 = doc.tables[4]._element
+elem_t5 = insert_figure_after(doc, elem_t5, BUG1_IMG_PATH, "Figure 7: Bug 1 Defect Resolution: 40-Feature vs 46-Feature Ingestion Schema Mismatch", width_inches=5.5)
+
+# 6. Section 5.4: Live Streamlit Dashboard right under Section 5.4 text
+if "5.4 Capstone showcase plan" in inserted_paras:
+    insert_figure_after(doc, inserted_paras["5.4 Capstone showcase plan"]._element,
+                        STREAM_IMG_PATH, "Figure 8: Live Operational Streamlit Dashboard Demonstrating Real-Time Threat Classification", width_inches=5.5)
+
+# Ensure all Normal body paragraphs in document are justified
+for p in doc.paragraphs:
+    if p.style.name == 'Normal' and p.text.strip() and not p.text.startswith("Figure ") and not p.text.startswith("The RIO Center"):
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
 # Title & UN SDG Alignment Header
 p_title = doc.paragraphs[0]
 p_title.text = "RIO Internship Report — Phase-1 Evaluation (Academic Year 2026–2027)"
 p_title.style = 'Heading 1'
+p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
 p_sdg = doc.add_paragraph()
 p_sdg.text = "The RIO Center, REVA University  |  Aligned with UN Sustainable Development Goals 9 & 11"
 p_sdg.style = 'Normal'
+p_sdg.alignment = WD_ALIGN_PARAGRAPH.CENTER
 for r in p_sdg.runs:
     r.font.bold = True
     r.font.color.rgb = NAVY
     r.font.size = Pt(10)
 p_title._element.addnext(p_sdg._element)
 
-# Appendix with Diagrams
-p_app = doc.add_paragraph()
-p_app.text = "Appendix: Technical Architecture, Flow Diagrams & Verification Artifacts"
-p_app.style = 'Heading 2'
-
-def add_figure_with_caption(doc, img_path, caption_text, width_inches=6.0):
-    if os.path.exists(img_path):
-        p_img = doc.add_paragraph()
-        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        run = p_img.add_run()
-        run.add_picture(img_path, width=Inches(width_inches))
-        
-        p_cap = doc.add_paragraph()
-        p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        run_cap = p_cap.add_run(caption_text)
-        run_cap.font.italic = True
-        run_cap.font.size = Pt(9.5)
-        run_cap.font.color.rgb = MUTED
-        p_cap.space_after = Pt(12)
-
-add_figure_with_caption(doc, ARCH_IMG_PATH, "Figure 1: Hierarchical Three-Tier Fog-IDS System Architecture Topology", width_inches=6.2)
-add_figure_with_caption(doc, FLOWCHART_IMG_PATH, "Figure 2: Sub-Millisecond Fog Packet Ingestion and Dual-Threshold Triage Flowchart", width_inches=5.8)
-add_figure_with_caption(doc, UML_IMG_PATH, "Figure 3: UML Sequence Diagram of End-to-End Fog Ingestion, Classification, and Tier-2 Escalation", width_inches=5.8)
-add_figure_with_caption(doc, DFD_IMG_PATH, "Figure 4: Data Flow Diagram (DFD Level 0 and Level 1) of Telemetry Transformations", width_inches=5.8)
-add_figure_with_caption(doc, AUDIT_IMG_PATH, "Figure 5: Edge Telemetry Health and System Diagnostic Audit Output", width_inches=5.8)
-add_figure_with_caption(doc, STREAM_IMG_PATH, "Figure 6: Live Operational Streamlit Dashboard Demonstrating Real-Time Threat Classification", width_inches=5.8)
-add_figure_with_caption(doc, PARETO_IMG_PATH, "Figure 7: Model Size vs Inference Latency Pareto Curve (Random Forest 48 μs vs CNN 185 ms)", width_inches=5.5)
-add_figure_with_caption(doc, BUG1_IMG_PATH, "Figure 8: Bug 1 Defect Resolution: 40-Feature vs 46-Feature Ingestion Schema Mismatch", width_inches=5.8)
-
-# Save Document
+# Save Document (Zero Appendices at the end!)
 doc.save(OUTPUT_DOCX)
 print(f"Saved RIO DOCX to: {OUTPUT_DOCX}")
 
@@ -314,4 +366,4 @@ except Exception as e:
 finally:
     word.Quit()
 
-print("RIO Report Complete!")
+print("RIO Report Complete with Inline Diagrams!")
