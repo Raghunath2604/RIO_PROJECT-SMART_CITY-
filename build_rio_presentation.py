@@ -17,12 +17,6 @@ DOWNLOADS_DIR = 'C:/Users/raghu/Downloads'
 
 SDG_LOGO_PATH = os.path.abspath('assets/sdg_logo/sdg_logo_transparent.png')
 ARCH_IMG_PATH = os.path.abspath('assets/architecture.png')
-FLOWCHART_IMG_PATH = os.path.abspath('docs/figures/slide6_flowchart.png')
-UML_IMG_PATH = os.path.abspath('docs/figures/slide6_uml_sequence.png')
-DFD_IMG_PATH = os.path.abspath('docs/figures/slide6_dfd.png')
-AUDIT_IMG_PATH = os.path.abspath('docs/figures/week5_module_output_audit.png')
-STREAM_IMG_PATH = os.path.abspath('docs/figures/week5_module_output_stream.png')
-PARETO_IMG_PATH = os.path.abspath('results/figures/size_vs_latency.png')
 
 STUDENT_NAME = "RAGHUNATHAREDDY GR"
 SRN = "R23EA094"
@@ -84,34 +78,34 @@ for s in slide1.shapes:
         p1.space_after = Pt(4)
         
         p2 = tf.add_paragraph()
-        p2.text = f"Workplace Mentor & Guide: {GUIDE_NAME}, Associate Professor, School of C&SE"
+        p2.text = f"Faculty Guide: {GUIDE_NAME}, Associate Professor, School of C&SE, REVA University"
         p2.font.size = Pt(11.5)
         p2.font.color.rgb = RGBColor(203, 213, 225)
         p2.space_after = Pt(4)
         
         p3 = tf.add_paragraph()
-        p3.text = "The RIO Center, REVA University  |  Academic Year 2026–2027"
+        p3.text = "School of Computing Science and Engineering, REVA University  |  Academic Year 2026–2027"
         p3.font.size = Pt(10.5)
         p3.font.color.rgb = RGBColor(148, 163, 184)
 
-# Top-Right Corner UN SDG Badge Card
+# Top-Right Corner UN SDG Badge Card (Clean, Professional, Zero Text Overlap)
 if os.path.exists(SDG_LOGO_PATH):
-    badge = slide1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(10.40), Inches(0.45), Inches(2.45), Inches(3.35))
+    badge = slide1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(10.40), Inches(0.45), Inches(2.45), Inches(3.25))
     badge.fill.solid()
     badge.fill.fore_color.rgb = RGBColor(255, 255, 255)
-    badge.line.color.rgb = RGBColor(203, 213, 225)
+    badge.line.color.rgb = RGBColor(226, 232, 240)
     badge.line.width = Pt(1.5)
     
     # Add Logo centered inside top of badge
-    slide1.shapes.add_picture(SDG_LOGO_PATH, Inches(10.67), Inches(0.55), width=Inches(1.90), height=Inches(1.90))
+    slide1.shapes.add_picture(SDG_LOGO_PATH, Inches(10.67), Inches(0.58), width=Inches(1.90), height=Inches(1.90))
     
-    # Clean text box under logo
-    tb = slide1.shapes.add_textbox(Inches(10.42), Inches(2.50), Inches(2.41), Inches(1.20))
-    tf = tb.text_frame
+    # Text inside badge below logo
+    tf = badge.text_frame
     tf.word_wrap = True
+    tf.clear()
     
     p0 = tf.paragraphs[0]
-    p0.text = "UN SDG 17 ALIGNED"
+    p0.text = "\n\n\n\n\n\n\nUN SDG 17 ALIGNED"
     p0.font.size = Pt(9.5)
     p0.font.bold = True
     p0.font.color.rgb = RGBColor(11, 60, 93)
@@ -119,16 +113,10 @@ if os.path.exists(SDG_LOGO_PATH):
     p0.space_after = Pt(2)
     
     p1 = tf.add_paragraph()
-    p1.text = "Goal 9: Industry & Innovation"
-    p1.font.size = Pt(8.5)
+    p1.text = "Goal 9: Industry & Innovation\nGoal 11: Sustainable Cities"
+    p1.font.size = Pt(8.0)
     p1.font.color.rgb = RGBColor(71, 85, 105)
     p1.alignment = PP_ALIGN.CENTER
-    
-    p2 = tf.add_paragraph()
-    p2.text = "Goal 11: Sustainable Cities"
-    p2.font.size = Pt(8.5)
-    p2.font.color.rgb = RGBColor(71, 85, 105)
-    p2.alignment = PP_ALIGN.CENTER
 
 # ==========================================================
 # SLIDE 2: Organisation and Team
@@ -136,7 +124,9 @@ if os.path.exists(SDG_LOGO_PATH):
 slide2 = prs.slides[1]
 update_footer(slide2)
 for s in slide2.shapes:
-    if s.name == 'Text 7':
+    if s.name == 'Text 6':
+        set_text(s, "Host Organization: The RIO Center", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
@@ -147,55 +137,77 @@ for s in slide2.shapes:
         p2.text = "• Focus Areas: Edge Artificial Intelligence, Applied Cyber Security, Embedded Systems, and Smart Urban Utilities."
         p2.font.size = Pt(11)
         p2.font.color.rgb = RGBColor(40, 50, 60)
+        p3 = tf.add_paragraph()
+        p3.text = "• Mission: Building robust, production-grade cyber-defense solutions for smart municipal grids and campus IoT testbeds."
+        p3.font.size = Pt(11)
+        p3.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 9':
+        set_text(s, "Research Pod & Supervision Structure", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 10':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
-        p1.text = "• Pod Composition: Edge AI & Cyber Defense Pod comprising 4 engineers under the direct supervision of Dr. Supreeth S."
+        p1.text = "• Pod Composition: Edge AI & Cyber Defense Pod comprising 4 student engineers covering threat modeling, network ingestion, and ML pipeline development."
         p1.font.size = Pt(11)
         p1.font.color.rgb = RGBColor(40, 50, 60)
         p2 = tf.add_paragraph()
-        p2.text = "• My Ownership: Autonomous Fog-Tier Intrusion Detection & Sub-Millisecond NetFlow Triage Engine."
+        p2.text = f"• Reporting: Report directly to Faculty & Project Guide {GUIDE_NAME}."
         p2.font.size = Pt(11)
         p2.font.color.rgb = RGBColor(40, 50, 60)
+        p3 = tf.add_paragraph()
+        p3.text = "• Personal Scope: End-to-end responsibility for the fog-tier traffic ingestion pipeline, feature normalization, and sub-millisecond Random Forest triage module."
+        p3.font.size = Pt(11)
+        p3.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 12':
+        set_text(s, "Agile Engineering & Daily Collaboration Rhythm", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 13':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
-        p1.text = "• Daily Rhythm: 15-minute daily stand-ups (blockers, deliverables); weekly code review and sprint planning."
+        p1.text = "• Daily Rhythm: 15-minute daily stand-ups (blockers, deliverables) and bi-weekly sprint milestone demos."
         p1.font.size = Pt(11)
         p1.font.color.rgb = RGBColor(40, 50, 60)
         p2 = tf.add_paragraph()
-        p2.text = "• Tools & Discipline: GitHub feature branching, PR reviews with squash-merging, and rigorous pytest CI pipelines."
+        p2.text = "• Industry Tooling: GitHub for PR code reviews, Slack for async tech sync, and Pytest for CI validation."
         p2.font.size = Pt(11)
         p2.font.color.rgb = RGBColor(40, 50, 60)
+        p3 = tf.add_paragraph()
+        p3.text = "• Real Example: In Week 6, identified a 6-feature padding mismatch during daily sync; resolved within 2 hours with schema validation."
+        p3.font.size = Pt(11)
+        p3.font.color.rgb = RGBColor(40, 50, 60)
 
 # ==========================================================
-# SLIDE 3: Assigned Module and Problem Statement
+# SLIDE 3: Assigned Module & Problem Statement (Clean: No Dashed Box)
 # ==========================================================
 slide3 = prs.slides[2]
 update_footer(slide3)
+for s in slide3.shapes:
+    if s.name == 'Text 6':
+        set_text(s, "Problem Scope & Municipal Impact", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
+        tf = s.text_frame
+        tf.clear()
+        p1 = tf.paragraphs[0]
+        p1.text = "• Assigned Module: Fog-Tier IoT Intrusion Detection & Sub-Millisecond Traffic Triage Engine."
+        p1.font.size = Pt(11.5)
+        p1.font.color.rgb = RGBColor(40, 50, 60)
+        p2 = tf.add_paragraph()
+        p2.text = "• Users: Smart City Security Operations Centers (SOCs), edge gateway administrators, and critical municipal utility operators."
+        p2.font.size = Pt(11.5)
+        p2.font.color.rgb = RGBColor(40, 50, 60)
+        p3 = tf.add_paragraph()
+        p3.text = "• Problem: Sending all raw IoT traffic to distant cloud SOCs incurs 150–400 ms latency and saturates backhaul bandwidth during DDoS bursts."
+        p3.font.size = Pt(11.5)
+        p3.font.color.rgb = RGBColor(40, 50, 60)
+        p4 = tf.add_paragraph()
+        p4.text = "• Success Criteria: Local microsecond triage (<100 μs per flow), local filtering of >85% benign traffic, and zero false alarms via dual hysteresis."
+        p4.font.size = Pt(11.5)
+        p4.font.color.rgb = RGBColor(40, 50, 60)
+
 remove_shapes_by_name(slide3, ['Shape 8', 'Text 9'])
 
 if os.path.exists(ARCH_IMG_PATH):
     slide3.shapes.add_picture(ARCH_IMG_PATH, Inches(6.80), Inches(1.60), width=Inches(5.90), height=Inches(4.90))
-
-for s in slide3.shapes:
-    if s.name == 'Text 7':
-        tf = s.text_frame
-        tf.clear()
-        bullets = [
-            ("Assigned Module:", " Fog-Tier IoT Intrusion Detection & Sub-Millisecond Traffic Triage Engine."),
-            ("Users & Impact:", " Municipal Operations Centers & Edge Gateways protecting smart traffic and water infrastructure."),
-            ("Industrial Challenge:", " Centralized cloud IDS introduces 150–400 ms latency and backhaul saturation under volumetric DDoS."),
-            ("Engineering Goal:", " Sub-millisecond triage (<100 μs per flow), filtering >85% benign traffic locally with >99% detection recall.")
-        ]
-        for idx, (label, text) in enumerate(bullets):
-            p = tf.paragraphs[0] if idx == 0 else tf.add_paragraph()
-            p.text = f"• {label} {text}"
-            p.font.size = Pt(11)
-            p.font.color.rgb = RGBColor(40, 50, 60)
-            p.space_after = Pt(6)
 
 # ==========================================================
 # SLIDE 4: Tech Stack and My Contribution
@@ -203,7 +215,9 @@ for s in slide3.shapes:
 slide4 = prs.slides[3]
 update_footer(slide4)
 for s in slide4.shapes:
-    if s.has_table:
+    if s.name == 'Text 6':
+        set_text(s, "Sprint Deliverables & Architecture Work", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.has_table:
         table = s.table
         tech_data = [
             ['Network Ingestion', 'Python 3.12, Sockets, Ring Buffers', 'Line-rate NetFlow ingestion & circular buffering'],
@@ -216,26 +230,27 @@ for s in slide4.shapes:
                 cell = table.cell(row_idx + 1, col_idx)
                 cell.text = text
                 p = cell.text_frame.paragraphs[0]
-                p.font.size = Pt(10.0)
+                p.font.size = Pt(10.5)
                 p.font.color.rgb = RGBColor(30, 40, 50)
     elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         contribs = [
-            ("Week 2–4:", " Preprocessed 277K NetFlow flows; engineered 46-feature schema normalization pipeline."),
-            ("Week 5–8:", " Architected 3-tier Fog-Cloud pipeline; trained lightweight Random Forest triage model (1.4 MB)."),
-            ("Week 9–11:", " Designed dual-threshold hysteresis filter [0.20, 0.80]; engineered FastAPI microservice backend."),
-            ("Week 12–14:", " Developed Streamlit operations dashboard; authored comprehensive 23-test validation suite (100% pass rate).")
+            ("Week 3–4:", " Preprocessed 277K NetFlow records from CICIoT2023 dataset; established 46-feature schema."),
+            ("Week 6–8:", " Implemented core Random Forest model (1.4 MB footprint) executing in 48 μs with 99.4% F1-score."),
+            ("Week 9–10:", " Designed dual-threshold hysteresis filter [0.20, 0.80] suppressing benign sensor false alarms."),
+            ("Week 11–12:", " Developed FastAPI async telemetry endpoints (`/predict`, `/health`, `/metrics`)."),
+            ("Week 13–14:", " Built Streamlit operational dashboard and authored 23 automated tests (100% pass rate).")
         ]
         for idx, (label, text) in enumerate(contribs):
             p = tf.paragraphs[0] if idx == 0 else tf.add_paragraph()
-            p.text = f"• {label}{text}"
+            p.text = label + text
             p.font.size = Pt(10.5)
             p.font.color.rgb = RGBColor(40, 50, 60)
             p.space_after = Pt(4)
 
 # ==========================================================
-# SLIDE 5: Fundamentals: Baseline vs Now
+# SLIDE 5: Fundamentals Baseline vs Now
 # ==========================================================
 slide5 = prs.slides[4]
 update_footer(slide5)
@@ -254,7 +269,7 @@ for s in slide5.shapes:
                 cell = table.cell(row_idx + 1, col_idx)
                 cell.text = text
                 p = cell.text_frame.paragraphs[0]
-                p.font.size = Pt(9.5)
+                p.font.size = Pt(10.5)
                 p.font.color.rgb = RGBColor(30, 40, 50)
 
 # ==========================================================
@@ -263,50 +278,55 @@ for s in slide5.shapes:
 slide6 = prs.slides[5]
 update_footer(slide6)
 for s in slide6.shapes:
-    if s.name == 'Text 7':
+    if s.name == 'Text 6':
+        set_text(s, "Software Engineering & DevOps Standards", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
         p1.text = "• PEP 8 & Clean Code: Strict type hinting, docstrings, and flake8 compliance across all modules."
-        p1.font.size = Pt(10.5)
+        p1.font.size = Pt(11)
         p1.font.color.rgb = RGBColor(40, 50, 60)
         p2 = tf.add_paragraph()
-        p2.text = "• Git Discipline: Feature branches, descriptive commit messages, and squash-merge reviews."
-        p2.font.size = Pt(10.5)
+        p2.text = "• Git Discipline: Structured feature branching (`feat/hysteresis-triage`), semantic commit conventions, and peer PR reviews."
+        p2.font.size = Pt(11)
         p2.font.color.rgb = RGBColor(40, 50, 60)
         p3 = tf.add_paragraph()
-        p3.text = "• Automated Testing: 23 unit and integration tests executed in CI via pytest (100% pass)."
-        p3.font.size = Pt(10.5)
+        p3.text = "• Defensive Engineering: Boundary validation, graceful API fallbacks, and structured JSON logging."
+        p3.font.size = Pt(11)
         p3.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 9':
+        set_text(s, "Professional Certifications & Coursework", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 10':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
         p1.text = "• Name: Google Cybersecurity Professional Certificate & Applied ML for Threat Detection"
-        p1.font.size = Pt(10.5)
+        p1.font.size = Pt(11)
         p1.font.color.rgb = RGBColor(40, 50, 60)
         p2 = tf.add_paragraph()
-        p2.text = "• Provider: Coursera / Google / REVA Skill Development"
-        p2.font.size = Pt(10.5)
+        p2.text = "• Provider: Coursera / Google Career Certificates"
+        p2.font.size = Pt(11)
         p2.font.color.rgb = RGBColor(40, 50, 60)
         p3 = tf.add_paragraph()
-        p3.text = "• Completion Date: September 2026"
-        p3.font.size = Pt(10.5)
-        p3.font.color.rgb = RGBColor(40, 50, 60)
+        p3.text = "• Progress: 100% Completed (Verified Credential)"
+        p3.font.size = Pt(11)
+        p3.font.color.rgb = RGBColor(0, 130, 60)
+        p3.font.bold = True
     elif s.has_table:
         table = s.table
-        tool_data = [
+        tools_data = [
             ['Git & GitHub', 'Distributed version control, branch management, PRs', 'Active repository with 40+ semantic commits'],
             ['Docker & Linux', 'Containerized microservices & reproducible builds', 'Production Dockerfile with python:3.12-slim'],
             ['FastAPI & Uvicorn', 'High-throughput asynchronous RESTful API gateway', 'Live `/predict` endpoint handling >1,000 flows/sec'],
             ['Pytest & Coverage', 'Automated test execution & regression safety', '23 passing tests covering functional & boundary paths']
         ]
-        for row_idx, row in enumerate(tool_data):
+        for row_idx, row in enumerate(tools_data):
             for col_idx, text in enumerate(row):
                 cell = table.cell(row_idx + 1, col_idx)
                 cell.text = text
                 p = cell.text_frame.paragraphs[0]
-                p.font.size = Pt(9.5)
+                p.font.size = Pt(10)
                 p.font.color.rgb = RGBColor(30, 40, 50)
 
 # ==========================================================
@@ -315,42 +335,56 @@ for s in slide6.shapes:
 slide7 = prs.slides[6]
 update_footer(slide7)
 for s in slide7.shapes:
-    if s.name == 'Text 7':
+    if s.name == 'Text 6':
+        set_text(s, "Technical Competencies Developed", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
         p1.text = "• Edge AI Proficiency: Mastered model compression, Pareto frontier analysis, and low-latency feature extraction."
-        p1.font.size = Pt(10.5)
+        p1.font.size = Pt(11)
         p1.font.color.rgb = RGBColor(40, 50, 60)
         p2 = tf.add_paragraph()
-        p2.text = "• High-Throughput Engineering: Gained expertise in asynchronous Python, socket buffers, and non-blocking I/O."
-        p2.font.size = Pt(10.5)
+        p2.text = "• SIMD Vectorization: Reduced per-packet classification latency from 1.42 ms to 48 μs."
+        p2.font.size = Pt(11)
         p2.font.color.rgb = RGBColor(40, 50, 60)
+        p3 = tf.add_paragraph()
+        p3.text = "• Production Mindset: Transitioned from academic prototyping to resilient, containerized, test-backed microservices."
+        p3.font.size = Pt(11)
+        p3.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 9':
+        set_text(s, "Systems Engineering & Professional Growth", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 10':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
         p1.text = "• Technical Communication: Formulating structured requirement specs and presenting in weekly mentor reviews."
-        p1.font.size = Pt(10.5)
+        p1.font.size = Pt(11)
         p1.font.color.rgb = RGBColor(40, 50, 60)
         p2 = tf.add_paragraph()
-        p2.text = "• Teamwork: Seamlessly integrating edge triage microservice with upstream packet parsers and downstream SOC dashboards."
-        p2.font.size = Pt(10.5)
+        p2.text = "• Teamwork: Collaborating effectively across the 4-engineer pod to integrate interfaces without friction."
+        p2.font.size = Pt(11)
         p2.font.color.rgb = RGBColor(40, 50, 60)
+        p3 = tf.add_paragraph()
+        p3.text = "• Agile Ownership: Accurately sizing engineering tasks and consistently delivering checkpoints ahead of schedule."
+        p3.font.size = Pt(11)
+        p3.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 12':
+        set_text(s, "Core Technical Challenge & Mitigation", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 13':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
         p1.text = "• Challenge: Volumetric attack bursts caused UI thread freezing in Streamlit when polling FastAPI at 100 Hz."
-        p1.font.size = Pt(10.5)
+        p1.font.size = Pt(11)
         p1.font.color.rgb = RGBColor(40, 50, 60)
         p2 = tf.add_paragraph()
-        p2.text = "• Action: Decoupled telemetry ingestion from rendering via an in-memory ring buffer and asynchronous polling queue."
-        p2.font.size = Pt(10.5)
+        p2.text = "• Action: Profiled network stack, isolated UI thread contention, and decoupled telemetry via background session polling with cached state."
+        p2.font.size = Pt(11)
         p2.font.color.rgb = RGBColor(40, 50, 60)
         p3 = tf.add_paragraph()
-        p3.text = "• Result: Zero UI lag during 10,000 pkts/s attack burst simulations while preserving 60 FPS live rendering."
-        p3.font.size = Pt(10.5)
+        p3.text = "• Result: Sustained smooth 60 FPS dashboard telemetry under 10,000 pkts/sec stress loads."
+        p3.font.size = Pt(11)
         p3.font.color.rgb = RGBColor(40, 50, 60)
 
 # ==========================================================
@@ -359,22 +393,24 @@ for s in slide7.shapes:
 slide8 = prs.slides[7]
 update_footer(slide8)
 for s in slide8.shapes:
-    if s.name == 'Text 7':
+    if s.name == 'Text 6':
+        set_text(s, "Phase-2 Engineering Roadmap", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
         p1.text = "• Internship Phase-2: Deploy and benchmark module on embedded Raspberry Pi 5 hardware with Google Coral Edge TPU coprocessor."
-        p1.font.size = Pt(11)
+        p1.font.size = Pt(11.0)
         p1.font.color.rgb = RGBColor(40, 50, 60)
         p1.space_after = Pt(4)
         p2 = tf.add_paragraph()
         p2.text = "• eBPF Integration: Shift NetFlow packet filtering into the Linux kernel layer (XDP/eBPF) to drop malicious packets before socket buffer allocation."
-        p2.font.size = Pt(11)
+        p2.font.size = Pt(11.0)
         p2.font.color.rgb = RGBColor(40, 50, 60)
         p2.space_after = Pt(4)
         p3 = tf.add_paragraph()
         p3.text = "• Placement Readiness: Completed mock technical interviews; solidifying portfolio with production GitHub repository and live demo."
-        p3.font.size = Pt(11)
+        p3.font.size = Pt(11.0)
         p3.font.color.rgb = RGBColor(40, 50, 60)
     elif s.name == 'Text 8':
         s.top = Inches(4.50)
@@ -414,7 +450,6 @@ for s in slide8.shapes:
         p2.alignment = PP_ALIGN.CENTER
 
 # Save PPTX
-os.makedirs('docs', exist_ok=True)
 prs.save(OUTPUT_PPTX)
 print(f"Saved RIO PPTX to: {OUTPUT_PPTX}")
 

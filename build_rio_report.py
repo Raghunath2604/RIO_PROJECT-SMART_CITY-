@@ -341,11 +341,6 @@ for r in p_sdg.runs:
     r.font.size = Pt(10)
 p_title._element.addnext(p_sdg._element)
 
-# Remove trailing empty paragraphs at document end
-while doc.paragraphs and not doc.paragraphs[-1].text.strip():
-    p = doc.paragraphs[-1]
-    p._element.getparent().remove(p._element)
-
 # Save Document (Zero Appendices at the end!)
 doc.save(OUTPUT_DOCX)
 print(f"Saved RIO DOCX to: {OUTPUT_DOCX}")
