@@ -103,17 +103,19 @@ if os.path.exists(SDG_LOGO_PATH):
     badge.fill.fore_color.rgb = RGBColor(255, 255, 255)
     badge.line.color.rgb = RGBColor(226, 232, 240)
     badge.line.width = Pt(1.5)
+    badge.text_frame.clear()
     
     # Add Logo centered inside top of badge
-    slide1.shapes.add_picture(SDG_LOGO_PATH, Inches(10.67), Inches(0.58), width=Inches(1.90), height=Inches(1.90))
+    slide1.shapes.add_picture(SDG_LOGO_PATH, Inches(10.67), Inches(0.55), width=Inches(1.90), height=Inches(1.90))
     
-    # Text inside badge below logo
-    tf = badge.text_frame
+    # Dedicated Caption Box below logo inside badge (no newline hacks)
+    cap_box = slide1.shapes.add_textbox(Inches(10.45), Inches(2.52), Inches(2.35), Inches(1.10))
+    tf = cap_box.text_frame
     tf.word_wrap = True
     tf.clear()
     
     p0 = tf.paragraphs[0]
-    p0.text = "\n\n\n\n\n\n\nUN SDG 17 ALIGNED"
+    p0.text = "UN SDG 17 ALIGNED"
     p0.font.size = Pt(9.5)
     p0.font.bold = True
     p0.font.color.rgb = RGBColor(11, 60, 93)
@@ -121,10 +123,16 @@ if os.path.exists(SDG_LOGO_PATH):
     p0.space_after = Pt(2)
     
     p1 = tf.add_paragraph()
-    p1.text = "Goal 9: Industry & Innovation\nGoal 11: Sustainable Cities"
-    p1.font.size = Pt(8.0)
+    p1.text = "Goal 9: Industry & Innovation"
+    p1.font.size = Pt(8.5)
     p1.font.color.rgb = RGBColor(71, 85, 105)
     p1.alignment = PP_ALIGN.CENTER
+    
+    p2 = tf.add_paragraph()
+    p2.text = "Goal 11: Sustainable Cities"
+    p2.font.size = Pt(8.5)
+    p2.font.color.rgb = RGBColor(71, 85, 105)
+    p2.alignment = PP_ALIGN.CENTER
 
 # ==========================================================
 # SLIDE 2: Problem Statement & Literature Gaps
@@ -246,14 +254,16 @@ update_footer(slide6)
 remove_shapes_by_name(slide6, ['Shape 5', 'Text 6', 'Shape 7', 'Text 8', 'Shape 9', 'Text 10'])
 
 if os.path.exists(FLOWCHART_IMG_PATH):
-    slide6.shapes.add_picture(FLOWCHART_IMG_PATH, Inches(0.70), Inches(1.60), width=Inches(3.85), height=Inches(4.75))
+    slide6.shapes.add_picture(FLOWCHART_IMG_PATH, Inches(0.70), Inches(1.60), width=Inches(3.85), height=Inches(4.40))
 if os.path.exists(UML_IMG_PATH):
-    slide6.shapes.add_picture(UML_IMG_PATH, Inches(4.70), Inches(1.60), width=Inches(3.85), height=Inches(4.75))
+    slide6.shapes.add_picture(UML_IMG_PATH, Inches(4.70), Inches(1.60), width=Inches(3.85), height=Inches(4.40))
 if os.path.exists(DFD_IMG_PATH):
-    slide6.shapes.add_picture(DFD_IMG_PATH, Inches(8.70), Inches(1.60), width=Inches(4.15), height=Inches(4.75))
+    slide6.shapes.add_picture(DFD_IMG_PATH, Inches(8.70), Inches(1.60), width=Inches(4.15), height=Inches(4.40))
 
 for s in slide6.shapes:
     if s.name == 'Text 11':
+        s.top = Inches(6.12)
+        s.height = Inches(0.48)
         set_text(s, "Traceability: R1 traces to DFD Level-0/1 Ingestion | R2 traces to Flowchart Classification & Hysteresis | R3 traces to UML Sequence Tier-2 Escalation | R4 traces to FastAPI & Streamlit UI",
                  font_size=10.5, color=RGBColor(0, 90, 160), bold=True)
 
@@ -276,6 +286,8 @@ for s in slide7.shapes:
     elif s.name == 'Text 14':
         set_text(s, "Target: 70%  |  Completed: 72%", font_size=11, bold=True, color=RGBColor(0, 130, 60))
     elif s.name == 'Text 17':
+        s.top = Inches(5.95)
+        s.height = Inches(0.95)
         tf = s.text_frame
         tf.clear()
         feats = [
@@ -286,7 +298,9 @@ for s in slide7.shapes:
         for idx, (label, text) in enumerate(feats):
             p = tf.paragraphs[0] if idx == 0 else tf.add_paragraph()
             p.text = label + text
-            p.font.size = Pt(11.0)
+            p.font.size = Pt(9.5)
+            p.font.color.rgb = RGBColor(40, 50, 60)
+            p.space_after = Pt(2)
             p.font.color.rgb = RGBColor(40, 50, 60)
             p.space_after = Pt(6)
 
@@ -468,9 +482,37 @@ for s in slide12.shapes:
             p.font.size = Pt(10.5)
             p.font.color.rgb = RGBColor(40, 50, 60)
             p.space_after = Pt(4)
+    elif s.name == 'Text 8':
+        s.top = Inches(4.35)
+        s.height = Inches(0.80)
+        set_text(s, "Thank you. Questions?", font_size=28, bold=True, color=RGBColor(11, 60, 93), align=PP_ALIGN.CENTER)
     elif s.name == 'Text 9':
-        set_text(s, f"Email: {EMAIL_ADDR}  |  LinkedIn: {LINKEDIN_URL}\nGitHub: {GITHUB_REPO}\nCandidate: {STUDENT_NAME} ({SRN})  |  Faculty Guide: {GUIDE_NAME}  |  REVA University",
-                 font_size=11, color=RGBColor(0, 114, 206), bold=True, align=PP_ALIGN.CENTER)
+        s.top = Inches(5.30)
+        s.height = Inches(1.35)
+        s.width = Inches(12.20)
+        tf = s.text_frame
+        tf.clear()
+        p1 = tf.paragraphs[0]
+        p1.text = f"Candidate: {STUDENT_NAME} ({SRN})  |  Faculty Guide: {GUIDE_NAME}  |  REVA University"
+        p1.font.size = Pt(11.5)
+        p1.font.bold = True
+        p1.font.color.rgb = RGBColor(11, 60, 93)
+        p1.alignment = PP_ALIGN.CENTER
+        p1.space_after = Pt(3)
+        
+        p2 = tf.add_paragraph()
+        p2.text = f"GitHub: {GITHUB_REPO}"
+        p2.font.size = Pt(10.5)
+        p2.font.bold = True
+        p2.font.color.rgb = RGBColor(0, 114, 206)
+        p2.alignment = PP_ALIGN.CENTER
+        p2.space_after = Pt(3)
+        
+        p3 = tf.add_paragraph()
+        p3.text = f"Email: {EMAIL_ADDR}  |  LinkedIn: {LINKEDIN_URL}"
+        p3.font.size = Pt(10.5)
+        p3.font.color.rgb = RGBColor(71, 85, 105)
+        p3.alignment = PP_ALIGN.CENTER
 
 # Save PPTX
 os.makedirs('docs', exist_ok=True)

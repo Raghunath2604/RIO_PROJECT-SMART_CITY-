@@ -7,7 +7,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 print("================ FINAL FORENSIC AUDIT ================")
 
-forbidden_phrases = [
+forbidden_patterns = [
     r'\(4.5 lines\)',
     r'\(150.200 words\)',
     r'\(2.3 lines\)',
@@ -23,6 +23,23 @@ forbidden_phrases = [
     r'Evidence: Phase-2'
 ]
 
+forbidden_card_titles = [
+    "Problem and users",
+    "Gap in existing work",
+    "Why this design",
+    "Root cause and fix",
+    "The RIO Center",
+    "My team",
+    "How the team works",
+    "What I built or tested",
+    "Coding and documentation standards",
+    "Certification / course",
+    "Technical growth",
+    "Professional growth",
+    "Challenge and response",
+    "Next steps"
+]
+
 # 1. Audit DOCX files
 for doc_file in ['docs/Project_Report_Phase1_R23EA094.docx', 'docs/RIO_Internship_Report_R23EA094.docx']:
     print(f"\nChecking DOCX: {doc_file}...")
@@ -30,7 +47,7 @@ for doc_file in ['docs/Project_Report_Phase1_R23EA094.docx', 'docs/RIO_Internshi
     issues = 0
     for p_idx, p in enumerate(doc.paragraphs):
         text = p.text
-        for phrase in forbidden_phrases:
+        for phrase in forbidden_patterns:
             matches = re.findall(phrase, text, re.IGNORECASE)
             for m in matches:
                 if not re.match(r'\[\s*\d+\.?\d*\s*,\s*\d+\.?\d*\s*\]', m) and not re.match(r'\[\d+\]', m):
@@ -47,13 +64,18 @@ for ppt_file in ['docs/Project_Presentation_R23EA094.pptx', 'docs/RIO_Internship
     for s_idx, slide in enumerate(prs.slides):
         for shape in slide.shapes:
             if shape.has_text_frame:
-                text = shape.text_frame.text
-                for phrase in forbidden_phrases:
+                text = shape.text_frame.text.strip()
+                # Check regex patterns
+                for phrase in forbidden_patterns:
                     matches = re.findall(phrase, text, re.IGNORECASE)
                     for m in matches:
                         if not re.match(r'\[\s*\d+\.?\d*\s*,\s*\d+\.?\d*\s*\]', m):
-                            print(f"  [ISSUE] Slide {s_idx+1}: Found '{m}' in '{text[:60]}'")
+                            print(f"  [ISSUE] Slide {s_idx+1} [{shape.name}]: Found pattern '{m}' in '{text[:60]}'")
                             issues += 1
+                # Check exact forbidden card titles
+                if text in forbidden_card_titles:
+                    print(f"  [ISSUE] Slide {s_idx+1} [{shape.name}]: Found raw template card title '{text}'")
+                    issues += 1
     if issues == 0:
         print(f"  --> CLEAN! Zero template prompts or forbidden phrases found in {ppt_file}")
 

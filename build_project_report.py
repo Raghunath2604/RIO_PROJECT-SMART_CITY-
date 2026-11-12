@@ -77,26 +77,6 @@ def format_table(table, header_bg="0B3C5D"):
                         run.font.color.rgb = CHARCOAL
                         run.font.size = Pt(9.5)
 
-def insert_figure_after(doc, target_element, img_path, caption_text, width_inches=5.8):
-    if os.path.exists(img_path):
-        p_img = doc.add_paragraph()
-        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        run = p_img.add_run()
-        run.add_picture(img_path, width=Inches(width_inches))
-        
-        p_cap = doc.add_paragraph()
-        p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        run_cap = p_cap.add_run(caption_text)
-        run_cap.font.italic = True
-        run_cap.font.size = Pt(9.5)
-        run_cap.font.color.rgb = MUTED
-        p_cap.space_after = Pt(12)
-        
-        target_element.addnext(p_img._element)
-        p_img._element.addnext(p_cap._element)
-        return p_cap._element
-    return target_element
-
 # ==========================================================
 # 1. POPULATE & STYLE ALL 10 TABLES
 # ==========================================================
@@ -195,8 +175,8 @@ format_table(t7)
 # Table 8: Bugs Found and Fixed
 t8 = doc.tables[7]
 t8_data = [
-    ('Bug 1: Feature Mismatch Zero-Padding', 'Ingestion client emitted 40 features instead of 46 expected by the trained model pipeline.', 'Added strict schema validator and zero-padding for optional NetFlow flags in preprocessing pipeline.', 'Verified via schema assertion unit tests (Figure 8)'),
-    ('Bug 2: Streamlit Session Thread Freeze', 'Rapid synchronous REST polling of FastAPI from UI thread blocked the render loop under stress.', 'Refactored to background caching with st.session_state and async event queue.', 'Verified via 60 FPS live telemetry stress test (Figures 9 & 10)')
+    ('Bug 1: Feature Mismatch Zero-Padding', 'Ingestion client emitted 40 features instead of 46 expected by the trained model pipeline.', 'Added strict schema validator and zero-padding for optional NetFlow flags in preprocessing pipeline.', 'Verified via schema assertion unit tests (Appendix B, Figure 8)'),
+    ('Bug 2: Streamlit Session Thread Freeze', 'Rapid synchronous REST polling of FastAPI from UI thread blocked the render loop under stress.', 'Refactored to background caching with st.session_state and async event queue.', 'Verified via 60 FPS live telemetry stress test (Appendix B, Figures 9 & 10)')
 ]
 for row_idx, row in enumerate(t8_data):
     for col_idx, text in enumerate(row):
@@ -301,8 +281,6 @@ replacements_map = {
 }
 
 # Iterate through document paragraphs and do exact in-place replacement
-inserted_paras = {}
-
 for p in list(doc.paragraphs):
     text_clean = p.text.strip()
     
@@ -322,12 +300,10 @@ for p in list(doc.paragraphs):
                 new_p = doc.add_paragraph()
                 new_p.text = new_body
                 new_p.style = 'Normal'
-                new_p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
                 for r in new_p.runs:
                     r.font.color.rgb = CHARCOAL
                     r.font.size = Pt(10.5)
                 p._element.addnext(new_p._element)
-                inserted_paras[prefix] = new_p
             break
             
     # Wipe out any raw Evidence lines or template question bullets
@@ -355,47 +331,43 @@ for r in p_sdg.runs:
     r.font.size = Pt(10)
 p_title._element.addnext(p_sdg._element)
 
-# ==========================================================
-# 3. SHOWCASE DIAGRAMS INLINE WHEREVER REQUIRED (NOT AT LAST)
-# ==========================================================
+# Appendices with Diagrams
+p_app = doc.add_paragraph()
+p_app.text = "Appendix A: Architectural and Detailed Design Artifacts"
+p_app.style = 'Heading 2'
 
-# 1. Section 2.1: System Architecture Diagram right under Section 2.1 text
-if "2.1 System design" in inserted_paras:
-    insert_figure_after(doc, inserted_paras["2.1 System design"]._element,
-                        ARCH_IMG_PATH, "Figure 1: Hierarchical Three-Tier Fog-IDS System Architecture Topology", width_inches=6.0)
+def add_figure_with_caption(doc, img_path, caption_text, width_inches=6.0):
+    if os.path.exists(img_path):
+        p_img = doc.add_paragraph()
+        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run = p_img.add_run()
+        run.add_picture(img_path, width=Inches(width_inches))
+        
+        p_cap = doc.add_paragraph()
+        p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run_cap = p_cap.add_run(caption_text)
+        run_cap.font.italic = True
+        run_cap.font.size = Pt(9.5)
+        run_cap.font.color.rgb = MUTED
+        p_cap.space_after = Pt(12)
 
-# 2. Section 2.2: Flowchart, UML Sequence, and DFD right under Table 4 (Detailed Design Diagrams)
-elem_t4 = doc.tables[3]._element
-elem_t4 = insert_figure_after(doc, elem_t4, FLOWCHART_IMG_PATH, "Figure 2: Detailed Flowchart of Sub-Millisecond Fog Packet Ingestion and Dual-Threshold Triage", width_inches=5.5)
-elem_t4 = insert_figure_after(doc, elem_t4, UML_IMG_PATH, "Figure 3: UML Sequence Diagram of End-to-End Fog Ingestion, Classification, and Tier-2 Escalation", width_inches=5.5)
-elem_t4 = insert_figure_after(doc, elem_t4, DFD_IMG_PATH, "Figure 4: Data Flow Diagram (DFD Level 0 and Level 1) of Telemetry Transformations", width_inches=5.5)
+add_figure_with_caption(doc, ARCH_IMG_PATH, "Figure 1: Hierarchical Three-Tier Fog-IDS System Architecture Topology", width_inches=6.2)
+add_figure_with_caption(doc, FLOWCHART_IMG_PATH, "Figure 2: Detailed Flowchart of Sub-Millisecond Fog Packet Ingestion and Dual-Threshold Triage", width_inches=5.8)
+add_figure_with_caption(doc, UML_IMG_PATH, "Figure 3: UML Sequence Diagram of End-to-End Fog Ingestion, Classification, and Tier-2 Escalation", width_inches=5.8)
+add_figure_with_caption(doc, DFD_IMG_PATH, "Figure 4: Data Flow Diagram (DFD Level 0 and Level 1) of Telemetry Transformations", width_inches=5.8)
 
-# 3. Section 3.1: Edge Telemetry Health and Audit Output right under Table 6 (Checkpoints)
-elem_t6 = doc.tables[5]._element
-elem_t6 = insert_figure_after(doc, elem_t6, AUDIT_IMG_PATH, "Figure 5: Edge Telemetry Health and System Diagnostic Audit Output (Week 8 & Week 10 Checkpoints)", width_inches=5.5)
+p_app2 = doc.add_paragraph()
+p_app2.text = "Appendix B: Implementation Verification and Performance Evidence"
+p_app2.style = 'Heading 2'
 
-# 4. Section 3.2: Live Operational Streamlit Dashboard right under Section 3.2 text
-if "3.2 Key features implemented" in inserted_paras:
-    insert_figure_after(doc, inserted_paras["3.2 Key features implemented"]._element,
-                        STREAM_IMG_PATH, "Figure 6: Live Operational Streamlit Dashboard Demonstrating Real-Time Threat Classification", width_inches=5.5)
+add_figure_with_caption(doc, AUDIT_IMG_PATH, "Figure 5: Edge Telemetry Health and System Audit Output (Week 8 & Week 10 Checkpoints)", width_inches=5.8)
+add_figure_with_caption(doc, STREAM_IMG_PATH, "Figure 6: Live Operational Streamlit Dashboard Demonstrating Real-Time Threat Classification", width_inches=5.8)
+add_figure_with_caption(doc, PARETO_IMG_PATH, "Figure 7: Model Size vs Inference Latency Pareto Frontier (Random Forest 48 μs vs CNN 185 ms)", width_inches=5.5)
+add_figure_with_caption(doc, BUG1_IMG_PATH, "Figure 8: Bug 1 Defect Resolution: 40-Feature vs 46-Feature Ingestion Schema Mismatch", width_inches=5.8)
+add_figure_with_caption(doc, BEFORE_IMG_PATH, "Figure 9: Bug 2 Resolution (Before): Streamlit Thread Lock Under Volumetric Bursts", width_inches=5.5)
+add_figure_with_caption(doc, AFTER_IMG_PATH, "Figure 10: Bug 2 Resolution (After): Responsive 60 FPS Telemetry via Decoupled Background Cache", width_inches=5.5)
 
-# 5. Section 3.3: Model Size vs Latency Pareto Frontier right under Section 3.3 text
-if "3.3 Code quality and optimization" in inserted_paras:
-    insert_figure_after(doc, inserted_paras["3.3 Code quality and optimization"]._element,
-                        PARETO_IMG_PATH, "Figure 7: Model Size vs Inference Latency Pareto Frontier (Random Forest 48 μs vs CNN 185 ms)", width_inches=5.2)
-
-# 6. Section 4.3: Bug Resolutions right under Table 8 (Bugs Found and Fixed)
-elem_t8 = doc.tables[7]._element
-elem_t8 = insert_figure_after(doc, elem_t8, BUG1_IMG_PATH, "Figure 8: Bug 1 Defect Resolution: 40-Feature vs 46-Feature Ingestion Schema Mismatch", width_inches=5.5)
-elem_t8 = insert_figure_after(doc, elem_t8, BEFORE_IMG_PATH, "Figure 9: Bug 2 Resolution (Before): Streamlit Thread Lock Under Volumetric Bursts", width_inches=5.2)
-elem_t8 = insert_figure_after(doc, elem_t8, AFTER_IMG_PATH, "Figure 10: Bug 2 Resolution (After): Responsive 60 FPS Telemetry via Decoupled Background Cache", width_inches=5.2)
-
-# Ensure all Normal body paragraphs in document are justified
-for p in doc.paragraphs:
-    if p.style.name == 'Normal' and p.text.strip() and not p.text.startswith("Figure ") and not p.text.startswith("Major Project Report") and not p.text.startswith("United Nations"):
-        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-
-# Save Document (Zero Appendices at the end!)
+# Save Document
 doc.save(OUTPUT_DOCX)
 print(f"Saved DOCX to: {OUTPUT_DOCX}")
 

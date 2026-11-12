@@ -95,17 +95,19 @@ if os.path.exists(SDG_LOGO_PATH):
     badge.fill.fore_color.rgb = RGBColor(255, 255, 255)
     badge.line.color.rgb = RGBColor(226, 232, 240)
     badge.line.width = Pt(1.5)
+    badge.text_frame.clear()
     
     # Add Logo centered inside top of badge
-    slide1.shapes.add_picture(SDG_LOGO_PATH, Inches(10.67), Inches(0.58), width=Inches(1.90), height=Inches(1.90))
+    slide1.shapes.add_picture(SDG_LOGO_PATH, Inches(10.67), Inches(0.55), width=Inches(1.90), height=Inches(1.90))
     
-    # Text inside badge below logo
-    tf = badge.text_frame
+    # Dedicated Caption Box below logo inside badge (no newline hacks)
+    cap_box = slide1.shapes.add_textbox(Inches(10.45), Inches(2.52), Inches(2.35), Inches(1.10))
+    tf = cap_box.text_frame
     tf.word_wrap = True
     tf.clear()
     
     p0 = tf.paragraphs[0]
-    p0.text = "\n\n\n\n\n\n\nUN SDG 17 ALIGNED"
+    p0.text = "UN SDG 17 ALIGNED"
     p0.font.size = Pt(9.5)
     p0.font.bold = True
     p0.font.color.rgb = RGBColor(11, 60, 93)
@@ -113,10 +115,16 @@ if os.path.exists(SDG_LOGO_PATH):
     p0.space_after = Pt(2)
     
     p1 = tf.add_paragraph()
-    p1.text = "Goal 9: Industry & Innovation\nGoal 11: Sustainable Cities"
-    p1.font.size = Pt(8.0)
+    p1.text = "Goal 9: Industry & Innovation"
+    p1.font.size = Pt(8.5)
     p1.font.color.rgb = RGBColor(71, 85, 105)
     p1.alignment = PP_ALIGN.CENTER
+    
+    p2 = tf.add_paragraph()
+    p2.text = "Goal 11: Sustainable Cities"
+    p2.font.size = Pt(8.5)
+    p2.font.color.rgb = RGBColor(71, 85, 105)
+    p2.alignment = PP_ALIGN.CENTER
 
 # ==========================================================
 # SLIDE 2: Organisation and Team
@@ -215,9 +223,7 @@ if os.path.exists(ARCH_IMG_PATH):
 slide4 = prs.slides[3]
 update_footer(slide4)
 for s in slide4.shapes:
-    if s.name == 'Text 6':
-        set_text(s, "Sprint Deliverables & Architecture Work", font_size=13, bold=True, color=RGBColor(11, 60, 93))
-    elif s.has_table:
+    if s.has_table:
         table = s.table
         tech_data = [
             ['Network Ingestion', 'Python 3.12, Sockets, Ring Buffers', 'Line-rate NetFlow ingestion & circular buffering'],
@@ -232,6 +238,8 @@ for s in slide4.shapes:
                 p = cell.text_frame.paragraphs[0]
                 p.font.size = Pt(10.5)
                 p.font.color.rgb = RGBColor(30, 40, 50)
+    elif s.name == 'Text 6':
+        set_text(s, "Sprint Deliverables & Architecture Work", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
@@ -400,54 +408,53 @@ for s in slide8.shapes:
         tf.clear()
         p1 = tf.paragraphs[0]
         p1.text = "• Internship Phase-2: Deploy and benchmark module on embedded Raspberry Pi 5 hardware with Google Coral Edge TPU coprocessor."
-        p1.font.size = Pt(11.0)
+        p1.font.size = Pt(11.5)
         p1.font.color.rgb = RGBColor(40, 50, 60)
-        p1.space_after = Pt(4)
         p2 = tf.add_paragraph()
         p2.text = "• eBPF Integration: Shift NetFlow packet filtering into the Linux kernel layer (XDP/eBPF) to drop malicious packets before socket buffer allocation."
-        p2.font.size = Pt(11.0)
+        p2.font.size = Pt(11.5)
         p2.font.color.rgb = RGBColor(40, 50, 60)
-        p2.space_after = Pt(4)
         p3 = tf.add_paragraph()
         p3.text = "• Placement Readiness: Completed mock technical interviews; solidifying portfolio with production GitHub repository and live demo."
-        p3.font.size = Pt(11.0)
+        p3.font.size = Pt(11.5)
         p3.font.color.rgb = RGBColor(40, 50, 60)
     elif s.name == 'Text 8':
-        s.top = Inches(4.50)
-        s.height = Inches(0.90)
-        s.width = Inches(12.20)
-        s.left = Inches(0.70)
+        s.top = Inches(4.35)
+        s.height = Inches(0.80)
         set_text(s, "Thank you. Questions?", font_size=28, bold=True, color=RGBColor(11, 60, 93), align=PP_ALIGN.CENTER)
     elif s.name == 'Text 9':
-        s.top = Inches(5.55)
-        s.height = Inches(1.20)
+        s.top = Inches(5.30)
+        s.height = Inches(1.35)
         s.width = Inches(12.20)
-        s.left = Inches(0.70)
         tf = s.text_frame
         tf.clear()
-        
-        p0 = tf.paragraphs[0]
-        p0.text = f"Candidate: {STUDENT_NAME} (SRN: {SRN})   |   Faculty Guide: {GUIDE_NAME}"
-        p0.font.size = Pt(11.5)
-        p0.font.bold = True
-        p0.font.color.rgb = RGBColor(11, 60, 93)
-        p0.alignment = PP_ALIGN.CENTER
-        p0.space_after = Pt(3)
-
-        p1 = tf.add_paragraph()
-        p1.text = "The RIO Center, School of Computing Science & Engineering, REVA University   |   Academic Year 2026–2027"
-        p1.font.size = Pt(10.5)
-        p1.font.bold = False
-        p1.font.color.rgb = RGBColor(74, 85, 104)
+        p1 = tf.paragraphs[0]
+        p1.text = f"Candidate: {STUDENT_NAME} ({SRN})  |  Faculty & Workplace Mentor: {GUIDE_NAME}"
+        p1.font.size = Pt(11)
+        p1.font.bold = True
+        p1.font.color.rgb = RGBColor(11, 60, 93)
         p1.alignment = PP_ALIGN.CENTER
-        p1.space_after = Pt(3)
-
+        p1.space_after = Pt(2)
+        
         p2 = tf.add_paragraph()
-        p2.text = f"Email: {EMAIL_ADDR}   |   GitHub: {GITHUB_REPO}\nLinkedIn: {LINKEDIN_URL}"
-        p2.font.size = Pt(10)
-        p2.font.bold = False
-        p2.font.color.rgb = RGBColor(0, 114, 206)
+        p2.text = "Host Organization: The RIO Center, REVA University"
+        p2.font.size = Pt(10.5)
+        p2.font.color.rgb = RGBColor(71, 85, 105)
         p2.alignment = PP_ALIGN.CENTER
+        p2.space_after = Pt(2)
+        
+        p3 = tf.add_paragraph()
+        p3.text = f"GitHub: {GITHUB_REPO}  |  Email: {EMAIL_ADDR}"
+        p3.font.size = Pt(10)
+        p3.font.color.rgb = RGBColor(0, 114, 206)
+        p3.alignment = PP_ALIGN.CENTER
+        p3.space_after = Pt(2)
+        
+        p4 = tf.add_paragraph()
+        p4.text = f"LinkedIn: {LINKEDIN_URL}"
+        p4.font.size = Pt(10)
+        p4.font.color.rgb = RGBColor(71, 85, 105)
+        p4.alignment = PP_ALIGN.CENTER
 
 # Save PPTX
 prs.save(OUTPUT_PPTX)
