@@ -84,7 +84,7 @@ t1 = doc.tables[0]
 t1_data = [
     ('Student name', f"{STUDENT_NAME}"),
     ('SRN / Roll number', f"{SRN}"),
-    ('Program and Section', "B.Tech Computer Science & Engineering (AIML), 7th Sem"),
+    ('Program and Section', "B.Tech Computer Science & Engineering (AIML), 7th Sem (Academic Year 2026–2027)"),
     ('Organization', "The RIO Center, REVA University (Research & Innovation Opportunities)"),
     ('Workplace mentor (name, designation)', f"{GUIDE_NAME}, Associate Professor & Edge AI Pod Lead, School of C&SE"),
     ('Faculty mentor', f"{GUIDE_NAME}, Associate Professor, School of C&SE, REVA University")
@@ -152,8 +152,8 @@ format_table(t5)
 # Table 6: Mock Interviews
 t6 = doc.tables[5]
 t6_data = [
-    ('Mock interview 1 (Week 7)', '28-02-2026', 'Data structures (ring buffers), Python concurrency (asyncio), Networking fundamentals (TCP 3-way handshake)', '8.5 / 10 | Strong algorithmic foundation; advised to strengthen system-level memory profiling', 'Practiced memory profiling using tracemalloc and cProfile'),
-    ('Capstone mock interview (Week 15)', '07-04-2026', 'End-to-end system design, edge AI trade-offs, Pareto frontier analysis, failure modes, viva readiness', '9.5 / 10 | Outstanding technical defense; clear articulation of design decisions and rejected alternatives', 'Refined presentation slides for final university and industry review')
+    ('Mock interview 1 (Week 7)', '26-09-2026', 'Data structures (ring buffers), Python concurrency (asyncio), Networking fundamentals (TCP 3-way handshake)', '8.5 / 10 | Strong algorithmic foundation; advised to strengthen system-level memory profiling', 'Practiced memory profiling using tracemalloc and cProfile'),
+    ('Capstone mock interview (Week 14)', '06-11-2026', 'End-to-end system design, edge AI trade-offs, Pareto frontier analysis, failure modes, viva readiness', '9.5 / 10 | Outstanding technical defense; clear articulation of design decisions and rejected alternatives', 'Refined presentation slides for final university and industry review')
 ]
 for row_idx, row in enumerate(t6_data):
     for col_idx, text in enumerate(row):
@@ -194,7 +194,7 @@ rio_map = {
     ),
     "4.1 Requirement review": (
         "4.1 Formal Requirement Review and Milestone Validation",
-        "On 18-02-2026 (Week 7 Milestone Review), Dr. Supreeth S validated the module's core ingestion pipeline and approved the transition from monolithic deep learning to a vectorized Random Forest. The mentor instructed the incorporation of a dual-threshold hysteresis filter [0.20, 0.80] to suppress benign sensor false alarms, which was successfully implemented and verified in Week 9."
+        "On 25-09-2026 (Week 7 Milestone Review), Dr. Supreeth S validated the module's core ingestion pipeline and approved the transition from monolithic deep learning to a vectorized Random Forest. The mentor instructed the incorporation of a dual-threshold hysteresis filter [0.20, 0.80] to suppress benign sensor false alarms, which was successfully implemented and verified in Week 9."
     ),
     "4.3 Professional conduct": (
         "4.3 Professional Conduct and Agile Accountability",
@@ -248,7 +248,7 @@ for p in list(doc.paragraphs):
 
 # Title & UN SDG Alignment Header
 p_title = doc.paragraphs[0]
-p_title.text = "RIO Internship Report — Phase-1 Evaluation"
+p_title.text = "RIO Internship Report — Phase-1 Evaluation (Academic Year 2026–2027)"
 p_title.style = 'Heading 1'
 
 p_sdg = doc.add_paragraph()

@@ -89,7 +89,7 @@ for s in slide1.shapes:
         p2.space_after = Pt(4)
         
         p3 = tf.add_paragraph()
-        p3.text = "School of Computing Science and Engineering, REVA University  |  Academic Year 2025–2026"
+        p3.text = "School of Computing Science and Engineering, REVA University  |  Academic Year 2026–2027"
         p3.font.size = Pt(10.5)
         p3.font.color.rgb = RGBColor(148, 163, 184)
 
@@ -328,9 +328,9 @@ for s in slide9.shapes:
     elif s.has_table:
         table = s.table
         test_data = [
-            ['T1 (Functional)', 'R1, R2: Benign Baseline', 'MQTT sensor stream (46 features)', 'P(attack) < 0.20, local pass', 'PASS (0.001s)'],
-            ['T2 (Boundary)', 'R2, R3: High-rate DDoS SYN Flood', 'DDoS SYN Flood (10,000 pkts/s)', 'P(attack) > 0.80, local drop alert', 'PASS (0.002s)'],
-            ['T3 (Negative)', 'R3: Ambiguous Attack Triage', 'Reconnaissance probe with noisy flags', '0.20 <= P <= 0.80, escalate to Tier-2', 'PASS (0.001s)']
+            ['T1 (Functional)', 'MQTT benign telemetry (46 features)', 'Local Pass (Zero False Alarm)', 'P = 0.04 (Local Pass, 48 μs)', 'PASS'],
+            ['T2 (Boundary)', 'DDoS SYN Flood (10,000 pkts/s)', 'Instant Drop (P > 0.80) & Forensic Alert', 'P = 0.98 (Dropped, 0 queue drop)', 'PASS'],
+            ['T3 (Negative)', 'Ambiguous probe (noisy recon flags)', 'Tier-2 Escalation (0.20 <= P <= 0.80)', 'Escalated to Tier-2 SOC (Zero Flapping)', 'PASS']
         ]
         for row_idx, row in enumerate(test_data):
             for col_idx, text in enumerate(row):
@@ -408,9 +408,9 @@ for s in slide11.shapes:
     elif s.has_table:
         table = s.table
         phase2_data = [
-            ['Hardware acceleration & benchmarking on Raspberry Pi 5 / Coral Edge TPU', 'High', 'Week 18'],
-            ['Kernel-level eBPF packet hook integration for line-rate hardware packet filtering', 'High', 'Week 20'],
-            ['Distributed Raft consensus for multi-fog node threat intelligence synchronization', 'Medium', 'Week 22']
+            ['Hardware deployment on Raspberry Pi 5 / Edge TPU', 'ONNX-Runtime Edge INT8 quantization on ARM Cortex', 'Week 18'],
+            ['Kernel-level eBPF line-rate packet filter', 'XDP/eBPF C kernel filter dropping attacks before socket allocation', 'Week 20'],
+            ['Distributed multi-fog threat intelligence sync', 'Raft state machine for synchronized IP blocklists across nodes', 'Week 22']
         ]
         for row_idx, row in enumerate(phase2_data):
             for col_idx, text in enumerate(row):

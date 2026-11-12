@@ -81,7 +81,7 @@ for s in slide1.shapes:
         p2.space_after = Pt(4)
         
         p3 = tf.add_paragraph()
-        p3.text = "School of Computing Science and Engineering, REVA University  |  Academic Year 2025–2026"
+        p3.text = "School of Computing Science and Engineering, REVA University  |  Academic Year 2026–2027"
         p3.font.size = Pt(10.5)
         p3.font.color.rgb = RGBColor(148, 163, 184)
 
