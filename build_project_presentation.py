@@ -132,7 +132,9 @@ if os.path.exists(SDG_LOGO_PATH):
 slide2 = prs.slides[1]
 update_footer(slide2)
 for s in slide2.shapes:
-    if s.name == 'Text 7':
+    if s.name == 'Text 6':
+        set_text(s, "Problem Context & Industrial Scope", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         bullets = [
@@ -147,6 +149,8 @@ for s in slide2.shapes:
             p.font.size = Pt(11.0)
             p.font.color.rgb = RGBColor(40, 50, 60)
             p.space_after = Pt(6)
+    elif s.name == 'Text 9':
+        set_text(s, "Identified Research Gaps", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 10':
         tf = s.text_frame
         tf.clear()
@@ -217,7 +221,9 @@ if os.path.exists(ARCH_IMG_PATH):
     slide5.shapes.add_picture(ARCH_IMG_PATH, Inches(0.70), Inches(1.60), width=Inches(8.00), height=Inches(5.00))
 
 for s in slide5.shapes:
-    if s.name == 'Text 9':
+    if s.name == 'Text 8':
+        set_text(s, "Architectural Rationale & Trade-Offs", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 9':
         tf = s.text_frame
         tf.clear()
         decisions = [
@@ -248,7 +254,7 @@ if os.path.exists(DFD_IMG_PATH):
 
 for s in slide6.shapes:
     if s.name == 'Text 11':
-        set_text(s, "Traceability: R1 traces to DFD Level-0/1 Ingestion | R2 traces to Flowchart Classification & Hysteresis | R3 traces to UML Sequence Tier-2 Escalation | R4 traces to FastAPI & Streamlit UI",
+        set_text(s, "Architectural Traceability Matrix: R1 -> Ingestion (DFD) | R2 -> Classifier (Flowchart) | R3 -> Hysteresis (UML) | R4 -> Telemetry (UI)",
                  font_size=10.5, color=RGBColor(0, 90, 160), bold=True)
 
 # ==========================================================
@@ -257,12 +263,18 @@ for s in slide6.shapes:
 slide7 = prs.slides[6]
 update_footer(slide7)
 for s in slide7.shapes:
-    if s.name == 'Text 6':
-        set_text(s, "target about 30%  |  actual: 32% (Completed)", font_size=11, bold=True, color=RGBColor(0, 130, 60))
+    if s.name == 'Text 5':
+        set_text(s, "Week 8: Core Implementation", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 6':
+        set_text(s, "Target: 30% | Completed: 32%", font_size=11, bold=True, color=RGBColor(0, 130, 60))
+    elif s.name == 'Text 9':
+        set_text(s, "Week 10: Subsystem Refinement & Debug", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 10':
-        set_text(s, "target about 55%  |  actual: 58% (Completed)", font_size=11, bold=True, color=RGBColor(0, 130, 60))
+        set_text(s, "Target: 55% | Completed: 58%", font_size=11, bold=True, color=RGBColor(0, 130, 60))
+    elif s.name == 'Text 13':
+        set_text(s, "Week 14: Phase-1 Consolidation", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 14':
-        set_text(s, "target about 70%  |  actual: 72% (Completed)", font_size=11, bold=True, color=RGBColor(0, 130, 60))
+        set_text(s, "Target: 70% | Completed: 72%", font_size=11, bold=True, color=RGBColor(0, 130, 60))
     elif s.name == 'Text 17':
         tf = s.text_frame
         tf.clear()
@@ -293,7 +305,9 @@ if os.path.exists(PARETO_IMG_PATH):
     slide8.shapes.add_picture(PARETO_IMG_PATH, Inches(8.70), Inches(1.60), width=Inches(4.15), height=Inches(3.35))
 
 for s in slide8.shapes:
-    if s.name == 'Text 13':
+    if s.name == 'Text 12':
+        set_text(s, "Core Engineering Implementation", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 13':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
@@ -304,6 +318,8 @@ for s in slide8.shapes:
         p2.text = "• Core Logic: Feature vectors evaluated through an ensemble of 40 shallow decision trees; thread-safe circular ring buffer buffers 1,000 flows with zero memory reallocation."
         p2.font.size = Pt(10.5)
         p2.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 15':
+        set_text(s, "Performance Optimization & Speedup", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 16':
         tf = s.text_frame
         tf.clear()
@@ -324,10 +340,16 @@ update_footer(slide9)
 for s in slide9.shapes:
     if s.name == 'Text 6':
         set_text(s, "23", font_size=28, bold=True, color=RGBColor(0, 114, 206), align=PP_ALIGN.CENTER)
+    elif s.name == 'Text 7':
+        set_text(s, "Test Cases Designed", font_size=11, bold=True, color=RGBColor(40, 50, 60), align=PP_ALIGN.CENTER)
     elif s.name == 'Text 9':
         set_text(s, "23", font_size=28, bold=True, color=RGBColor(0, 130, 60), align=PP_ALIGN.CENTER)
+    elif s.name == 'Text 10':
+        set_text(s, "Verified Passed", font_size=11, bold=True, color=RGBColor(40, 50, 60), align=PP_ALIGN.CENTER)
     elif s.name == 'Text 12':
         set_text(s, "3", font_size=28, bold=True, color=RGBColor(210, 80, 20), align=PP_ALIGN.CENTER)
+    elif s.name == 'Text 13':
+        set_text(s, "Defects Resolved", font_size=11, bold=True, color=RGBColor(40, 50, 60), align=PP_ALIGN.CENTER)
     elif s.has_table:
         table = s.table
         test_data = [
@@ -356,7 +378,9 @@ if os.path.exists(AFTER_IMG_PATH):
     slide10.shapes.add_picture(AFTER_IMG_PATH, Inches(3.90), Inches(1.60), width=Inches(3.00), height=Inches(2.60))
 
 for s in slide10.shapes:
-    if s.name == 'Text 11':
+    if s.name == 'Text 10':
+        set_text(s, "Root-Cause Analysis & Defect Resolution", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 11':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
@@ -371,6 +395,8 @@ for s in slide10.shapes:
         p3.text = "• Bug 3 (Negative Latency Skew): System clock drift logged negative times -> Migrated all latency metrics to monotonic time.perf_counter_ns()."
         p3.font.size = Pt(10.0)
         p3.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 13':
+        set_text(s, "Subsystem Integration & Concurrency Hardening", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 14':
         tf = s.text_frame
         tf.clear()
@@ -393,7 +419,9 @@ for s in slide10.shapes:
 slide11 = prs.slides[10]
 update_footer(slide11)
 for s in slide11.shapes:
-    if s.name == 'Text 7':
+    if s.name == 'Text 6':
+        set_text(s, "Individual Engineering Contribution", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         contribs = [
@@ -429,7 +457,9 @@ for s in slide11.shapes:
 slide12 = prs.slides[11]
 update_footer(slide12)
 for s in slide12.shapes:
-    if s.name == 'Text 7':
+    if s.name == 'Text 6':
+        set_text(s, "Key Engineering Challenges & Takeaways", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         learnings = [
@@ -444,8 +474,10 @@ for s in slide12.shapes:
             p.font.size = Pt(10.5)
             p.font.color.rgb = RGBColor(40, 50, 60)
             p.space_after = Pt(4)
+    elif s.name == 'Text 8':
+        set_text(s, "Thank you. Questions?", font_size=18, bold=True, color=RGBColor(11, 60, 93), align=PP_ALIGN.CENTER)
     elif s.name == 'Text 9':
-        set_text(s, f"Email: {EMAIL_ADDR}  |  LinkedIn: {LINKEDIN_URL}\nGitHub: {GITHUB_REPO}\nCandidate: {STUDENT_NAME} ({SRN})  |  Faculty Guide: {GUIDE_NAME}  |  REVA University",
+        set_text(s, f"Candidate: {STUDENT_NAME} ({SRN})  |  Faculty Guide: {GUIDE_NAME}\nEmail: {EMAIL_ADDR}  |  LinkedIn: {LINKEDIN_URL}\nProject Repository: {GITHUB_REPO}\nSchool of C&SE, REVA University  |  Academic Year 2026–2027",
                  font_size=11, color=RGBColor(0, 114, 206), bold=True, align=PP_ALIGN.CENTER)
 
 # Save PPTX

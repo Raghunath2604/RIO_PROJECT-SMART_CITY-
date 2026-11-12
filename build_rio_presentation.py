@@ -124,7 +124,9 @@ if os.path.exists(SDG_LOGO_PATH):
 slide2 = prs.slides[1]
 update_footer(slide2)
 for s in slide2.shapes:
-    if s.name == 'Text 7':
+    if s.name == 'Text 6':
+        set_text(s, "Host Organization: The RIO Center", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
@@ -139,6 +141,8 @@ for s in slide2.shapes:
         p3.text = "• Mission: Building robust, production-grade cyber-defense solutions for smart municipal grids and campus IoT testbeds."
         p3.font.size = Pt(11)
         p3.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 9':
+        set_text(s, "Research Pod Structure", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 10':
         tf = s.text_frame
         tf.clear()
@@ -154,6 +158,8 @@ for s in slide2.shapes:
         p3.text = "• Personal Scope: End-to-end responsibility for the fog-tier traffic ingestion pipeline, feature normalization, and sub-millisecond Random Forest triage module."
         p3.font.size = Pt(11)
         p3.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 12':
+        set_text(s, "Agile Engineering Workflow", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 13':
         tf = s.text_frame
         tf.clear()
@@ -176,7 +182,9 @@ for s in slide2.shapes:
 slide3 = prs.slides[2]
 update_footer(slide3)
 for s in slide3.shapes:
-    if s.name == 'Text 7':
+    if s.name == 'Text 6':
+        set_text(s, "Problem Context & Industrial Scope", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
@@ -222,6 +230,8 @@ for s in slide4.shapes:
                 p = cell.text_frame.paragraphs[0]
                 p.font.size = Pt(10.5)
                 p.font.color.rgb = RGBColor(30, 40, 50)
+    elif s.name == 'Text 6':
+        set_text(s, "Engineering Deliverables & Milestones", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
@@ -268,7 +278,9 @@ for s in slide5.shapes:
 slide6 = prs.slides[5]
 update_footer(slide6)
 for s in slide6.shapes:
-    if s.name == 'Text 7':
+    if s.name == 'Text 6':
+        set_text(s, "Software Engineering Standards", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
@@ -283,6 +295,8 @@ for s in slide6.shapes:
         p3.text = "• Defensive Engineering: Boundary validation, graceful API fallbacks, and structured JSON logging."
         p3.font.size = Pt(11)
         p3.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 9':
+        set_text(s, "Professional Certifications & Coursework", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 10':
         tf = s.text_frame
         tf.clear()
@@ -321,7 +335,9 @@ for s in slide6.shapes:
 slide7 = prs.slides[6]
 update_footer(slide7)
 for s in slide7.shapes:
-    if s.name == 'Text 7':
+    if s.name == 'Text 6':
+        set_text(s, "Technical Competencies Developed", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
@@ -336,6 +352,8 @@ for s in slide7.shapes:
         p3.text = "• Production Mindset: Transitioned from academic prototyping to resilient, containerized, test-backed microservices."
         p3.font.size = Pt(11)
         p3.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 9':
+        set_text(s, "Systems Engineering & Professional Growth", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 10':
         tf = s.text_frame
         tf.clear()
@@ -351,6 +369,8 @@ for s in slide7.shapes:
         p3.text = "• Agile Ownership: Accurately sizing engineering tasks and consistently delivering checkpoints ahead of schedule."
         p3.font.size = Pt(11)
         p3.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 12':
+        set_text(s, "Core Technical Challenge & Mitigation", font_size=13, bold=True, color=RGBColor(11, 60, 93))
     elif s.name == 'Text 13':
         tf = s.text_frame
         tf.clear()
@@ -373,7 +393,9 @@ for s in slide7.shapes:
 slide8 = prs.slides[7]
 update_footer(slide8)
 for s in slide8.shapes:
-    if s.name == 'Text 7':
+    if s.name == 'Text 6':
+        set_text(s, "Phase-2 Engineering Roadmap", font_size=13, bold=True, color=RGBColor(11, 60, 93))
+    elif s.name == 'Text 7':
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
@@ -388,8 +410,10 @@ for s in slide8.shapes:
         p3.text = "• Placement Readiness: Completed mock technical interviews; solidifying portfolio with production GitHub repository and live demo."
         p3.font.size = Pt(11.5)
         p3.font.color.rgb = RGBColor(40, 50, 60)
+    elif s.name == 'Text 8':
+        set_text(s, "Thank you. Questions?", font_size=18, bold=True, color=RGBColor(11, 60, 93), align=PP_ALIGN.CENTER)
     elif s.name == 'Text 9':
-        set_text(s, f"Email: {EMAIL_ADDR}  |  LinkedIn: {LINKEDIN_URL}\nGitHub: {GITHUB_REPO}\nCandidate: {STUDENT_NAME} ({SRN})  |  Faculty Guide: {GUIDE_NAME}  |  The RIO Center, REVA University",
+        set_text(s, f"Candidate: {STUDENT_NAME} ({SRN})  |  Faculty Guide: {GUIDE_NAME}\nEmail: {EMAIL_ADDR}  |  LinkedIn: {LINKEDIN_URL}\nRepository: {GITHUB_REPO}\nThe RIO Center, REVA University  |  Academic Year 2026–2027",
                  font_size=11, color=RGBColor(0, 114, 206), bold=True, align=PP_ALIGN.CENTER)
 
 # Save PPTX
