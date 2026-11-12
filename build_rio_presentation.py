@@ -128,7 +128,7 @@ for s in slide2.shapes:
         tf = s.text_frame
         tf.clear()
         p1 = tf.paragraphs[0]
-        p1.text = "• About RIO: The Research and Innovation Opportunities (RIO) Center at REVA University fosters industry-aligned incubation, advanced computing, and smart infrastructure."
+        p1.text = "• About RIO: The Research and Innovation Opportunities (RIO) Center at REVA University conducts applied systems incubation, advanced computing, and smart infrastructure."
         p1.font.size = Pt(11)
         p1.font.color.rgb = RGBColor(40, 50, 60)
         p2 = tf.add_paragraph()
